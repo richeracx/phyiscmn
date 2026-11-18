@@ -5,7 +5,6 @@ import { systemInstruction, userPrompt } from './prompt';
 import type { SolveInput } from './request';
 
 const REQUEST_TIMEOUT_MS = 110_000;
-const LUNA_MODEL = 'gpt-6-luna';
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -137,7 +136,7 @@ export async function* streamGptSolution(input: SolveInput, signal: AbortSignal)
   const messages = buildMessages(input);
 
   const payload: Record<string, unknown> = {
-    model: LUNA_MODEL,
+    model: config.openaiModel(),
     messages,
     response_format: { type: 'json_object' },
     reasoning_effort: 'medium',
@@ -210,7 +209,7 @@ export async function generateGptSolution(
   const url = `${config.openaiBaseUrl().replace(/\/+$/, '')}/chat/completions`;
 
   const payload: Record<string, unknown> = {
-    model: LUNA_MODEL,
+    model: config.openaiModel(),
     messages,
     response_format: { type: 'json_object' },
     reasoning_effort: 'medium',

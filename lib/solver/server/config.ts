@@ -11,11 +11,11 @@ const read = (name: string) => {
  * Zero leaks to client bundles.
  */
 export const config = {
-  // GPT-6 Luna API Key
+  // GPT Luna API Key
   openaiApiKey: () =>
     read('OPENAI_API_KEY') ?? read('GPT_API_KEY') ?? read('LUNA_API_KEY'),
   openaiBaseUrl: () => read('OPENAI_BASE_URL') ?? 'https://api.openai.com/v1',
-  openaiModel: () => 'gpt-6-luna',
+  openaiModel: () => read('OPENAI_MODEL') ?? read('GPT_MODEL') ?? 'gpt-5.6-luna',
 
   // Check if API key is present
   hasApiKey: () =>
