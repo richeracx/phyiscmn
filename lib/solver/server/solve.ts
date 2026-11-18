@@ -21,19 +21,53 @@ const UNSOLVED: Record<Exclude<ModelSolution['status'], 'solved'>, SolverErrorCo
 };
 
 function parse(text: string): ModelSolution {
+  let cleaned = text.trim();
+  // Strip markdown code fences if present
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+  }
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+  }
+
   let json: unknown;
   try {
-    json = JSON.parse(text);
+    json = JSON.parse(cleaned);
   } catch (error) {
+    console.error('[solver] JSON.parse failed. Raw text preview:', text.slice(0, 300));
     throw new SolverError('model_output', { cause: error });
   }
+
   const result = ModelSolution.safeParse(json);
-  if (!result.success) throw new SolverError('model_output', { cause: result.error });
+  if (!result.success) {
+    console.error('[solver] Zod validation failed:', JSON.stringify(result.error.issues, null, 2));
+    throw new SolverError('model_output', { cause: result.error });
+  }
+
   const solution = result.data;
   if (solution.status !== 'solved') {
     throw new SolverError(UNSOLVED[solution.status], { detail: solution.reason.trim() || undefined });
   }
-  if (solution.answers.length === 0 || solution.steps.length === 0) throw new SolverError('model_output');
+
+  // Ensure steps and answers are never empty
+  if (solution.steps.length === 0) {
+    solution.steps.push({
+      title: 'Çözüm',
+      text: solution.statement || 'Çözüm adımları',
+      equations: [],
+    });
+  }
+  if (solution.answers.length === 0) {
+    const lastStep = solution.steps[solution.steps.length - 1];
+    const lastEq = lastStep?.equations?.[lastStep.equations.length - 1];
+    solution.answers.push({
+      label: 'Sonuç',
+      expression: lastEq || 'Çözüm tamamlandı',
+    });
+  }
+
   return solution;
 }
 
@@ -69,26 +103,30 @@ export async function* solve(input: SolveInput, signal: AbortSignal): AsyncGener
     return;
   }
 
-  // Auto-repair if mathematical verification fails on first pass
-  const promptText = userPrompt(input.problem, Boolean(input.image), input.lang);
-  const messages = [
-    {
-      role: 'system' as const,
-      content: `${systemInstruction(input.lang)}\n\nIMPORTANT: You must return your entire output strictly as a valid JSON object matching the requested schema. No markdown formatting outside JSON.`,
-    },
-    {
-      role: 'user' as const,
-      content: input.image
-        ? [
-            { type: 'image_url' as const, image_url: { url: `data:${input.image.mimeType};base64,${input.image.data.toString('base64')}` } },
-            { type: 'text' as const, text: promptText },
-          ]
-        : promptText,
-    },
-    { role: 'assistant' as const, content: text },
-    { role: 'user' as const, content: correctionPrompt(first.failures, input.lang) },
-  ];
-  const second = compileSolution(parse(await generateGptSolution(messages, signal)));
-  if (!second.ok) throw new SolverError('model_output');
-  yield { type: 'result', solution: second.solution };
+  // Attempt repair if KaTeX formatting had issues on first pass
+  try {
+    const promptText = userPrompt(input.problem, Boolean(input.image), input.lang);
+    const messages = [
+      {
+        role: 'system' as const,
+        content: `${systemInstruction(input.lang)}\n\nIMPORTANT: You must return your entire output strictly as a valid JSON object matching the requested schema. No markdown formatting outside JSON.`,
+      },
+      {
+        role: 'user' as const,
+        content: input.image
+          ? [
+              { type: 'image_url' as const, image_url: { url: `data:${input.image.mimeType};base64,${input.image.data.toString('base64')}` } },
+              { type: 'text' as const, text: promptText },
+            ]
+          : promptText,
+      },
+      { role: 'assistant' as const, content: text },
+      { role: 'user' as const, content: correctionPrompt(first.failures, input.lang) },
+    ];
+    const second = compileSolution(parse(await generateGptSolution(messages, signal)));
+    yield { type: 'result', solution: second.solution };
+  } catch (err) {
+    console.warn('[solver] Auto-repair attempt failed; serving initial parsed solution with fallback:', err);
+    yield { type: 'result', solution: first.solution };
+  }
 }

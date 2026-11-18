@@ -15,16 +15,26 @@ const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 /** A run like "........" or "____" signals degenerate model output rather than prose. */
 const DEGENERATE = /(\S)\1{11,}/;
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 class MathCompiler {
   readonly failures: string[] = [];
 
   tex(source: string, displayMode = false): string {
     const tex = source.replace(CONTROL_CHARS, '').trim();
+    if (!tex) return '';
     try {
       return katex.renderToString(tex, { ...KATEX_OPTIONS, displayMode });
     } catch {
       this.failures.push(tex);
-      return '';
+      return `<span class="katex-fallback font-mono">${escapeHtml(tex)}</span>`;
     }
   }
 
@@ -48,7 +58,9 @@ class MathCompiler {
   }
 }
 
-export type CompileResult = { ok: true; solution: Solution } | { ok: false; failures: string[] };
+export type CompileResult =
+  | { ok: true; solution: Solution }
+  | { ok: false; failures: string[]; solution: Solution };
 
 export function compileSolution(raw: ModelSolution): CompileResult {
   const m = new MathCompiler();
@@ -74,5 +86,5 @@ export function compileSolution(raw: ModelSolution): CompileResult {
       forces: raw.diagram.kind === 'forces' ? raw.diagram.forces.map((f) => ({ ...f, label: m.tex(f.label) })) : [],
     },
   };
-  return m.failures.length > 0 ? { ok: false, failures: m.failures } : { ok: true, solution };
+  return m.failures.length > 0 ? { ok: false, failures: m.failures, solution } : { ok: true, solution };
 }
