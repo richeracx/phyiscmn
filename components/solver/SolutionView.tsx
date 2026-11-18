@@ -52,16 +52,26 @@ export function SolutionView({ solution }: { solution: Solution }) {
           <Panel>
             <Label>{sections.given}</Label>
             <dl className="mt-4 divide-y divide-white/[0.06]">
-              {solution.given.map((item, i) => (
-                <div key={i} className="grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] items-baseline gap-x-5 py-2.5">
-                  <dt className="text-[15px] text-[#F5F5F7]">
-                    <Tex html={item.symbol} /> <span className="text-[#71717A]">=</span> <Tex html={item.value} />
-                  </dt>
-                  <dd className="text-right text-[13px] text-[#71717A]">
-                    <Rich value={item.meaning} />
-                  </dd>
-                </div>
-              ))}
+              {solution.given.map((item, i) => {
+                const hasSymbol = Boolean(item.symbol && item.symbol.trim().length > 0);
+                const hasValue = Boolean(item.value && item.value.trim().length > 0);
+                const hasMeaning = Boolean(item.meaning && item.meaning.length > 0);
+                const symbolHasEquals = hasSymbol && item.symbol.includes('=');
+
+                return (
+                  <div key={i} className="grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] items-baseline gap-x-5 py-2.5">
+                    <dt className="text-[15px] font-medium text-[#F5F5F7]">
+                      {hasSymbol && <Tex html={item.symbol} />}
+                      {hasSymbol && hasValue && !symbolHasEquals && <span className="mx-1.5 text-[#71717A]">=</span>}
+                      {hasValue && <Tex html={item.value} />}
+                      {!hasSymbol && !hasValue && <span className="text-[#E5C158]">•</span>}
+                    </dt>
+                    <dd className="text-right text-[13px] text-[#A1A1AA]">
+                      {hasMeaning && <Rich value={item.meaning} />}
+                    </dd>
+                  </div>
+                );
+              })}
             </dl>
           </Panel>
           <Panel>
@@ -143,15 +153,23 @@ export function SolutionView({ solution }: { solution: Solution }) {
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="min-w-0 flex-1 space-y-5">
             <Label>{sections.result}</Label>
-            {solution.answers.map((answer, i) => (
-              <div key={i}>
-                <p className="text-[13px] text-[#A1A1AA]">{answer.label}</p>
-                <Tex
-                  html={answer.expression}
-                  className="mt-1 block overflow-x-auto text-[1.15rem] text-[#F5F5F7] [&_.katex-display]:my-1 [&_.katex-display]:text-left"
-                />
-              </div>
-            ))}
+            {solution.answers.map((answer, i) => {
+              const hasLabel = Boolean(answer.label && answer.label.trim().length > 0);
+              const hasExpr = Boolean(answer.expression && answer.expression.trim().length > 0);
+              const isSame = hasLabel && hasExpr && answer.label.trim().toLowerCase() === answer.expression.trim().toLowerCase();
+
+              return (
+                <div key={i}>
+                  {hasLabel && !isSame && <p className="text-[13px] text-[#A1A1AA]">{answer.label}</p>}
+                  {hasExpr && (
+                    <Tex
+                      html={answer.expression}
+                      className="mt-1 block overflow-x-auto text-[1.15rem] text-[#F5F5F7] [&_.katex-display]:my-1 [&_.katex-display]:text-left"
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
           {solution.choice && (
             <div className="flex flex-col items-center gap-2">

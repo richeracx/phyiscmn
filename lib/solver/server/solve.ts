@@ -64,7 +64,7 @@ function parse(text: string): ModelSolution {
     const lastEq = lastStep?.equations?.[lastStep.equations.length - 1];
     solution.answers.push({
       label: 'Sonuç',
-      expression: lastEq || 'Çözüm tamamlandı',
+      expression: lastEq || '',
     });
   }
 

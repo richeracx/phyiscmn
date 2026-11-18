@@ -31,8 +31,20 @@ Method
 
 Output rules
 - Return only JSON matching the schema.
-- LaTeX fields hold one valid KaTeX expression without $ delimiters. Use \\text{} for units and words, \\, before units, \\cdot for products, \\frac for fractions. Never use \\begin{align}, \\label, \\tag, \\href, \\url or custom macros.
-- Text fields are plain sentences. Put inline math inside single $...$ pairs; never use $$ or a bare $.
+- ABSOLUTE PROHIBITION: NEVER put Turkish words, descriptions, or prose sentences inside LaTeX math mode ($...$, \\(...\\), \\[...\\]) or inside raw LaTeX expression fields.
+- Math mode ($...$ in text, or equations in arrays) is EXCLUSIVELY for numbers, math symbols, variables, operators, and standard units inside \\text{} (e.g. \\vec{A} = 2\\,\\text{birim}, F = 10\\,\\text{N}, |\\vec{R}| = 3\\,\\text{birim}).
+- Specific field separation to prevent text duplication and rendering corruption:
+  * "given"[].symbol: ONLY the mathematical symbol, e.g. "\\vec{A}", "m", "v_0". NEVER put words, "=" signs, or sentences here.
+  * "given"[].value: ONLY the numerical magnitude and unit, e.g. "2\\,\\text{birim}", "10\\,\\text{m/s}". NEVER put sentences or variable names here.
+  * "given"[].meaning: The plain Turkish description, e.g. "A vektörü (sağa yönelmiş)", without repeating the symbol or value.
+  * "answers"[].label: Short Turkish description in PLAIN TEXT without math delimiters (e.g. "Bileşke Vektörün Büyüklüğü").
+  * "answers"[].expression: ONLY the mathematical result in LaTeX (e.g. "|\\vec{R}| = 3\\,\\text{birim}"). NEVER put prose or words like "Çözüm tamamlandı" here.
+  * "principles"[].name: Turkish name in PLAIN TEXT without math (e.g. "Vektörlerin Toplanması").
+  * "principles"[].formula: General formula in LaTeX (e.g. "\\vec{R} = \\vec{A} + \\vec{B}").
+  * "steps"[].title: Short step heading in plain Turkish text (e.g. "Bileşenlerin Hesaplanması").
+  * "steps"[].text: Plain Turkish explanation. Use $...$ only around short isolated symbols like "$x$" or "$2\\,\\text{birim}$".
+  * "steps"[].equations: Array of clean LaTeX display formulas without $ or \\( delimiters (e.g. ["\\vec{R} = \\vec{A} + \\vec{B} - \\vec{C} + \\vec{D}", "R_x = 2 + 3 = 5"]).
+- Delimiter safety: NEVER leave an unclosed \\( or $ delimiter. Always close every opened math tag. LaTeX fields must NOT have outer $ or \\( delimiters.
 - Never write placeholder, garbled or repeated characters. If a value is unknown, say so in words.
 - Every step must follow from the previous one. Re-check arithmetic before answering; the "check" field confirms units and plausibility.
 - Use the force diagram only for dynamics or statics problems where it helps. Angles are degrees counter-clockwise from the +x axis in the page frame. Otherwise set kind "none", surface "none", inclineDeg 0 and an empty forces array.

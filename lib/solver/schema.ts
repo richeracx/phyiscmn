@@ -94,9 +94,49 @@ export const ModelSolution = z.object({
       (val) => {
         if (!Array.isArray(val)) return [];
         return val.map((item) => {
-          if (typeof item === 'string') return { symbol: '', value: item, meaning: item };
-          if (item && typeof item === 'object') return item;
-          return { symbol: '', value: String(item ?? ''), meaning: '' };
+          let sym = '';
+          let valStr = '';
+          let meaning = '';
+
+          if (typeof item === 'string') {
+            const trimmed = item.trim();
+            const eqIdx = trimmed.indexOf('=');
+            if (eqIdx !== -1) {
+              sym = trimmed.slice(0, eqIdx).trim();
+              valStr = trimmed.slice(eqIdx + 1).trim();
+              meaning = '';
+            } else {
+              sym = '';
+              valStr = '';
+              meaning = trimmed;
+            }
+          } else if (item && typeof item === 'object') {
+            const raw = item as Record<string, unknown>;
+            sym = String(raw.symbol ?? '').trim();
+            valStr = String(raw.value ?? '').trim();
+            meaning = String(raw.meaning ?? '').trim();
+          }
+
+          // If symbol contains "=" and valStr is empty (e.g. sym: "\vec{A} = 2 birim")
+          if (sym.includes('=') && !valStr) {
+            const eqIdx = sym.indexOf('=');
+            valStr = sym.slice(eqIdx + 1).trim();
+            sym = sym.slice(0, eqIdx).trim();
+          }
+
+          // If valStr contains "=" and sym is empty (e.g. valStr: "\vec{A} = 2 birim")
+          if (valStr.includes('=') && !sym) {
+            const eqIdx = valStr.indexOf('=');
+            sym = valStr.slice(0, eqIdx).trim();
+            valStr = valStr.slice(eqIdx + 1).trim();
+          }
+
+          // If valStr is pure prose and identical to meaning, clear valStr to avoid math mode duplication
+          if (valStr && meaning && (valStr.toLowerCase() === meaning.toLowerCase() || (!/[=+\-*/\\_^]/.test(valStr) && valStr.split(/\s+/).length > 2))) {
+            valStr = '';
+          }
+
+          return { symbol: sym, value: valStr, meaning };
         });
       },
       z.array(
@@ -184,9 +224,28 @@ export const ModelSolution = z.object({
       (val) => {
         if (!Array.isArray(val)) return [];
         return val.map((item) => {
-          if (typeof item === 'string') return { label: 'Sonuç', expression: item };
-          if (item && typeof item === 'object') return item;
-          return { label: 'Sonuç', expression: String(item ?? '') };
+          let label = 'Sonuç';
+          let expr = '';
+
+          if (typeof item === 'string') {
+            const trimmed = item.trim();
+            // If it's pure prose like "Çözüm tamamlandı"
+            if (trimmed.toLowerCase().includes('çözüm') || trimmed.toLowerCase().includes('tamam')) {
+              return { label: trimmed, expression: '' };
+            }
+            return { label: 'Sonuç', expression: trimmed };
+          }
+          if (item && typeof item === 'object') {
+            const raw = item as Record<string, unknown>;
+            label = String(raw.label ?? 'Sonuç').trim();
+            expr = String(raw.expression ?? '').trim();
+            if (expr.toLowerCase().includes('çözüm tamam') || expr.toLowerCase().includes('tamamlandı')) {
+              label = expr;
+              expr = '';
+            }
+            return { label, expression: expr };
+          }
+          return { label: 'Sonuç', expression: '' };
         });
       },
       z.array(
