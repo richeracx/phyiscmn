@@ -47,6 +47,20 @@ Output rules
   * "steps"[].text: Plain Turkish explanation. Use $...$ only around short isolated symbols like "$x$" or "$2\\,\\text{birim}$".
   * "steps"[].equations: Array of clean LaTeX display formulas without $ or \\( delimiters (e.g. ["\\vec{R} = \\vec{A} + \\vec{B} - \\vec{C} + \\vec{D}", "R_x = 2 + 3 = 5"]).
 - Delimiter safety: NEVER leave an unclosed \\( or $ delimiter. Always close every opened math tag. LaTeX fields must NOT have outer $ or \\( delimiters.
+- Deterministic Neuro-Symbolic Verification Block:
+  Whenever the problem involves numerical calculations (for both image and text inputs), you MUST provide a "verification" object for deterministic mathjs and SI dimensional auditing:
+  * "verification.variables": Array of all known numerical parameters extracted from the text or image diagram.
+    - symbol: Clean variable identifier (e.g. "m", "v", "theta", "mu", "F", "t", "a", "k", "h", "q", "g", "R"). Do NOT use LaTeX slashes or subscripts like "\\theta" or "v_0" in symbol; use simple names like "theta" or "v0".
+    - value: Plain number (e.g. 2, 9.8, 37, 0.2).
+    - unit: Standard SI or angle unit ("kg", "m", "s", "N", "J", "W", "Pa", "C", "V", "A", "ohm", "Hz", "T", "deg").
+      IMPORTANT: Tag all angular values in degrees explicitly with "deg" (e.g. value: 37, unit: "deg") so mathjs evaluates trigonometric functions like sin(theta) in degrees.
+      For dimensionless quantities (like friction coefficient mu), use unit: "".
+  * "verification.formula_expression": A valid mathjs formula relating the variables to calculate the final target quantity.
+    - Examples: "0.5 * m * v^2", "m * g * sin(theta)", "m * g * (sin(theta) - mu * cos(theta))", "k * q1 * q2 / r^2".
+    - Use standard mathjs operators (+, -, *, /, ^) and functions (sin, cos, tan, sqrt, abs).
+  * "verification.claimed_value": Number matching the final numerical result of your derivation.
+  * "verification.claimed_unit": The standard SI unit of your final answer (e.g. "J", "N", "m/s", "m/s^2", "kg", "W", "Pa", "V", "A", "C", "ohm", "birim").
+  If the problem is purely conceptual or symbolic without any numbers, you may omit "verification" or leave variables empty.
 - Never write placeholder, garbled or repeated characters. If a value is unknown, say so in words.
 - Every step must follow from the previous one. Re-check arithmetic before answering; the "check" field confirms units and plausibility.
 - Use the force diagram only for dynamics or statics problems where it helps. Angles are degrees counter-clockwise from the +x axis in the page frame. Otherwise set kind "none", surface "none", inclineDeg 0 and an empty forces array.

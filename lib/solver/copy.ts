@@ -37,6 +37,7 @@ export interface SolverCopy {
     choice: string;
     check: string;
     diagram: string;
+    mathVerifiedBadge: string;
   };
   disclaimer: string;
   retry: string;
@@ -102,6 +103,7 @@ export const solverCopy: Record<'en' | 'tr', SolverCopy> = {
       choice: 'Correct option',
       check: 'Check',
       diagram: 'Free-body diagram',
+      mathVerifiedBadge: 'Numerically & Unit Audited via mathjs',
     },
     disclaimer: 'Physicsmn can make mistakes. Follow each step and check it against your notes.',
     retry: 'Try again',
@@ -184,6 +186,7 @@ export const solverCopy: Record<'en' | 'tr', SolverCopy> = {
       choice: 'Doğru seçenek',
       check: 'Kontrol',
       diagram: 'Serbest cisim diyagramı',
+      mathVerifiedBadge: 'Sayısal ve Birim Doğrulaması Yapıldı (mathjs)',
     },
     disclaimer: 'Physicsmn hata yapabilir. Her adımı takip et ve notlarınla karşılaştır.',
     retry: 'Tekrar dene',

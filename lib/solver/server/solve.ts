@@ -6,6 +6,7 @@ import { generateGptSolution, streamGptSolution } from './gpt';
 import { correctionPrompt, systemInstruction, userPrompt } from './prompt';
 import { compileSolution } from './render';
 import type { SolveInput } from './request';
+import { verifyPhysicsSolution } from './verify';
 
 /** Top-level keys in schema order; their first appearance in the stream marks real progress. */
 const STAGE_MARKERS: ReadonlyArray<{ key: string; stage: Stage }> = [
@@ -114,15 +115,37 @@ export async function* solve(input: SolveInput, signal: AbortSignal): AsyncGener
     marker += 1;
   }
 
-  const first = compileSolution(parse(text));
-  if (first.ok) {
-    yield { type: 'result', solution: first.solution };
+  const firstParsed = parse(text);
+  const firstCompile = compileSolution(firstParsed);
+  const firstAudit = verifyPhysicsSolution(firstParsed);
+
+  // If both KaTeX compilation and deterministic mathjs verification passed (or was skipped for qualitative problems)
+  if (firstCompile.ok && firstAudit.passed) {
+    if (firstAudit.mathVerified) {
+      firstCompile.solution.mathVerified = true;
+    }
+    yield { type: 'result', solution: firstCompile.solution };
     return;
   }
 
-  // Attempt repair if KaTeX formatting had issues on first pass
+  // Attempt self-correction retry loop if KaTeX formatting or mathjs verification failed
   try {
     const promptText = userPrompt(input.problem, Boolean(input.image), input.lang);
+
+    // Construct actionable error feedback for the model
+    const feedbackParts: string[] = [];
+    if (!firstCompile.ok) {
+      feedbackParts.push(correctionPrompt(firstCompile.failures, input.lang));
+    }
+    if (!firstAudit.passed && firstAudit.errorReason) {
+      feedbackParts.push(
+        input.lang === 'tr'
+          ? `Deterministik mathjs ve SI birim denetimi başarısız oldu:\n- ${firstAudit.errorReason}\nLütfen cebirsel bağıntılarınızı, "formula_expression" ifadenizi ve sayısal işlemlerinizi kontrol edin. Çelişkiyi giderip tüm çözümü düzeltilmiş JSON olarak tekrar gönderin.`
+          : `Deterministic mathjs & SI unit audit failed:\n- ${firstAudit.errorReason}\nPlease verify your algebraic relations, "formula_expression", and arithmetic calculation. Resolve the discrepancy and return the corrected complete JSON solution.`,
+      );
+    }
+    const combinedFeedback = feedbackParts.join('\n\n');
+
     const messages = [
       {
         role: 'system' as const,
@@ -138,12 +161,21 @@ export async function* solve(input: SolveInput, signal: AbortSignal): AsyncGener
           : promptText,
       },
       { role: 'assistant' as const, content: text },
-      { role: 'user' as const, content: correctionPrompt(first.failures, input.lang) },
+      { role: 'user' as const, content: combinedFeedback },
     ];
-    const second = compileSolution(parse(await generateGptSolution(messages, signal)));
-    yield { type: 'result', solution: second.solution };
+    const secondParsed = parse(await generateGptSolution(messages, signal));
+    const secondCompile = compileSolution(secondParsed);
+    const secondAudit = verifyPhysicsSolution(secondParsed);
+
+    if (secondAudit.mathVerified) {
+      secondCompile.solution.mathVerified = true;
+    }
+    yield { type: 'result', solution: secondCompile.solution };
   } catch (err) {
     console.warn('[solver] Auto-repair attempt failed; serving initial parsed solution with fallback:', err);
-    yield { type: 'result', solution: first.solution };
+    if (firstAudit.mathVerified) {
+      firstCompile.solution.mathVerified = true;
+    }
+    yield { type: 'result', solution: firstCompile.solution };
   }
 }

@@ -58,6 +58,28 @@ const diagramSchema = z.preprocess(
   }),
 ).default({ kind: 'none', surface: 'none', inclineDeg: 0, forces: [] });
 
+export const VerificationVariable = z.object({
+  symbol: z.string().describe('Alphanumeric symbol, e.g. m, v, theta, g'),
+  value: z.preprocess((val) => {
+    const num = Number(val);
+    return Number.isNaN(num) ? 0 : num;
+  }, z.number()),
+  unit: z.preprocess((val) => (val == null ? '' : String(val).trim()), z.string().default('')),
+});
+
+export const VerificationBlock = z.object({
+  variables: z.preprocess((val) => (Array.isArray(val) ? val : []), z.array(VerificationVariable)).default([]),
+  formula_expression: z.preprocess((val) => (val == null ? '' : String(val).trim()), z.string().default('')),
+  claimed_value: z.preprocess((val) => {
+    if (val == null || val === '') return undefined;
+    const num = Number(val);
+    return Number.isNaN(num) ? undefined : num;
+  }, z.number().optional()),
+  claimed_unit: z.preprocess((val) => (val == null ? '' : String(val).trim()), z.string().default('')),
+});
+
+export type VerificationBlock = z.infer<typeof VerificationBlock>;
+
 /**
  * Resilient schema for model output.
  * Tolerates variations in LLM formatting while guaranteeing type-safe structure.
@@ -287,6 +309,11 @@ export const ModelSolution = z.object({
   choice: choiceSchema.default(''),
   check: prose('Unit and reasonableness check').default(''),
   diagram: diagramSchema,
+  verification: z
+    .preprocess((val) => {
+      if (!val || typeof val !== 'object') return undefined;
+      return val;
+    }, VerificationBlock.optional()),
 });
 
 export type ModelSolution = z.infer<typeof ModelSolution>;
@@ -311,6 +338,7 @@ export interface Solution {
     inclineDeg: number;
     forces: ReadonlyArray<{ label: string; angleDeg: number; magnitude: number }>;
   };
+  mathVerified?: boolean;
 }
 
 export const STAGES = ['read', 'laws', 'derive', 'verify'] as const;

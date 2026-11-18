@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/components/shared/LanguageProvider';
 import type { Solution } from '@/lib/solver/schema';
 import { ForceDiagram } from './ForceDiagram';
@@ -158,7 +159,15 @@ export function SolutionView({ solution }: { solution: Solution }) {
         <span aria-hidden className="absolute inset-y-0 left-0 w-[2px] bg-[#E5C158]" />
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="min-w-0 flex-1 space-y-5">
-            <Label>{sections.result}</Label>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <Label>{sections.result}</Label>
+              {solution.mathVerified && (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-[11px] font-medium text-emerald-400">
+                  <CheckCircle2 size={13} className="text-emerald-400" />
+                  {sections.mathVerifiedBadge}
+                </span>
+              )}
+            </div>
             {solution.answers.map((answer, i) => {
               const hasLabel = Boolean(answer.label && answer.label.trim().length > 0);
               const hasExpr = Boolean(answer.expression && answer.expression.trim().length > 0);
