@@ -91,7 +91,14 @@ export const ModelSolution = z.object({
   statement: prose('The problem restated exactly as understood').default(''),
   given: z
     .preprocess(
-      (val) => (Array.isArray(val) ? val : []),
+      (val) => {
+        if (!Array.isArray(val)) return [];
+        return val.map((item) => {
+          if (typeof item === 'string') return { symbol: '', value: item, meaning: item };
+          if (item && typeof item === 'object') return item;
+          return { symbol: '', value: String(item ?? ''), meaning: '' };
+        });
+      },
       z.array(
         z.object({
           symbol: tex('LaTeX symbol, e.g. m').default(''),
@@ -103,7 +110,14 @@ export const ModelSolution = z.object({
     .default([]),
   find: z
     .preprocess(
-      (val) => (Array.isArray(val) ? val : []),
+      (val) => {
+        if (!Array.isArray(val)) return [];
+        return val.map((item) => {
+          if (typeof item === 'string') return { symbol: item, meaning: item };
+          if (item && typeof item === 'object') return item;
+          return { symbol: String(item ?? ''), meaning: '' };
+        });
+      },
       z.array(
         z.object({
           symbol: tex('LaTeX symbol of the unknown').default(''),
@@ -115,7 +129,14 @@ export const ModelSolution = z.object({
   assumptions: z.preprocess((val) => (Array.isArray(val) ? val.map(String) : []), z.array(z.string())).default([]),
   principles: z
     .preprocess(
-      (val) => (Array.isArray(val) ? val : []),
+      (val) => {
+        if (!Array.isArray(val)) return [];
+        return val.map((item) => {
+          if (typeof item === 'string') return { name: item, formula: '' };
+          if (item && typeof item === 'object') return item;
+          return { name: 'Fizik Yasası', formula: '' };
+        });
+      },
       z.array(
         z.object({
           name: prose('Law or principle').default('Fizik Yasası'),
@@ -126,7 +147,24 @@ export const ModelSolution = z.object({
     .default([]),
   steps: z
     .preprocess(
-      (val) => (Array.isArray(val) ? val : []),
+      (val) => {
+        if (!Array.isArray(val)) return [];
+        return val.map((item, idx) => {
+          if (typeof item === 'string') {
+            return {
+              title: `Adım ${idx + 1}`,
+              text: item,
+              equations: [],
+            };
+          }
+          if (item && typeof item === 'object') return item;
+          return {
+            title: `Adım ${idx + 1}`,
+            text: String(item ?? ''),
+            equations: [],
+          };
+        });
+      },
       z.array(
         z.object({
           title: prose('Short step heading').default('Adım'),
@@ -143,7 +181,14 @@ export const ModelSolution = z.object({
     .default([]),
   answers: z
     .preprocess(
-      (val) => (Array.isArray(val) ? val : []),
+      (val) => {
+        if (!Array.isArray(val)) return [];
+        return val.map((item) => {
+          if (typeof item === 'string') return { label: 'Sonuç', expression: item };
+          if (item && typeof item === 'object') return item;
+          return { label: 'Sonuç', expression: String(item ?? '') };
+        });
+      },
       z.array(
         z.object({
           label: prose('What this answer is').default('Sonuç'),
