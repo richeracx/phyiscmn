@@ -12,7 +12,7 @@ interface ChatMessage {
 }
 
 function buildMessages(input: SolveInput): ChatMessage[] {
-  const sys = systemInstruction(input.lang);
+  const sys = `${systemInstruction(input.lang)}\n\nIMPORTANT: You must return your entire output strictly as a valid JSON object matching the requested schema. No markdown formatting outside JSON.`;
   const promptText = userPrompt(input.problem, Boolean(input.image), input.lang);
 
   const messages: ChatMessage[] = [{ role: 'system', content: sys }];
@@ -36,11 +36,97 @@ function buildMessages(input: SolveInput): ChatMessage[] {
   return messages;
 }
 
-function handleFetchError(error: unknown, signal: AbortSignal): never {
-  if (error instanceof SolverError) throw error;
-  if (signal.aborted) throw new SolverError('model_timeout', { cause: error });
-  // Never leak provider internal details or keys
-  throw new SolverError('model_busy', { cause: error });
+/**
+ * Executes a fetch to the OpenAI-compatible endpoint with automatic fallback
+ * if the requested model (e.g. gpt-6-luna) is unavailable or returns 404.
+ */
+async function fetchWithModelFallback(
+  url: string,
+  apiKey: string,
+  basePayload: Record<string, unknown>,
+  signal: AbortSignal,
+): Promise<Response> {
+  const requestedModel = config.openaiModel();
+  const modelsToTry = [
+    requestedModel,
+    'gpt-4o',
+    'gpt-4o-mini',
+  ];
+  const uniqueModels = Array.from(new Set(modelsToTry));
+
+  let lastResponse: Response | null = null;
+  let hadRateLimit = false;
+
+  for (const model of uniqueModels) {
+    const payload: Record<string, unknown> = { ...basePayload, model };
+    if (model.startsWith('o1') || model.startsWith('o3')) {
+      delete payload.temperature;
+    }
+
+    try {
+      const timeoutSignal = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+      const combinedSignal = AbortSignal.any([signal, timeoutSignal]);
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(payload),
+        signal: combinedSignal,
+        cache: 'no-store',
+      });
+
+      if (res.ok) {
+        if (model !== requestedModel) {
+          console.warn(`[solver] Requested '${requestedModel}' unavailable; succeeded with fallback '${model}'`);
+        }
+        return res;
+      }
+
+      const errText = await res.text().catch(() => '');
+      lastResponse = res;
+      console.error(`[solver] Model '${model}' failed (HTTP ${res.status}): ${errText}`);
+
+      // If auth fails (401/403), no need to try other models with the same invalid key
+      if (res.status === 401 || res.status === 403) {
+        throw new SolverError('not_configured', { detail: 'API authentication failed. Check your API key.' });
+      }
+
+      if (res.status === 429) {
+        hadRateLimit = true;
+        // Keep trying fallback model (e.g. gpt-4o-mini might have available quota if gpt-4o hit limits)
+        continue;
+      }
+
+      // If model not found (404) or bad request (400), try next model
+      if (res.status === 404 || res.status === 400 || res.status >= 500) {
+        continue;
+      }
+
+      break;
+    } catch (err) {
+      if (err instanceof SolverError) throw err;
+      if (signal.aborted) throw new SolverError('model_timeout', { cause: err });
+      console.error(`[solver] Network exception calling '${model}':`, err);
+    }
+  }
+
+  if (hadRateLimit) {
+    throw new SolverError('model_busy', {
+      detail: 'OpenAI quota or rate limit exceeded. Please check your OpenAI billing/credits.',
+    });
+  }
+
+  if (lastResponse) {
+    if (lastResponse.status >= 500) {
+      throw new SolverError('model_busy', { detail: 'AI provider is temporarily overloaded.' });
+    }
+    throw new SolverError('model_busy', { detail: 'Requested AI model is unavailable. Please verify API key and model.' });
+  }
+
+  throw new SolverError('model_busy');
 }
 
 /**
@@ -53,42 +139,14 @@ export async function* streamGptSolution(input: SolveInput, signal: AbortSignal)
   const url = `${config.openaiBaseUrl().replace(/\/+$/, '')}/chat/completions`;
   const messages = buildMessages(input);
 
-  const payload = {
-    model: config.openaiModel(),
+  const basePayload = {
     messages,
     response_format: { type: 'json_object' },
     temperature: 0.1,
     stream: true,
   };
 
-  let response: Response;
-  try {
-    const timeoutSignal = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
-    const combinedSignal = AbortSignal.any([signal, timeoutSignal]);
-
-    response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(payload),
-      signal: combinedSignal,
-      cache: 'no-store',
-    });
-  } catch (error) {
-    handleFetchError(error, signal);
-  }
-
-  if (!response.ok) {
-    if (response.status === 401 || response.status === 403) {
-      console.error('[solver] GPT-6 Luna auth rejected');
-      throw new SolverError('not_configured');
-    }
-    if (response.status === 429) throw new SolverError('model_busy');
-    if (response.status >= 500) throw new SolverError('model_busy');
-    throw new SolverError('model_busy');
-  }
+  const response = await fetchWithModelFallback(url, apiKey, basePayload, signal);
 
   if (!response.body) throw new SolverError('model_output');
 
@@ -124,7 +182,10 @@ export async function* streamGptSolution(input: SolveInput, signal: AbortSignal)
       }
     }
   } catch (error) {
-    handleFetchError(error, signal);
+    if (error instanceof SolverError) throw error;
+    if (signal.aborted) throw new SolverError('model_timeout', { cause: error });
+    console.error('[solver] Stream reading error:', error);
+    throw new SolverError('model_busy', { cause: error });
   } finally {
     reader.releaseLock();
   }
@@ -142,38 +203,14 @@ export async function generateGptSolution(
 
   const url = `${config.openaiBaseUrl().replace(/\/+$/, '')}/chat/completions`;
 
-  const payload = {
-    model: config.openaiModel(),
+  const basePayload = {
     messages,
     response_format: { type: 'json_object' },
     temperature: 0.1,
     stream: false,
   };
 
-  let response: Response;
-  try {
-    const timeoutSignal = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
-    const combinedSignal = AbortSignal.any([signal, timeoutSignal]);
-
-    response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(payload),
-      signal: combinedSignal,
-      cache: 'no-store',
-    });
-  } catch (error) {
-    handleFetchError(error, signal);
-  }
-
-  if (!response.ok) {
-    if (response.status === 401 || response.status === 403) throw new SolverError('not_configured');
-    if (response.status === 429 || response.status >= 500) throw new SolverError('model_busy');
-    throw new SolverError('model_busy');
-  }
+  const response = await fetchWithModelFallback(url, apiKey, basePayload, signal);
 
   try {
     const json = (await response.json()) as {
@@ -183,6 +220,7 @@ export async function generateGptSolution(
     if (!content) throw new SolverError('model_output');
     return content;
   } catch (error) {
-    handleFetchError(error, signal);
+    if (error instanceof SolverError) throw error;
+    throw new SolverError('model_busy', { cause: error });
   }
 }

@@ -44,56 +44,68 @@ export async function* solve(input: SolveInput, signal: AbortSignal): AsyncGener
   const useGemini = Boolean(config.geminiApiKey());
 
   if (!useGpt && !useGemini) {
-    throw new SolverError('not_configured');
+    throw new SolverError('not_configured', { detail: 'No AI provider API key found.' });
   }
 
   yield { type: 'stage', stage: 'read' };
 
   let text = '';
   let marker = 0;
+  let gptSucceeded = false;
 
   if (useGpt) {
     // -------------------------------------------------------------------------
-    // GPT-6 Luna Engine
+    // GPT-6 Luna Engine (with automatic model fallback)
     // -------------------------------------------------------------------------
-    for await (const chunk of streamGptSolution(input, signal)) {
-      text += chunk;
-      while (marker < STAGE_MARKERS.length && text.includes(STAGE_MARKERS[marker].key)) {
+    try {
+      for await (const chunk of streamGptSolution(input, signal)) {
+        text += chunk;
+        while (marker < STAGE_MARKERS.length && text.includes(STAGE_MARKERS[marker].key)) {
+          yield { type: 'stage', stage: STAGE_MARKERS[marker].stage };
+          marker += 1;
+        }
+      }
+      while (marker < STAGE_MARKERS.length) {
         yield { type: 'stage', stage: STAGE_MARKERS[marker].stage };
         marker += 1;
       }
-    }
-    while (marker < STAGE_MARKERS.length) {
-      yield { type: 'stage', stage: STAGE_MARKERS[marker].stage };
-      marker += 1;
-    }
 
-    const first = compileSolution(parse(text));
-    if (first.ok) {
-      yield { type: 'result', solution: first.solution };
+      const first = compileSolution(parse(text));
+      if (first.ok) {
+        yield { type: 'result', solution: first.solution };
+        return;
+      }
+
+      // Auto-repair if mathematical verification fails on first pass
+      const promptText = userPrompt(input.problem, Boolean(input.image), input.lang);
+      const messages = [
+        { role: 'system' as const, content: systemInstruction(input.lang) },
+        {
+          role: 'user' as const,
+          content: input.image
+            ? [
+                { type: 'image_url' as const, image_url: { url: `data:${input.image.mimeType};base64,${input.image.data.toString('base64')}` } },
+                { type: 'text' as const, text: promptText },
+              ]
+            : promptText,
+        },
+        { role: 'assistant' as const, content: text },
+        { role: 'user' as const, content: correctionPrompt(first.failures, input.lang) },
+      ];
+      const second = compileSolution(parse(await generateGptSolution(messages, signal)));
+      if (!second.ok) throw new SolverError('model_output');
+      yield { type: 'result', solution: second.solution };
+      gptSucceeded = true;
       return;
+    } catch (err) {
+      if (!useGemini) throw err;
+      console.warn('[solver] GPT provider failed, switching to Gemini fallback:', err);
+      text = '';
+      marker = 0;
     }
+  }
 
-    // Auto-repair if mathematical verification fails on first pass
-    const promptText = userPrompt(input.problem, Boolean(input.image), input.lang);
-    const messages = [
-      { role: 'system' as const, content: systemInstruction(input.lang) },
-      {
-        role: 'user' as const,
-        content: input.image
-          ? [
-              { type: 'image_url' as const, image_url: { url: `data:${input.image.mimeType};base64,${input.image.data.toString('base64')}` } },
-              { type: 'text' as const, text: promptText },
-            ]
-          : promptText,
-      },
-      { role: 'assistant' as const, content: text },
-      { role: 'user' as const, content: correctionPrompt(first.failures, input.lang) },
-    ];
-    const second = compileSolution(parse(await generateGptSolution(messages, signal)));
-    if (!second.ok) throw new SolverError('model_output');
-    yield { type: 'result', solution: second.solution };
-  } else {
+  if (!gptSucceeded && useGemini) {
     // -------------------------------------------------------------------------
     // Gemini Fallback
     // -------------------------------------------------------------------------

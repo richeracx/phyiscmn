@@ -57,51 +57,80 @@ function translateError(error: unknown, signal: AbortSignal): SolverError {
   if (error instanceof SolverError) return error;
   if (signal.aborted) return new SolverError('model_timeout', { cause: error });
   if (error instanceof ApiError) {
+    console.error(`[solver] Gemini API error (HTTP ${error.status}):`, error.message);
     if (error.status === 429 || error.status >= 500) return new SolverError('model_busy', { cause: error });
     if (error.status === 401 || error.status === 403) return new SolverError('not_configured', { cause: error });
     return new SolverError('internal', { cause: error });
   }
   if (error instanceof Error && error.name === 'AbortError') return new SolverError('model_timeout', { cause: error });
+  console.error('[solver] Gemini unexpected error:', error);
   return new SolverError('model_busy', { cause: error });
 }
 
 /** Streams the raw JSON text of a solution, chunk by chunk. */
 export async function* streamSolution(contents: Content[], lang: Lang, signal: AbortSignal): AsyncGenerator<string> {
   const ai = getClient();
-  try {
-    const stream = await ai.models.generateContentStream({
-      model: config.geminiModel(),
-      contents,
-      config: generationConfig(lang, signal),
-    });
-    let finish: FinishReason | undefined;
-    let blockedPrompt = false;
-    for await (const chunk of stream) {
-      if (chunk.promptFeedback?.blockReason) blockedPrompt = true;
-      finish = chunk.candidates?.[0]?.finishReason ?? finish;
-      const text = chunk.text;
-      if (text) yield text;
+  const models = Array.from(new Set([config.geminiModel(), 'gemini-2.0-flash', 'gemini-1.5-flash']));
+  let lastError: unknown;
+
+  for (const model of models) {
+    try {
+      const stream = await ai.models.generateContentStream({
+        model,
+        contents,
+        config: generationConfig(lang, signal),
+      });
+      let finish: FinishReason | undefined;
+      let blockedPrompt = false;
+      for await (const chunk of stream) {
+        if (chunk.promptFeedback?.blockReason) blockedPrompt = true;
+        finish = chunk.candidates?.[0]?.finishReason ?? finish;
+        const text = chunk.text;
+        if (text) yield text;
+      }
+      checkFinish(finish, blockedPrompt);
+      return;
+    } catch (error) {
+      lastError = error;
+      if (error instanceof SolverError) throw error;
+      if (error instanceof ApiError && (error.status === 404 || error.status === 400)) {
+        console.warn(`[solver] Gemini model '${model}' unavailable, trying fallback...`);
+        continue;
+      }
+      throw translateError(error, signal);
     }
-    checkFinish(finish, blockedPrompt);
-  } catch (error) {
-    throw translateError(error, signal);
   }
+
+  throw translateError(lastError, signal);
 }
 
 /** One complete, non-streamed solution (used for the corrective second attempt). */
 export async function generateSolution(contents: Content[], lang: Lang, signal: AbortSignal): Promise<string> {
   const ai = getClient();
-  try {
-    const response = await ai.models.generateContent({
-      model: config.geminiModel(),
-      contents,
-      config: generationConfig(lang, signal),
-    });
-    checkFinish(response.candidates?.[0]?.finishReason, Boolean(response.promptFeedback?.blockReason));
-    const text = response.text;
-    if (!text) throw new SolverError('model_output');
-    return text;
-  } catch (error) {
-    throw translateError(error, signal);
+  const models = Array.from(new Set([config.geminiModel(), 'gemini-2.0-flash', 'gemini-1.5-flash']));
+  let lastError: unknown;
+
+  for (const model of models) {
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents,
+        config: generationConfig(lang, signal),
+      });
+      checkFinish(response.candidates?.[0]?.finishReason, Boolean(response.promptFeedback?.blockReason));
+      const text = response.text;
+      if (!text) throw new SolverError('model_output');
+      return text;
+    } catch (error) {
+      lastError = error;
+      if (error instanceof SolverError) throw error;
+      if (error instanceof ApiError && (error.status === 404 || error.status === 400)) {
+        console.warn(`[solver] Gemini model '${model}' unavailable, trying fallback...`);
+        continue;
+      }
+      throw translateError(error, signal);
+    }
   }
+
+  throw translateError(lastError, signal);
 }

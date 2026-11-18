@@ -12,14 +12,25 @@ const read = (name: string) => {
  */
 export const config = {
   // GPT-6 Luna & OpenAI-compatible provider
-  openaiApiKey: () =>
-    read('OPENAI_API_KEY') ?? read('GPT_API_KEY') ?? read('LUNA_API_KEY'),
+  openaiApiKey: () => {
+    const raw = read('OPENAI_API_KEY') ?? read('GPT_API_KEY') ?? read('LUNA_API_KEY');
+    if (raw && !raw.startsWith('AIza')) return raw;
+    const geminiRaw = read('GEMINI_API_KEY');
+    if (geminiRaw && (geminiRaw.startsWith('sk-') || geminiRaw.startsWith('sess-'))) return geminiRaw;
+    return undefined;
+  },
   openaiBaseUrl: () => read('OPENAI_BASE_URL') ?? 'https://api.openai.com/v1',
   openaiModel: () => read('OPENAI_MODEL') ?? read('GPT_MODEL') ?? 'gpt-6-luna',
 
-  // Google Gemini provider (fallback)
-  geminiApiKey: () => read('GEMINI_API_KEY'),
-  geminiModel: () => read('GEMINI_MODEL') ?? 'gemini-2.5-flash',
+  // Google Gemini provider (fallback or primary)
+  geminiApiKey: () => {
+    const gemini = read('GEMINI_API_KEY');
+    if (gemini && !gemini.startsWith('sk-')) return gemini;
+    const raw = read('OPENAI_API_KEY') ?? read('GPT_API_KEY') ?? read('LUNA_API_KEY');
+    if (raw && raw.startsWith('AIza')) return raw;
+    return undefined;
+  },
+  geminiModel: () => read('GEMINI_MODEL') ?? 'gemini-2.0-flash',
 
   // Check if any LLM provider key is available
   hasApiKey: () =>
