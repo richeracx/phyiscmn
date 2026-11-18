@@ -1,10 +1,10 @@
 import 'server-only';
 import { SolverError, type SolverErrorCode } from '../errors';
-import { ModelSolution, type SolverEvent, type Stage } from '../schema';
+import { WorksheetResponse, type SingleProblemSolution, type SolverEvent, type Stage } from '../schema';
 import { config } from './config';
 import { generateGptSolution, streamGptSolution } from './gpt';
 import { correctionPrompt, systemInstruction, userPrompt } from './prompt';
-import { compileSolution } from './render';
+import { compileWorksheet } from './render';
 import type { SolveInput } from './request';
 import { verifyPhysicsSolution } from './verify';
 
@@ -15,13 +15,13 @@ const STAGE_MARKERS: ReadonlyArray<{ key: string; stage: Stage }> = [
   { key: '"answers"', stage: 'verify' },
 ];
 
-const UNSOLVED: Record<Exclude<ModelSolution['status'], 'solved'>, SolverErrorCode> = {
+const UNSOLVED: Record<Exclude<SingleProblemSolution['status'], 'solved'>, SolverErrorCode> = {
   not_physics: 'not_physics',
   unreadable: 'unreadable',
   insufficient_data: 'insufficient_data',
 };
 
-function parse(text: string): ModelSolution {
+function parse(text: string): WorksheetResponse {
   let cleaned = text.trim();
   // Strip markdown code fences if present
   if (cleaned.startsWith('```')) {
@@ -41,52 +41,47 @@ function parse(text: string): ModelSolution {
     throw new SolverError('model_output', { cause: error });
   }
 
-  const result = ModelSolution.safeParse(json);
+  const result = WorksheetResponse.safeParse(json);
   if (!result.success) {
     console.error('[solver] Zod validation failed:', JSON.stringify(result.error.issues, null, 2));
     throw new SolverError('model_output', { cause: result.error });
   }
 
-  const solution = result.data;
-  if (solution.status !== 'solved') {
-    throw new SolverError(UNSOLVED[solution.status], { detail: solution.reason.trim() || undefined });
+  const worksheet = result.data;
+
+  // If there's a single problem with an unsolved status, throw specific user-friendly error
+  if (worksheet.problems.length === 1) {
+    const p = worksheet.problems[0];
+    if (p.status !== 'solved') {
+      throw new SolverError(UNSOLVED[p.status], { detail: p.reason.trim() || undefined });
+    }
   }
 
-  // Ensure steps and answers are never empty
-  if (solution.steps.length === 0) {
-    solution.steps.push({
-      title: 'Çözüm',
-      text: solution.statement || 'Çözüm adımları',
-      equations: [],
-    });
-  }
-  if (solution.answers.length === 0) {
-    const lastStep = solution.steps[solution.steps.length - 1];
-    const lastEq = lastStep?.equations?.[lastStep.equations.length - 1];
-    solution.answers.push({
-      label: 'Sonuç',
-      expression: lastEq || '',
-    });
-  }
+  // Filter out any invalid non-solved problems if there are other solved problems
+  const solved = worksheet.problems.filter((p) => p.status === 'solved');
+  const activeProblems = solved.length > 0 ? solved : worksheet.problems;
 
-  // Ensure "find" is always populated if empty by extracting from answers
-  if (solution.find.length === 0 && solution.answers.length > 0) {
-    for (const ans of solution.answers) {
-      let targetSym = ans.expression.trim();
-      const eqIdx = targetSym.indexOf('=');
-      if (eqIdx !== -1) {
-        targetSym = targetSym.slice(0, eqIdx).trim();
-      }
-      if (targetSym) {
-        solution.find.push({
-          symbol: `${targetSym} = ?`,
-          meaning: ans.label || 'İstenen Değer',
-        });
+  // Clean and prepare each problem without injecting fake placeholder cards
+  for (const solution of activeProblems) {
+    // Populate "find" from answers if empty and answers exist
+    if (solution.find.length === 0 && solution.answers.length > 0) {
+      for (const ans of solution.answers) {
+        let targetSym = ans.expression.trim();
+        const eqIdx = targetSym.indexOf('=');
+        if (eqIdx !== -1) {
+          targetSym = targetSym.slice(0, eqIdx).trim();
+        }
+        if (targetSym) {
+          solution.find.push({
+            symbol: `${targetSym} = ?`,
+            meaning: ans.label || 'İstenen Değer',
+          });
+        }
       }
     }
   }
 
-  return solution;
+  return { problems: activeProblems };
 }
 
 /**
@@ -116,32 +111,50 @@ export async function* solve(input: SolveInput, signal: AbortSignal): AsyncGener
   }
 
   const firstParsed = parse(text);
-  const firstCompile = compileSolution(firstParsed);
-  const firstAudit = verifyPhysicsSolution(firstParsed);
+  const firstCompile = compileWorksheet(firstParsed);
 
-  // If both KaTeX compilation and deterministic mathjs verification passed (or was skipped for qualitative problems)
-  if (firstCompile.ok && firstAudit.passed) {
-    if (firstAudit.mathVerified) {
-      firstCompile.solution.mathVerified = true;
+  // Run mathjs verification independently on EACH problem in the worksheet
+  let firstAllAuditsPassed = true;
+  const firstAuditErrors: string[] = [];
+
+  for (let i = 0; i < firstParsed.problems.length; i++) {
+    const rawProblem = firstParsed.problems[i];
+    const compiledProb = firstCompile.solution.problems?.[i];
+    const auditRes = verifyPhysicsSolution(rawProblem);
+
+    if (compiledProb) {
+      compiledProb.mathVerified = auditRes.mathVerified;
     }
+    if (i === 0) {
+      firstCompile.solution.mathVerified = auditRes.mathVerified;
+    }
+
+    if (!auditRes.passed) {
+      firstAllAuditsPassed = false;
+      const probTitle = rawProblem.topic?.title || `Soru ${i + 1}`;
+      firstAuditErrors.push(`[${probTitle}] ${auditRes.errorReason}`);
+    }
+  }
+
+  // If both KaTeX compilation and deterministic mathjs verification passed across all problems
+  if (firstCompile.ok && firstAllAuditsPassed) {
     yield { type: 'result', solution: firstCompile.solution };
     return;
   }
 
-  // Attempt self-correction retry loop if KaTeX formatting or mathjs verification failed
+  // Attempt self-correction retry loop if KaTeX formatting or mathjs verification failed on any problem
   try {
     const promptText = userPrompt(input.problem, Boolean(input.image), input.lang);
 
-    // Construct actionable error feedback for the model
     const feedbackParts: string[] = [];
-    if (!firstCompile.ok) {
+    if (!firstCompile.ok && firstCompile.failures.length > 0) {
       feedbackParts.push(correctionPrompt(firstCompile.failures, input.lang));
     }
-    if (!firstAudit.passed && firstAudit.errorReason) {
+    if (!firstAllAuditsPassed && firstAuditErrors.length > 0) {
       feedbackParts.push(
         input.lang === 'tr'
-          ? `Deterministik mathjs ve SI birim denetimi başarısız oldu:\n- ${firstAudit.errorReason}\nLütfen cebirsel bağıntılarınızı, "formula_expression" ifadenizi ve sayısal işlemlerinizi kontrol edin. Çelişkiyi giderip tüm çözümü düzeltilmiş JSON olarak tekrar gönderin.`
-          : `Deterministic mathjs & SI unit audit failed:\n- ${firstAudit.errorReason}\nPlease verify your algebraic relations, "formula_expression", and arithmetic calculation. Resolve the discrepancy and return the corrected complete JSON solution.`,
+          ? `Deterministik mathjs ve SI birim denetimi şu sorularda başarısız oldu:\n${firstAuditErrors.map((e) => `- ${e}`).join('\n')}\nLütfen ilgili sorulardaki "formula_expression", değişken birimleri ve sayısal işlemleri kontrol edin. Çelişkileri giderip tüm soruları içeren düzeltilmiş "problems" dizisini JSON olarak tekrar gönderin.`
+          : `Deterministic mathjs & SI unit audit failed on problem(s):\n${firstAuditErrors.map((e) => `- ${e}`).join('\n')}\nPlease verify your algebraic relations, "formula_expression", and arithmetic calculation. Resolve the discrepancy and return the corrected complete JSON with all problems.`,
       );
     }
     const combinedFeedback = feedbackParts.join('\n\n');
@@ -149,7 +162,7 @@ export async function* solve(input: SolveInput, signal: AbortSignal): AsyncGener
     const messages = [
       {
         role: 'system' as const,
-        content: `${systemInstruction(input.lang)}\n\nIMPORTANT: You must return your entire output strictly as a valid JSON object matching the requested schema. No markdown formatting outside JSON.`,
+        content: `${systemInstruction(input.lang)}\n\nIMPORTANT: You must return your entire output strictly as a valid JSON object matching the requested schema with a top-level "problems" array. No markdown formatting outside JSON.`,
       },
       {
         role: 'user' as const,
@@ -163,19 +176,25 @@ export async function* solve(input: SolveInput, signal: AbortSignal): AsyncGener
       { role: 'assistant' as const, content: text },
       { role: 'user' as const, content: combinedFeedback },
     ];
-    const secondParsed = parse(await generateGptSolution(messages, signal));
-    const secondCompile = compileSolution(secondParsed);
-    const secondAudit = verifyPhysicsSolution(secondParsed);
 
-    if (secondAudit.mathVerified) {
-      secondCompile.solution.mathVerified = true;
+    const secondParsed = parse(await generateGptSolution(messages, signal));
+    const secondCompile = compileWorksheet(secondParsed);
+
+    for (let i = 0; i < secondParsed.problems.length; i++) {
+      const rawProb = secondParsed.problems[i];
+      const compiledProb = secondCompile.solution.problems?.[i];
+      const audit = verifyPhysicsSolution(rawProb);
+      if (compiledProb) {
+        compiledProb.mathVerified = audit.mathVerified;
+      }
+      if (i === 0) {
+        secondCompile.solution.mathVerified = audit.mathVerified;
+      }
     }
+
     yield { type: 'result', solution: secondCompile.solution };
   } catch (err) {
     console.warn('[solver] Auto-repair attempt failed; serving initial parsed solution with fallback:', err);
-    if (firstAudit.mathVerified) {
-      firstCompile.solution.mathVerified = true;
-    }
     yield { type: 'result', solution: firstCompile.solution };
   }
 }

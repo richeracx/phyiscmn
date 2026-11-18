@@ -1,6 +1,6 @@
 import 'server-only';
 import katex from 'katex';
-import type { ModelSolution, RichText, Solution } from '../schema';
+import type { RichText, SingleProblemSolution, SingleSolution, Solution, WorksheetResponse } from '../schema';
 
 const KATEX_OPTIONS = {
   throwOnError: false,
@@ -195,12 +195,12 @@ class MathCompiler {
 }
 
 export type CompileResult =
-  | { ok: true; solution: Solution }
-  | { ok: false; failures: string[]; solution: Solution };
+  | { ok: true; solution: SingleSolution }
+  | { ok: false; failures: string[]; solution: SingleSolution };
 
-export function compileSolution(raw: ModelSolution): CompileResult {
+export function compileSingleProblem(raw: SingleProblemSolution): CompileResult {
   const m = new MathCompiler();
-  const solution: Solution = {
+  const solution: SingleSolution = {
     topic: raw.topic,
     statement: m.rich(raw.statement),
     given: raw.given.map((g) => ({
@@ -227,4 +227,35 @@ export function compileSolution(raw: ModelSolution): CompileResult {
     },
   };
   return m.failures.length > 0 ? { ok: false, failures: m.failures, solution } : { ok: true, solution };
+}
+
+export const compileSolution = compileSingleProblem;
+
+export interface WorksheetCompileResult {
+  ok: boolean;
+  failures: string[];
+  solution: Solution;
+}
+
+export function compileWorksheet(raw: WorksheetResponse): WorksheetCompileResult {
+  const problems: SingleSolution[] = [];
+  const failures: string[] = [];
+  let allOk = true;
+
+  for (const prob of raw.problems) {
+    const res = compileSingleProblem(prob);
+    if (!res.ok) {
+      allOk = false;
+      failures.push(...res.failures);
+    }
+    problems.push(res.solution);
+  }
+
+  const primary = problems[0];
+  const solution: Solution = {
+    ...primary,
+    problems,
+  };
+
+  return { ok: allOk, failures, solution };
 }

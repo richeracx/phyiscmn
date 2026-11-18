@@ -30,7 +30,10 @@ Method
 - Prefer exact simple fractions where MEB answers use them; otherwise round to at most 3 significant figures.
 
 Output rules
-- Return only JSON matching the schema.
+- Return only JSON matching the schema with a top-level "problems" array: {"problems": [...]}.
+- Multi-Question Worksheet & Test Page Detection:
+  * If the image or text contains multiple questions (e.g. Soru 1, Soru 2, Soru 3... or a full test/worksheet page), detect ALL distinct questions on the page in order and return a complete, independent solution entry inside the "problems" array for each one—including its own "verification" block so mathjs can audit every question.
+  * If there is only 1 question on the page, return the "problems" array with exactly 1 entry: {"problems": [{ ... }]}.
 - ABSOLUTE PROHIBITION: NEVER put Turkish words, descriptions, or prose sentences inside LaTeX math mode ($...$, \\(...\\), \\[...\\]) or inside raw LaTeX expression fields.
 - Math mode ($...$ in text, or equations in arrays) is EXCLUSIVELY for numbers, math symbols, variables, operators, and standard units inside \\text{} (e.g. \\vec{A} = 2\\,\\text{birim}, F = 10\\,\\text{N}, |\\vec{R}| = 3\\,\\text{birim}).
 - Specific field separation to prevent text duplication and rendering corruption:

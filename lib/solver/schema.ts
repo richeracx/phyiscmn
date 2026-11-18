@@ -81,10 +81,10 @@ export const VerificationBlock = z.object({
 export type VerificationBlock = z.infer<typeof VerificationBlock>;
 
 /**
- * Resilient schema for model output.
+ * Resilient schema for model output of a single physics problem.
  * Tolerates variations in LLM formatting while guaranteeing type-safe structure.
  */
-export const ModelSolution = z.object({
+export const SingleProblemSolution = z.object({
   status: z
     .preprocess((val) => {
       const s = String(val ?? '').toLowerCase();
@@ -316,13 +316,33 @@ export const ModelSolution = z.object({
     }, VerificationBlock.optional()),
 });
 
-export type ModelSolution = z.infer<typeof ModelSolution>;
+export type SingleProblemSolution = z.infer<typeof SingleProblemSolution>;
+export const ModelSolution = SingleProblemSolution;
+export type ModelSolution = SingleProblemSolution;
+
+/**
+ * Top-level response schema for a worksheet/exam page containing one or multiple problems.
+ * Backward-compatible: automatically normalizes a single problem object into `{ problems: [problem] }`.
+ */
+export const WorksheetResponse = z.preprocess((val) => {
+  if (!val || typeof val !== 'object') return { problems: [] };
+  const raw = val as Record<string, unknown>;
+  if ('problems' in raw && Array.isArray(raw.problems)) {
+    return raw;
+  }
+  // Backward compatibility: If the model returned a single problem object directly
+  return { problems: [raw] };
+}, z.object({
+  problems: z.array(SingleProblemSolution).min(1),
+}));
+
+export type WorksheetResponse = z.infer<typeof WorksheetResponse>;
 
 export type RichText = ReadonlyArray<{ kind: 'text'; value: string } | { kind: 'math'; html: string }>;
 
-/** A solution with every LaTeX fragment compiled to KaTeX HTML on the server. */
-export interface Solution {
-  topic: ModelSolution['topic'];
+/** A single compiled solution with every LaTeX fragment compiled to KaTeX HTML on the server. */
+export interface SingleSolution {
+  topic: SingleProblemSolution['topic'];
   statement: RichText;
   given: ReadonlyArray<{ symbol: string; value: string; meaning: RichText }>;
   find: ReadonlyArray<{ symbol: string; meaning: RichText }>;
@@ -330,15 +350,23 @@ export interface Solution {
   principles: ReadonlyArray<{ name: string; formula: string }>;
   steps: ReadonlyArray<{ title: string; text: RichText; equations: ReadonlyArray<string> }>;
   answers: ReadonlyArray<{ label: string; expression: string }>;
-  choice: ModelSolution['choice'];
+  choice: SingleProblemSolution['choice'];
   check: RichText;
   diagram: {
-    kind: ModelSolution['diagram']['kind'];
-    surface: ModelSolution['diagram']['surface'];
+    kind: SingleProblemSolution['diagram']['kind'];
+    surface: SingleProblemSolution['diagram']['surface'];
     inclineDeg: number;
     forces: ReadonlyArray<{ label: string; angleDeg: number; magnitude: number }>;
   };
   mathVerified?: boolean;
+}
+
+/**
+ * Top-level solution delivered to the client.
+ * Extends SingleSolution for full backward compatibility, and carries `problems` for multi-question worksheets.
+ */
+export interface Solution extends SingleSolution {
+  problems?: ReadonlyArray<SingleSolution>;
 }
 
 export const STAGES = ['read', 'laws', 'derive', 'verify'] as const;
