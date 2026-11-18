@@ -42,6 +42,22 @@ export interface SolverCopy {
   disclaimer: string;
   retry: string;
   retryIn: (seconds: number) => string;
+  history: {
+    button: string;
+    title: string;
+    empty: string;
+    emptyDetail: string;
+    clearAll: string;
+    clearConfirm: string;
+    questionsCount: (n: number) => string;
+    justNow: string;
+    minutesAgo: (m: number) => string;
+    hoursAgo: (h: number) => string;
+    daysAgo: (d: number) => string;
+    restore: string;
+    delete: string;
+    verified: string;
+  };
   errors: Record<SolverErrorCode, { title: string; body: string }>;
 }
 
@@ -108,6 +124,22 @@ export const solverCopy: Record<'en' | 'tr', SolverCopy> = {
     disclaimer: 'Physicsmn can make mistakes. Follow each step and check it against your notes.',
     retry: 'Try again',
     retryIn: (s) => `Try again in ${s}s`,
+    history: {
+      button: 'History',
+      title: 'Solution Vault',
+      empty: 'No solved problems yet',
+      emptyDetail: 'Problems you solve will automatically be saved here on your device.',
+      clearAll: 'Clear All',
+      clearConfirm: 'Are you sure you want to clear your solution history?',
+      questionsCount: (n) => `${n} ${n === 1 ? 'question' : 'questions'}`,
+      justNow: 'Just now',
+      minutesAgo: (m) => `${m}m ago`,
+      hoursAgo: (h) => `${h}h ago`,
+      daysAgo: (d) => `${d}d ago`,
+      restore: 'Open solution',
+      delete: 'Delete',
+      verified: 'mathjs Verified',
+    },
     errors: {
       empty_input: { title: 'Nothing to solve yet', body: 'Type the problem or attach a photo of it.' },
       text_too_long: { title: 'The problem is too long', body: 'Keep the text under 4,000 characters, or attach a photo instead.' },
@@ -191,6 +223,22 @@ export const solverCopy: Record<'en' | 'tr', SolverCopy> = {
     disclaimer: 'Physicsmn hata yapabilir. Her adımı takip et ve notlarınla karşılaştır.',
     retry: 'Tekrar dene',
     retryIn: (s) => `${s} sn sonra tekrar dene`,
+    history: {
+      button: 'Geçmiş',
+      title: 'Çözüm Geçmişi',
+      empty: 'Henüz çözülmüş soru yok',
+      emptyDetail: 'Çözdüğünüz sorular otomatik olarak bu cihazda güvenle saklanır.',
+      clearAll: 'Tümünü Temizle',
+      clearConfirm: 'Tüm soru geçmişini silmek istediğinize emin misiniz?',
+      questionsCount: (n) => `${n} Soru`,
+      justNow: 'Az önce',
+      minutesAgo: (m) => `${m} dk önce`,
+      hoursAgo: (h) => `${h} sa önce`,
+      daysAgo: (d) => `${d} gün önce`,
+      restore: 'Çözümü Aç',
+      delete: 'Sil',
+      verified: 'mathjs Doğrulandı',
+    },
     errors: {
       empty_input: { title: 'Henüz çözülecek bir şey yok', body: 'Problemi yaz ya da fotoğrafını ekle.' },
       text_too_long: { title: 'Problem metni çok uzun', body: 'Metni 4.000 karakterin altında tut ya da fotoğraf ekle.' },

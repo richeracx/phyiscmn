@@ -5,11 +5,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/components/shared/LanguageProvider';
 import { soundController } from '@/lib/cosmos/audio';
 import { takeStashedPhoto } from '@/lib/solver/client/handoff';
+import { getHistory, saveToHistory } from '@/lib/solver/client/history';
 import { preparePhoto, releasePhoto, type Photo } from '@/lib/solver/client/photo';
 import { SolverError } from '@/lib/solver/errors';
 import { LIMITS } from '@/lib/solver/limits';
+import type { Solution } from '@/lib/solver/schema';
 import { Composer } from './Composer';
 import { ErrorNotice } from './ErrorNotice';
+import { HistoryDrawer } from './HistoryDrawer';
 import { Progress } from './Progress';
 import { SolutionView } from './SolutionView';
 import { SolverHeader } from './SolverHeader';
@@ -19,11 +22,14 @@ export function Solver() {
   const { t, lang, ready } = useLanguage();
   const copy = t.solver;
   const params = useSearchParams();
-  const { phase, solve, cancel, fail } = useSolver();
+  const { phase, solve, cancel, fail, restore } = useSolver();
 
   const [problem, setProblem] = useState(() => (params.get('q') ?? '').slice(0, LIMITS.problemChars));
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [preparing, setPreparing] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyCount, setHistoryCount] = useState(0);
+
   const photoRef = useRef<Photo | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const handoff = useRef<{ query: string; photo: { blob: Blob; name: string } | null } | null>(null);
@@ -39,6 +45,21 @@ export function Solver() {
   }, []);
 
   useEffect(() => () => releasePhoto(photoRef.current), []);
+
+  // Sync history item count
+  useEffect(() => {
+    const updateCount = () => setHistoryCount(getHistory().length);
+    updateCount();
+    window.addEventListener('physicsmn:history', updateCount);
+    return () => window.removeEventListener('physicsmn:history', updateCount);
+  }, []);
+
+  // Automatically record verified solutions to client-side history vault
+  useEffect(() => {
+    if (phase.kind === 'solved') {
+      saveToHistory(phase.solution, problem);
+    }
+  }, [phase, problem]);
 
   const attach = useCallback(
     async (file: Blob, name: string) => {
@@ -66,6 +87,17 @@ export function Solver() {
       );
     },
     [lang, solve],
+  );
+
+  const handleRestoreHistory = useCallback(
+    (solution: Solution) => {
+      restore(solution);
+      setHistoryOpen(false);
+      window.requestAnimationFrame(() =>
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      );
+    },
+    [restore],
   );
 
   // Arriving from the landing page with a problem (and possibly a photo) starts solving at once,
@@ -101,7 +133,7 @@ export function Solver() {
         <div className="absolute inset-0 bg-[radial-gradient(rgba(245,245,247,0.07)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_30%,black,transparent)]" />
       </div>
 
-      <SolverHeader />
+      <SolverHeader historyCount={historyCount} onOpenHistory={() => setHistoryOpen(true)} />
 
       <main className="mx-auto max-w-4xl px-5 pb-28 pt-14 sm:px-8 sm:pt-20">
         <section className="mx-auto max-w-3xl">
@@ -155,6 +187,12 @@ export function Solver() {
           {phase.kind === 'solved' && <SolutionView solution={phase.solution} />}
         </div>
       </main>
+
+      <HistoryDrawer
+        isOpen={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        onSelect={handleRestoreHistory}
+      />
     </div>
   );
 }

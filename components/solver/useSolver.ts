@@ -43,5 +43,10 @@ export function useSolver() {
 
   const fail = useCallback((error: SolverErrorPayload) => setPhase({ kind: 'failed', error }), []);
 
-  return { phase, solve, cancel, fail };
+  const restore = useCallback((solution: Solution) => {
+    controller.current?.abort();
+    setPhase({ kind: 'solved', solution });
+  }, []);
+
+  return { phase, solve, cancel, fail, restore };
 }
