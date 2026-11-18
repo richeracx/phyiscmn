@@ -1,4 +1,3 @@
-import 'server-only';
 import { evaluate, isUnit, unit, type Unit } from 'mathjs';
 import type { ModelSolution } from '../schema';
 
