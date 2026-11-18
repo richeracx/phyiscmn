@@ -56,13 +56,12 @@ export function SolutionView({ solution }: { solution: Solution }) {
                 const hasSymbol = Boolean(item.symbol && item.symbol.trim().length > 0);
                 const hasValue = Boolean(item.value && item.value.trim().length > 0);
                 const hasMeaning = Boolean(item.meaning && item.meaning.length > 0);
-                const symbolHasEquals = hasSymbol && item.symbol.includes('=');
 
                 return (
                   <div key={i} className="grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] items-baseline gap-x-5 py-2.5">
-                    <dt className="text-[15px] font-medium text-[#F5F5F7]">
+                    <dt className="flex items-baseline gap-2 text-[15px] font-medium text-[#F5F5F7]">
                       {hasSymbol && <Tex html={item.symbol} />}
-                      {hasSymbol && hasValue && !symbolHasEquals && <span className="mx-1.5 text-[#71717A]">=</span>}
+                      {hasSymbol && hasValue && <span className="font-mono text-[14px] text-[#E5C158]">=</span>}
                       {hasValue && <Tex html={item.value} />}
                       {!hasSymbol && !hasValue && <span className="text-[#E5C158]">•</span>}
                     </dt>
@@ -74,19 +73,26 @@ export function SolutionView({ solution }: { solution: Solution }) {
               })}
             </dl>
           </Panel>
-          <Panel>
-            <Label>{sections.find}</Label>
-            <ul className="mt-4 space-y-2.5">
-              {solution.find.map((item, i) => (
-                <li key={i} className="flex items-baseline gap-4 text-[15px] text-[#F5F5F7]">
-                  <Tex html={item.symbol} />
-                  <span className="text-[13px] text-[#71717A]">
-                    <Rich value={item.meaning} />
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </Panel>
+
+          {solution.find.length > 0 && (
+            <Panel>
+              <Label>{sections.find}</Label>
+              <ul className="mt-4 space-y-2.5">
+                {solution.find.map((item, i) => (
+                  <li key={i} className="flex items-baseline justify-between gap-4 text-[15px] text-[#F5F5F7]">
+                    <span className="font-medium text-[#F5F5F7]">
+                      <Tex html={item.symbol} />
+                    </span>
+                    {item.meaning && item.meaning.length > 0 && (
+                      <span className="text-right text-[13px] text-[#A1A1AA]">
+                        <Rich value={item.meaning} />
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
         </div>
 
         {hasDiagram ? (

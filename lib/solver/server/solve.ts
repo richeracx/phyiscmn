@@ -68,6 +68,23 @@ function parse(text: string): ModelSolution {
     });
   }
 
+  // Ensure "find" is always populated if empty by extracting from answers
+  if (solution.find.length === 0 && solution.answers.length > 0) {
+    for (const ans of solution.answers) {
+      let targetSym = ans.expression.trim();
+      const eqIdx = targetSym.indexOf('=');
+      if (eqIdx !== -1) {
+        targetSym = targetSym.slice(0, eqIdx).trim();
+      }
+      if (targetSym) {
+        solution.find.push({
+          symbol: `${targetSym} = ?`,
+          meaning: ans.label || 'İstenen Değer',
+        });
+      }
+    }
+  }
+
   return solution;
 }
 

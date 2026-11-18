@@ -117,14 +117,16 @@ export const ModelSolution = z.object({
             meaning = String(raw.meaning ?? '').trim();
           }
 
-          // If symbol contains "=" and valStr is empty (e.g. sym: "\vec{A} = 2 birim")
-          if (sym.includes('=') && !valStr) {
+          // If symbol contains "="
+          if (sym.includes('=')) {
             const eqIdx = sym.indexOf('=');
-            valStr = sym.slice(eqIdx + 1).trim();
+            if (!valStr) {
+              valStr = sym.slice(eqIdx + 1).trim();
+            }
             sym = sym.slice(0, eqIdx).trim();
           }
 
-          // If valStr contains "=" and sym is empty (e.g. valStr: "\vec{A} = 2 birim")
+          // If valStr contains "=" and sym is empty
           if (valStr.includes('=') && !sym) {
             const eqIdx = valStr.indexOf('=');
             sym = valStr.slice(0, eqIdx).trim();
@@ -153,14 +155,40 @@ export const ModelSolution = z.object({
       (val) => {
         if (!Array.isArray(val)) return [];
         return val.map((item) => {
-          if (typeof item === 'string') return { symbol: item, meaning: item };
-          if (item && typeof item === 'object') return item;
-          return { symbol: String(item ?? ''), meaning: '' };
+          let sym = '';
+          let meaning = '';
+
+          if (typeof item === 'string') {
+            const trimmed = item.trim();
+            if (trimmed.includes('=')) {
+              sym = trimmed;
+              meaning = '';
+            } else {
+              sym = `${trimmed} = ?`;
+              meaning = trimmed;
+            }
+          } else if (item && typeof item === 'object') {
+            const raw = item as Record<string, unknown>;
+            sym = String(raw.symbol ?? '').trim();
+            meaning = String(raw.meaning ?? '').trim();
+          }
+
+          // If symbol is missing but meaning has a symbol or text
+          if (!sym && meaning) {
+            sym = meaning.includes('=') ? meaning : `${meaning} = ?`;
+          }
+
+          // Ensure symbol has "= ?" format if it's just a raw variable like "\vec{R}" or "a"
+          if (sym && !sym.includes('=') && !sym.includes('?')) {
+            sym = `${sym} = ?`;
+          }
+
+          return { symbol: sym, meaning };
         });
       },
       z.array(
         z.object({
-          symbol: tex('LaTeX symbol of the unknown').default(''),
+          symbol: tex('LaTeX symbol of the unknown, e.g. |\\vec{R}| = ?').default(''),
           meaning: prose('What is asked').default(''),
         }),
       ),

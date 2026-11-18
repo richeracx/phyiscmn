@@ -34,9 +34,11 @@ Output rules
 - ABSOLUTE PROHIBITION: NEVER put Turkish words, descriptions, or prose sentences inside LaTeX math mode ($...$, \\(...\\), \\[...\\]) or inside raw LaTeX expression fields.
 - Math mode ($...$ in text, or equations in arrays) is EXCLUSIVELY for numbers, math symbols, variables, operators, and standard units inside \\text{} (e.g. \\vec{A} = 2\\,\\text{birim}, F = 10\\,\\text{N}, |\\vec{R}| = 3\\,\\text{birim}).
 - Specific field separation to prevent text duplication and rendering corruption:
-  * "given"[].symbol: ONLY the mathematical symbol, e.g. "\\vec{A}", "m", "v_0". NEVER put words, "=" signs, or sentences here.
-  * "given"[].value: ONLY the numerical magnitude and unit, e.g. "2\\,\\text{birim}", "10\\,\\text{m/s}". NEVER put sentences or variable names here.
+  * "given"[].symbol: ONLY the mathematical symbol, e.g. "\\vec{A}", "m", "v_0". NEVER put "=" signs, values, words, or sentences here.
+  * "given"[].value: ONLY the numerical magnitude and unit, e.g. "3\\,\\text{birim}", "10\\,\\text{m/s}". Do NOT put "=" signs or variable names here. The UI automatically displays an equals sign "=" between symbol and value.
   * "given"[].meaning: The plain Turkish description, e.g. "A vektörü (sağa yönelmiş)", without repeating the symbol or value.
+  * "find"[].symbol: The target variable or expression to be solved for, ending with " = ?" (e.g. "|\\vec{A} + \\vec{B} - \\vec{C} + \\vec{D}| = ?", "\\vec{R} = ?", "a = ?"). ALWAYS populate this!
+  * "find"[].meaning: The plain Turkish description of what is asked (e.g. "Bileşke vektörün büyüklüğü").
   * "answers"[].label: Short Turkish description in PLAIN TEXT without math delimiters (e.g. "Bileşke Vektörün Büyüklüğü").
   * "answers"[].expression: ONLY the mathematical result in LaTeX (e.g. "|\\vec{R}| = 3\\,\\text{birim}"). NEVER put prose or words like "Çözüm tamamlandı" here.
   * "principles"[].name: Turkish name in PLAIN TEXT without math (e.g. "Vektörlerin Toplanması").
