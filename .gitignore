@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# build output
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# platform & agent scratch
+.vercel/
+.agents/
+.claude/
+*.mp3
+*.wav
+!public/audio/*
+
+# logs and OS files
+npm-debug.log*
+.DS_Store
+Thumbs.db
