@@ -3,9 +3,15 @@ import { display, inter, mono } from '@/lib/fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Physicsmn — Physics, solved with rigor',
+  title: 'Physicsmn — AI-Assisted High School Physics Solver',
   description:
-    'Type or photograph a physics problem. Physicsmn returns a complete, unit-checked derivation in the MEB high-school style.',
+    'Type or photograph high school physics problems. Physicsmn generates step-by-step LaTeX derivations aligned with the MEB curriculum for students to review and verify.',
+  openGraph: {
+    title: 'Physicsmn — AI-Assisted High School Physics Solver',
+    description:
+      'Type or photograph high school physics problems. Physicsmn generates step-by-step LaTeX derivations aligned with the MEB curriculum for students to review and verify.',
+    type: 'website',
+  },
   icons: { icon: '/favicon.svg' },
 };
 

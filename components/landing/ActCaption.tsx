@@ -63,19 +63,19 @@ export function ActCaption({ act }: { act: 1 }) {
           <div className="flex flex-col gap-5 font-mono text-[13.5px] text-[#9a9a9a] lg:col-span-5 lg:pl-8">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
               <span className="text-[#bdbdbd]">{tr ? 'Müfredat Uyumu' : 'Curriculum Standard'}</span>
-              <span className="text-white">MEB & Üniversite %100</span>
+              <span className="text-white">{tr ? 'MEB Lise Müfredatı' : 'MEB Curriculum'}</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-[#bdbdbd]">{tr ? 'Boyut & Birim Analizi' : 'Dimensional Analysis'}</span>
-              <span className="text-white">[M][L][T]⁻² SI Doğrulandı</span>
+              <span className="text-[#bdbdbd]">{tr ? 'Birim Gösterimi' : 'Unit Representation'}</span>
+              <span className="text-white">{tr ? 'SI Standartları' : 'SI Standards'}</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
               <span className="text-[#bdbdbd]">{tr ? 'LaTeX Matematik Dizgisi' : 'LaTeX Typesetting'}</span>
               <span className="text-white">KaTeX Native</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-[#bdbdbd]">{tr ? 'Türetim Gerekçelendirme' : 'Derivation Reasoning'}</span>
-              <span className="text-white">Tavizsiz / Sıfır Uydurma</span>
+              <span className="text-[#bdbdbd]">{tr ? 'Türetim Yapısı' : 'Derivation Structure'}</span>
+              <span className="text-white">{tr ? 'Doğrulanabilir Adımlar' : 'Verifiable Steps'}</span>
             </div>
           </div>
         </div>

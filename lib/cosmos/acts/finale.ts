@@ -233,9 +233,6 @@ export class FinaleAct implements Act {
     // Trigger audio effects synchronized with the implosion, explosion & wordmark illumination
     if (blown && weight > 0.3) {
       soundController.playExplosion();
-      if (settle > 0.05) {
-        soundController.playTrailerVoice();
-      }
     } else if (!blown && charge > 0.05 && weight > 0.4) {
       soundController.playCharge();
     } else if (L < D * 0.3) {

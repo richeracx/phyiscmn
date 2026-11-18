@@ -2,8 +2,8 @@ import type { TranslationDictionary } from './types';
 
 export const en: TranslationDictionary = {
   meta: {
-    title: "Physicsmn // AI Physics Engine & Symbolic Solver",
-    description: "First-principles physics engine and symbolic solver. Solve multimodal mechanics, electromagnetism, and optics with mathematical rigor.",
+    title: "Physicsmn // AI High School Physics Solver",
+    description: "AI-assisted physics problem solver aligned with high school physics. Solve mechanics, electromagnetism, and optics with step-by-step LaTeX derivations.",
   },
   nav: {
     brandName: "Physicsmn",
@@ -15,7 +15,7 @@ export const en: TranslationDictionary = {
   hero: {
     badge: "AI PHYSICS ENGINE // V1.0",
     displayH1: "Physics, solved with rigor.",
-    subtitle: "From handwritten laboratory notes to validated tensor derivations. Zero hallucinations, pure first principles.",
+    subtitle: "From textbook problems and handwritten notes to step-by-step LaTeX derivations rooted in first principles.",
     quickSolve: {
       placeholder: "Describe a problem, paste LaTeX, or drop an equation...",
       uploadPhoto: "Upload Photo",
@@ -30,9 +30,9 @@ export const en: TranslationDictionary = {
     },
   },
   showcase: {
-    sectionBadge: "MULTIMODAL REASONING // VISION + SYMBOLIC",
-    title: "From rough handwritten notes to rigorous symbolic derivations.",
-    subtitle: "Drop a phone snapshot of a blackboard or paper notebook. Physicsmn isolates the free-body diagram, maps every force vector, extracts boundary conditions, and derives the complete analytical solution.",
+    sectionBadge: "MULTIMODAL SOLVER // VISION + STEP-BY-STEP",
+    title: "From rough handwritten notes to step-by-step LaTeX derivations.",
+    subtitle: "Drop a photo of a textbook problem or paper notebook. Physicsmn extracts given parameters, maps governing equations, and formats a clear step-by-step derivation.",
     imageCard: {
       alt: "Handwritten physics notebook open to a 35 degree inclined plane problem with force vectors and derivations",
       overlayBadgeLines: [
@@ -44,7 +44,7 @@ export const en: TranslationDictionary = {
     solutionCard: {
       systemId: "SYSTEM_ID: PHY-MECH-INCLINE-035",
       problemTitle: "Block on Rough Inclined Plane (35°)",
-      statusBadge: "CLOSED-FORM SYMBOLIC SOLUTION VERIFIED",
+      statusBadge: "STEP-BY-STEP DERIVATION GENERATED",
       givensHeading: "Parsed Parameters",
       parameters: [
         { name: "Incline Angle", symbol: "θ", value: "35", unit: "°" },
@@ -97,14 +97,14 @@ export const en: TranslationDictionary = {
       finalResult: {
         label: "ACCELERATION",
         value: "a = 9.81(\\sin 35^\\circ - 0.22 \\cos 35^\\circ) = 3.86 m/s²",
-        badge: "CONFIRMED // ZERO DIMENSIONAL RESIDUAL",
+        badge: "MEB CURRICULUM ALIGNED",
       },
     },
   },
   domains: {
-    sectionBadge: "PHYSICS TAXONOMY // CORE ENGINES",
+    sectionBadge: "PHYSICS TAXONOMY // CURRICULUM DOMAINS",
     sectionTitle: "Eight Foundational Domains.",
-    sectionSubtitle: "Each domain backed by exact symbolic solvers and verified against standard laboratory benchmarks.",
+    sectionSubtitle: "Covering standard high school and introductory college physics topics with structured derivations.",
     cards: [
       {
         id: "mechanics",
@@ -178,33 +178,33 @@ export const en: TranslationDictionary = {
     ],
   },
   methodology: {
-    sectionBadge: "COMPUTATIONAL PIPELINE // 4-STAGE DETERMINISTIC REASONING",
-    sectionTitle: "Engineered for Mathematical Certainty.",
-    sectionSubtitle: "Physicsmn replaces generative LLM guessing with symbolic solvers, tensor verification, and rigorous dimensional analysis.",
+    sectionBadge: "PROBLEM-SOLVING PIPELINE // 4-STEP PEDAGOGICAL WORKFLOW",
+    sectionTitle: "Structured for Clear Understanding.",
+    sectionSubtitle: "Physicsmn guides students through systematic physics methodology: stating givens, identifying principles, formatting equations, and explaining each step.",
     steps: [
       {
         stepNumber: "01",
         title: "Parse Givens",
         description: "Extracts knowns, unknowns, geometric boundary conditions, and units from raw text, LaTeX, or image.",
-        subtext: "Optical character recognition + LaTeX grammar parser with unit normalization.",
+        subtext: "Multimodal recognition and parameter extraction with SI unit notation.",
       },
       {
         stepNumber: "02",
         title: "Map Laws",
         description: "Identifies conserved quantities (energy, momentum, charge) and binds governing first-principles equations.",
-        subtext: "Conservation graph mapping across classical and relativistic domains.",
+        subtext: "Identifying relevant conservation laws and kinematic relations for the problem.",
       },
       {
         stepNumber: "03",
         title: "Render Diagram",
         description: "Synthesizes parametric Free-Body Diagrams with exact vector magnitudes, angles, and coordinate frames.",
-        subtext: "Vector decomposition with dynamic scalar projection and tension validation.",
+        subtext: "Vector decomposition and coordinate axes alignment for force balance.",
       },
       {
         stepNumber: "04",
-        title: "Derive & Verify",
-        description: "Executes symbolic algebraic derivations step-by-step, validating units through dimensional analysis.",
-        subtext: "Computer algebra engine with theorem-prover verification and SI unit auditing.",
+        title: "Derive & Explain",
+        description: "Formats algebraic equations step-by-step with LaTeX, explicitly showing units and physical relations.",
+        subtext: "Structured algebraic steps formatted with KaTeX math rendering for easy student review.",
       },
     ],
   },

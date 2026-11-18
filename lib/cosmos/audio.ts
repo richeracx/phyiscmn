@@ -22,7 +22,6 @@ class SoundController {
   private muted = true;
   private bgmAudio: HTMLAudioElement | null = null;
   private explosionAudio: HTMLAudioElement | null = null;
-  private voiceAudio: HTMLAudioElement | null = null;
   private chargeAudio: HTMLAudioElement | null = null;
   private gravWaveAudio: HTMLAudioElement | null = null;
   private warpAudio: HTMLAudioElement | null = null;
@@ -31,7 +30,6 @@ class SoundController {
   private glyphAudio: HTMLAudioElement | null = null;
 
   private explosionFired = false;
-  private voiceFired = false;
   private chargeFired = false;
   private lastWarpTime = 0;
   private lastGlyphTime = 0;
@@ -52,7 +50,6 @@ class SoundController {
 
       this.bgmAudio = load('/audio/background-music.mp3?v=2', 0.35, true);
       this.explosionAudio = load('/audio/explosion.mp3?v=2', 1.0);
-      this.voiceAudio = load('/audio/voice-trailer.mp3?v=2', 1.0);
       this.chargeAudio = load('/audio/charge.mp3?v=2', 0.7);
       this.gravWaveAudio = load('/audio/grav-wave.mp3?v=2', 0.65);
       this.warpAudio = load('/audio/warp.mp3?v=2', 0.4);
@@ -157,19 +154,10 @@ class SoundController {
   }
 
   /**
-   * Movie trailer voice saying "Physicsmen" right after the explosion
+   * Voice trailer audio has been removed
    */
   public playTrailerVoice() {
-    if (this.muted || this.voiceFired) return;
-    this.voiceFired = true;
-    this.initCtx();
-
-    if (this.voiceAudio) {
-      this.voiceAudio.currentTime = 0;
-      this.voiceAudio.play().catch(() => this.playSyntheticVoiceChime());
-    } else {
-      this.playSyntheticVoiceChime();
-    }
+    // No-op: voice trailer audio removed
   }
 
   /**
@@ -237,7 +225,6 @@ class SoundController {
 
   public resetFinaleTriggers() {
     this.explosionFired = false;
-    this.voiceFired = false;
     this.chargeFired = false;
   }
 
@@ -311,24 +298,6 @@ class SoundController {
 
     whiteNoise.start(now);
     whiteNoise.stop(now + 2.5);
-  }
-
-  private playSyntheticVoiceChime() {
-    if (!this.ctx || this.muted) return;
-    const now = this.ctx.currentTime;
-    [185, 277.18, 466.16].forEach((freq) => {
-      const osc = this.ctx!.createOscillator();
-      const g = this.ctx!.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, now);
-      g.gain.setValueAtTime(0.001, now);
-      g.gain.linearRampToValueAtTime(0.2, now + 0.15);
-      g.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
-      osc.connect(g);
-      g.connect(this.ctx!.destination);
-      osc.start(now);
-      osc.stop(now + 2.9);
-    });
   }
 }
 

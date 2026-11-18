@@ -244,7 +244,7 @@ export const AUTHORITATIVE_TRANSLATIONS = {
     hero: {
       badge: 'AI PHYSICS ENGINE // V1.0',
       displayH1: 'Physics, solved with rigor.',
-      subtitle: 'From handwritten laboratory notes to validated tensor derivations. Zero hallucinations, pure first principles.',
+      subtitle: 'From textbook problems and handwritten notes to step-by-step LaTeX derivations rooted in first principles.',
       quickSolve: {
         placeholder: 'Describe a problem, paste LaTeX, or drop an equation...',
         uploadPhoto: 'Upload Photo',
@@ -254,8 +254,8 @@ export const AUTHORITATIVE_TRANSLATIONS = {
       },
     },
     showcase: {
-      badge: 'MULTIMODAL REASONING // VISION + SYMBOLIC',
-      title: 'From rough handwritten notes to rigorous symbolic derivations.',
+      badge: 'MULTIMODAL SOLVER // VISION + STEP-BY-STEP',
+      title: 'From rough handwritten notes to step-by-step LaTeX derivations.',
       inclineSystemId: 'SYSTEM_ID: PHY-MECH-INCLINE-035',
       problemTitle: 'Block on Rough Inclined Plane (35°)',
       accelerationLabel: 'ACCELERATION',
@@ -266,13 +266,13 @@ export const AUTHORITATIVE_TRANSLATIONS = {
       badge: 'PHYSICS TAXONOMY // CORE ENGINES',
     },
     methodology: {
-      badge: 'COMPUTATIONAL PIPELINE // 4-STAGE DETERMINISTIC REASONING',
-      title: 'Engineered for Mathematical Certainty.',
+      badge: 'PROBLEM-SOLVING PIPELINE // 4-STEP PEDAGOGICAL WORKFLOW',
+      title: 'Structured for Clear Understanding.',
       steps: [
         { num: '01', title: 'Parse Givens' },
         { num: '02', title: 'Map Laws' },
         { num: '03', title: 'Render Diagram' },
-        { num: '04', title: 'Derive & Verify' },
+        { num: '04', title: 'Derive & Explain' },
       ],
     },
     footer: {
@@ -289,7 +289,7 @@ export const AUTHORITATIVE_TRANSLATIONS = {
     hero: {
       badge: 'AI PHYSICS ENGINE // V1.0',
       displayH1: 'Fizik, bilimsel titizlikle çözüldü.',
-      subtitle: 'El yazısı laboratuvar notlarından doğrulanmış tensör türetimlerine. Sıfır yanılsama, salt temel ilkeler.',
+      subtitle: 'Ders kitabı sorularından el yazısı notlara kadar; temel ilkeler ve MEB müfredatına uygun, adım adım LaTeX fizik çözümleri.',
       quickSolve: {
         placeholder: 'Bir problem tanımlayın, LaTeX yapıştırın veya denklem girin...',
         uploadPhoto: 'Fotoğraf Yükle',
@@ -299,8 +299,8 @@ export const AUTHORITATIVE_TRANSLATIONS = {
       },
     },
     showcase: {
-      badge: 'ÇOK MODLU AKIL YÜRÜTME // GÖRSEL + SEMBOLİK',
-      title: 'Müsvedde el yazısı notlardan titiz sembolik türetimlere.',
+      badge: 'ÇOK MODLU ÇÖZÜCÜ // GÖRSEL + ADIM ADIM',
+      title: 'Müsvedde el yazısı notlardan adım adım LaTeX çözümlerine.',
       inclineSystemId: 'SYSTEM_ID: PHY-MECH-INCLINE-035',
       problemTitle: 'Pürüzlü Eğik Düzlem Üzerindeki Blok (35°)',
       accelerationLabel: 'İVME',
@@ -308,16 +308,16 @@ export const AUTHORITATIVE_TRANSLATIONS = {
     },
     domains: {
       title: 'Sekiz Temel Alan.',
-      badge: 'FİZİK TAKSONOMİSİ // ÇEKİRDEK MOTORLAR',
+      badge: 'FİZİK KONULARI // MÜFREDAT ALANLARI',
     },
     methodology: {
-      badge: 'HESAPLAMALI SÜREÇ // 4 AŞAMALI BELİRLENİMCİ AKIL YÜRÜTME',
-      title: 'Matematiksel Kesinlik İçin Tasarlandı.',
+      badge: 'ÇÖZÜM SÜRECİ // 4 AŞAMALI PEDAGOJİK YÖNTEM',
+      title: 'Anlaşılır ve Pedagojik Öğrenim İçin Tasarlandı.',
       steps: [
         { num: '01', title: 'Verilenleri Ayrıştır' },
         { num: '02', title: 'Yasaları Haritala' },
         { num: '03', title: 'Diyagramı Çiz' },
-        { num: '04', title: 'Türet ve Doğrula' },
+        { num: '04', title: 'Türet ve Açıkla' },
       ],
     },
     footer: {

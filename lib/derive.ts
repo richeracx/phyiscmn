@@ -1,6 +1,6 @@
 import type { Lang } from './i18n';
 
-/** A 3-line symbolic preview: Given → Principle → Closed-form result. */
+/** A 3-line step-by-step preview: Given → Principle → Result. */
 export interface Derivation {
   given: string;
   principle: string;
@@ -220,7 +220,7 @@ export function deriveFromQuery(raw: string, lang: Lang): Derivation {
   }
   return {
     given,
-    principle: tr ? 'Korunum yasaları + boyut analizi ile model kurulumu' : 'Model set-up from conservation laws + dimensional analysis',
-    result: tr ? 'Kapalı form çözüm tam çözücüde türetilecek' : 'Closed form derived step by step in the full solver',
+    principle: tr ? 'Temel korunum yasaları ve formül modeli kurulumu' : 'Model set-up from conservation laws and governing equations',
+    result: tr ? 'Açıklamalı çözüm tam çözücüde adım adım türetilecek' : 'Step-by-step solution derived in the full solver',
   };
 }

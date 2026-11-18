@@ -313,8 +313,8 @@ test('S2.4: Section 3 (Multimodal Showcase) strings change on language toggle', 
 
   assert(enSol.problemTitle !== trSol.problemTitle, 'Problem title must change');
   assert(enSol.statusBadge !== trSol.statusBadge, 'Solution statusBadge must change');
-  assertEqual(enSol.statusBadge, 'CLOSED-FORM SYMBOLIC SOLUTION VERIFIED');
-  assertEqual(trSol.statusBadge, 'KAPALI FORMDA SEMBOLİK ÇÖZÜM DOĞRULANDI');
+  assertEqual(enSol.statusBadge, 'STEP-BY-STEP DERIVATION GENERATED');
+  assertEqual(trSol.statusBadge, 'ADIM ADIM ÇÖZÜM OLUŞTURULDU');
 
   assertEqual(enSol.givensHeading, 'Parsed Parameters');
   assertEqual(trSol.givensHeading, 'Ayrıştırılan Parametreler');
@@ -337,8 +337,8 @@ test('S2.4: Section 3 (Multimodal Showcase) strings change on language toggle', 
 
   assert(enSol.finalResult.label !== trSol.finalResult.label, 'Final result label must change');
   assert(enSol.finalResult.badge !== trSol.finalResult.badge, 'Final result badge must change');
-  assertEqual(enSol.finalResult.badge, 'CONFIRMED // ZERO DIMENSIONAL RESIDUAL');
-  assertEqual(trSol.finalResult.badge, 'DOĞRULANDI // SIFIR BOYUTSAL SAPMA');
+  assertEqual(enSol.finalResult.badge, 'MEB CURRICULUM ALIGNED');
+  assertEqual(trSol.finalResult.badge, 'MEB MÜFREDATINA UYGUN');
 });
 
 test('S2.5: Section 4 (Physics Domains) strings change on language toggle', () => {

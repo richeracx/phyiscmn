@@ -2,8 +2,8 @@ import type { TranslationDictionary } from './types';
 
 export const tr: TranslationDictionary = {
   meta: {
-    title: "Physicsmn // Yapay Zeka Fizik Motoru ve Sembolik Çözücü",
-    description: "Temel ilkeler fizik motoru ve sembolik çözücü. Çok modlu mekanik, elektromanyetizma ve optik problemlerini matematiksel titizlikle çözün.",
+    title: "Physicsmn // Yapay Zeka MEB Fizik Çözücü",
+    description: "MEB lise fizik müfredatıyla uyumlu yapay zeka destekli problem çözücü. Mekanik, elektrik ve optik problemlerini adım adım LaTeX çözümleriyle öğrenin.",
   },
   nav: {
     brandName: "Physicsmn",
@@ -15,7 +15,7 @@ export const tr: TranslationDictionary = {
   hero: {
     badge: "AI PHYSICS ENGINE // V1.0",
     displayH1: "Fizik, bilimsel titizlikle çözüldü.",
-    subtitle: "El yazısı laboratuvar notlarından doğrulanmış tensör türetimlerine. Sıfır yanılsama, salt temel ilkeler.",
+    subtitle: "Ders kitabı sorularından el yazısı notlara kadar; temel ilkeler ve MEB müfredatına uygun, adım adım LaTeX fizik çözümleri.",
     quickSolve: {
       placeholder: "Bir problem tanımlayın, LaTeX yapıştırın veya denklem girin...",
       uploadPhoto: "Fotoğraf Yükle",
@@ -30,9 +30,9 @@ export const tr: TranslationDictionary = {
     },
   },
   showcase: {
-    sectionBadge: "ÇOK MODLU AKIL YÜRÜTME // GÖRSEL + SEMBOLİK",
-    title: "Müsvedde el yazısı notlardan titiz sembolik türetimlere.",
-    subtitle: "Bir kara tahtanın veya kağıt defterin telefon fotoğrafını yükleyin. Physicsmn serbest cisim diyagramını ayrıştırır, tüm kuvvet vektörlerini haritalar, sınır koşullarını çıkarır ve eksiksiz analitik çözümü türetir.",
+    sectionBadge: "ÇOK MODLU ÇÖZÜCÜ // GÖRSEL + ADIM ADIM",
+    title: "Müsvedde el yazısı notlardan adım adım LaTeX çözümlerine.",
+    subtitle: "Kitaptan veya defterden bir soru fotoğrafı yükleyin. Physicsmn verilen parametreleri listeler, ilgili fizik yasalarını belirler ve adım adım çözümü sunar.",
     imageCard: {
       alt: "Kuvvet vektörleri ve türetimleri içeren 35 derece eğik düzlem problemine açık el yazısı fizik not defteri",
       overlayBadgeLines: [
@@ -44,7 +44,7 @@ export const tr: TranslationDictionary = {
     solutionCard: {
       systemId: "SYSTEM_ID: PHY-MECH-INCLINE-035",
       problemTitle: "Pürüzlü Eğik Düzlem Üzerindeki Blok (35°)",
-      statusBadge: "KAPALI FORMDA SEMBOLİK ÇÖZÜM DOĞRULANDI",
+      statusBadge: "ADIM ADIM ÇÖZÜM OLUŞTURULDU",
       givensHeading: "Ayrıştırılan Parametreler",
       parameters: [
         { name: "Eğim Açısı", symbol: "θ", value: "35", unit: "°" },
@@ -97,14 +97,14 @@ export const tr: TranslationDictionary = {
       finalResult: {
         label: "İVME",
         value: "a = 9.81(\\sin 35^\\circ - 0.22 \\cos 35^\\circ) = 3.86 m/s²",
-        badge: "DOĞRULANDI // SIFIR BOYUTSAL SAPMA",
+        badge: "MEB MÜFREDATINA UYGUN",
       },
     },
   },
   domains: {
-    sectionBadge: "FİZİK TAKSONOMİSİ // ÇEKİRDEK MOTORLAR",
+    sectionBadge: "FİZİK KONULARI // MÜFREDAT ALANLARI",
     sectionTitle: "Sekiz Temel Alan.",
-    sectionSubtitle: "Her alan, kesin sembolik çözücülerle desteklenmiş ve standart laboratuvar referanslarıyla doğrulanmıştır.",
+    sectionSubtitle: "MEB lise ve temel üniversite fizik konularını kapsayan yapılandırılmış adım adım çözümler.",
     cards: [
       {
         id: "mechanics",
@@ -178,33 +178,33 @@ export const tr: TranslationDictionary = {
     ],
   },
   methodology: {
-    sectionBadge: "HESAPLAMALI SÜREÇ // 4 AŞAMALI BELİRLENİMCİ AKIL YÜRÜTME",
-    sectionTitle: "Matematiksel Kesinlik İçin Tasarlandı.",
-    sectionSubtitle: "Physicsmn, üretici yapay zeka tahminlerinin yerine sembolik çözücüler, tensör doğrulaması ve titiz boyutsal analiz koyar.",
+    sectionBadge: "ÇÖZÜM SÜRECİ // 4 AŞAMALI PEDAGOJİK YÖNTEM",
+    sectionTitle: "Anlaşılır ve Pedagojik Öğrenim İçin Tasarlandı.",
+    sectionSubtitle: "Physicsmn öğrencilere sistematik fizik problem çözme adımlarını öğretir: verilenleri listeleme, yasaları belirleme ve her adımı gerekçelendirme.",
     steps: [
       {
         stepNumber: "01",
         title: "Verilenleri Ayrıştır",
         description: "Ham metin, LaTeX veya görselden bilinenleri, bilinmeyenleri, geometrik sınır koşullarını ve birimleri çıkarır.",
-        subtext: "Optik karakter tanıma + birim normalizasyonlu LaTeX dilbilgisi ayrıştırıcı.",
+        subtext: "Görselden ve metinden soru tanıma ve SI birimleriyle parametre çıkarımı.",
       },
       {
         stepNumber: "02",
         title: "Yasaları Haritala",
         description: "Korunumlu nicelikleri (enerji, momentum, yük) belirler ve temel ilkelerden kaynaklanan ana denklemleri bağlar.",
-        subtext: "Klasik ve rölativistik alanlarda korunum çizgesi haritalaması.",
+        subtext: "Probleme uygun korunum yasalarını ve kinematik bağıntıları belirleme.",
       },
       {
         stepNumber: "03",
         title: "Diyagramı Çiz",
         description: "Kesin vektör büyüklükleri, açılar ve koordinat sistemleriyle parametrik Serbest Cisim Diyagramları oluşturur.",
-        subtext: "Dinamik skaler izdüşüm ve gerilim doğrulama ile vektör ayrıştırma.",
+        subtext: "Kuvvet dengesi için vektör bileşenlerini ayırma ve eksen yerleşimi.",
       },
       {
         stepNumber: "04",
-        title: "Türet ve Doğrula",
-        description: "Sembolik cebirsel türetimleri adım adım gerçekleştirir, boyutsal analiz ile birim tutarlılığını doğrular.",
-        subtext: "Teorem kanıtlayıcı doğrulaması ve SI birim denetimli bilgisayar cebir motoru.",
+        title: "Türet ve Açıkla",
+        description: "Cebirsel işlemleri ve formülleri adım adım LaTeX ile biçimlendirir, birimleri ve fiziksel bağıntıları açıkça gösterir.",
+        subtext: "Öğrencinin kolayca kontrol edebileceği, KaTeX formatında adım adım cebirsel işlemler.",
       },
     ],
   },

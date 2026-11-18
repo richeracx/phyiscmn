@@ -44,13 +44,13 @@ export function ActExplosionFinale() {
       <div className="flex max-w-2xl flex-col items-center">
         <span className="mb-3 inline-flex items-center gap-2 font-sans text-[12px] font-medium uppercase tracking-[0.25em] text-white/50">
           <Sparkles size={13} className="text-white/70" />
-          <span>{tr ? '03 // KOZMİK TİTİZLİK' : '03 // COSMIC RIGOR'}</span>
+          <span>{tr ? '03 // ADIM ADIM ÇÖZÜM' : '03 // STEP-BY-STEP DERIVATION'}</span>
         </span>
 
         <p className="mt-2 max-w-xl font-sans text-[16px] font-extralight leading-[1.6] text-[#bdbdbd] md:text-[18px]">
           {tr
-            ? 'Newton mekaniğinden göreliliğe kadar. Her adımı doğrulanmış, tam gerekçelendirilmiş fizik türetimleri.'
-            : 'From Newtonian mechanics to relativistic fields. Step into verified, mathematically rigorous derivations.'}
+            ? 'Newton mekaniğinden dalgalara ve optiğe kadar. LaTeX formatında, adım adım MEB lise fizik çözümleri.'
+            : 'From Newtonian mechanics to waves and optics. Step-by-step high school physics derivations formatted in LaTeX.'}
         </p>
 
         {/* Translucent Frosted Glass Pill Button saying "START SOLVING" */}
