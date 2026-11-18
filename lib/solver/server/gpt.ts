@@ -5,6 +5,7 @@ import { systemInstruction, userPrompt } from './prompt';
 import type { SolveInput } from './request';
 
 const REQUEST_TIMEOUT_MS = 110_000;
+const LUNA_MODEL = 'gpt-6-luna';
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -37,96 +38,90 @@ function buildMessages(input: SolveInput): ChatMessage[] {
 }
 
 /**
- * Executes a fetch to the OpenAI-compatible endpoint with automatic fallback
- * if the requested model (e.g. gpt-6-luna) is unavailable or returns 404.
+ * Executes a call directly to OpenAI Chat Completions for GPT-6 Luna.
+ * Note: GPT-6 Luna is a high reasoning model.
+ * Per OpenAI documentation:
+ * - Reasoning models reject custom temperature (must not pass temperature).
+ * - reasoning_effort is supported (none, low, medium, high, xhigh, max).
+ * - max_completion_tokens is used instead of max_tokens.
+ * - Tier Free is not supported (requires paid tier like Build).
  */
-async function fetchWithModelFallback(
+async function callGpt6Luna(
   url: string,
   apiKey: string,
-  basePayload: Record<string, unknown>,
+  payload: Record<string, unknown>,
   signal: AbortSignal,
 ): Promise<Response> {
-  const requestedModel = config.openaiModel();
-  const modelsToTry = [
-    requestedModel,
-    'gpt-4o',
-    'gpt-4o-mini',
-  ];
-  const uniqueModels = Array.from(new Set(modelsToTry));
+  try {
+    const timeoutSignal = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+    const combinedSignal = AbortSignal.any([signal, timeoutSignal]);
 
-  let lastResponse: Response | null = null;
-  let hadRateLimit = false;
-
-  for (const model of uniqueModels) {
-    const payload: Record<string, unknown> = { ...basePayload, model };
-    if (model.startsWith('o1') || model.startsWith('o3')) {
-      delete payload.temperature;
-    }
-
-    try {
-      const timeoutSignal = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
-      const combinedSignal = AbortSignal.any([signal, timeoutSignal]);
-
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(payload),
-        signal: combinedSignal,
-        cache: 'no-store',
-      });
-
-      if (res.ok) {
-        if (model !== requestedModel) {
-          console.warn(`[solver] Requested '${requestedModel}' unavailable; succeeded with fallback '${model}'`);
-        }
-        return res;
-      }
-
-      const errText = await res.text().catch(() => '');
-      lastResponse = res;
-      console.error(`[solver] Model '${model}' failed (HTTP ${res.status}): ${errText}`);
-
-      // If auth fails (401/403), no need to try other models with the same invalid key
-      if (res.status === 401 || res.status === 403) {
-        throw new SolverError('not_configured', { detail: 'API authentication failed. Check your API key.' });
-      }
-
-      if (res.status === 429) {
-        hadRateLimit = true;
-        // Keep trying fallback model (e.g. gpt-4o-mini might have available quota if gpt-4o hit limits)
-        continue;
-      }
-
-      // If model not found (404) or bad request (400), try next model
-      if (res.status === 404 || res.status === 400 || res.status >= 500) {
-        continue;
-      }
-
-      break;
-    } catch (err) {
-      if (err instanceof SolverError) throw err;
-      if (signal.aborted) throw new SolverError('model_timeout', { cause: err });
-      console.error(`[solver] Network exception calling '${model}':`, err);
-    }
-  }
-
-  if (hadRateLimit) {
-    throw new SolverError('model_busy', {
-      detail: 'OpenAI quota or rate limit exceeded. Please check your OpenAI billing/credits.',
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
+      signal: combinedSignal,
+      cache: 'no-store',
     });
-  }
 
-  if (lastResponse) {
-    if (lastResponse.status >= 500) {
-      throw new SolverError('model_busy', { detail: 'AI provider is temporarily overloaded.' });
+    if (res.ok) return res;
+
+    const errText = await res.text().catch(() => '');
+    console.error(`[solver] GPT-6 Luna request failed (HTTP ${res.status}): ${errText}`);
+
+    let parsedError: { error?: { message?: string; type?: string; code?: string } } | null = null;
+    try {
+      parsedError = JSON.parse(errText);
+    } catch {}
+
+    const errorMessage = parsedError?.error?.message || errText || 'Unknown provider error';
+    const errorCode = parsedError?.error?.code;
+
+    if (res.status === 401 || res.status === 403) {
+      throw new SolverError('not_configured', {
+        detail: `OpenAI authentication failed (${res.status}): ${errorMessage}`,
+      });
     }
-    throw new SolverError('model_busy', { detail: 'Requested AI model is unavailable. Please verify API key and model.' });
-  }
 
-  throw new SolverError('model_busy');
+    if (res.status === 429) {
+      const isQuota = errorCode === 'insufficient_quota' || errorMessage.toLowerCase().includes('quota');
+      throw new SolverError('model_busy', {
+        detail: isQuota
+          ? 'OpenAI quota exceeded. GPT-6 Luna requires a paid tier (Build/Launch/Grow) with available credits.'
+          : `OpenAI rate limit exceeded: ${errorMessage}`,
+      });
+    }
+
+    if (res.status === 404) {
+      throw new SolverError('model_busy', {
+        detail: `GPT-6 Luna model access error: ${errorMessage}`,
+      });
+    }
+
+    if (res.status === 400) {
+      throw new SolverError('bad_request', {
+        detail: `OpenAI API request validation error: ${errorMessage}`,
+      });
+    }
+
+    if (res.status >= 500) {
+      throw new SolverError('model_busy', {
+        detail: `OpenAI service error (${res.status}). Please try again shortly.`,
+      });
+    }
+
+    throw new SolverError('model_busy', {
+      detail: `GPT-6 Luna error (${res.status}): ${errorMessage}`,
+    });
+  } catch (err) {
+    if (err instanceof SolverError) throw err;
+    if (signal.aborted) throw new SolverError('model_timeout', { cause: err });
+    console.error('[solver] Network exception calling GPT-6 Luna:', err);
+    throw new SolverError('network', { cause: err });
+  }
 }
 
 /**
@@ -134,19 +129,23 @@ async function fetchWithModelFallback(
  */
 export async function* streamGptSolution(input: SolveInput, signal: AbortSignal): AsyncGenerator<string> {
   const apiKey = config.openaiApiKey();
-  if (!apiKey) throw new SolverError('not_configured');
+  if (!apiKey) {
+    throw new SolverError('not_configured', { detail: 'OpenAI API key is missing. Set OPENAI_API_KEY in Vercel.' });
+  }
 
   const url = `${config.openaiBaseUrl().replace(/\/+$/, '')}/chat/completions`;
   const messages = buildMessages(input);
 
-  const basePayload = {
+  const payload: Record<string, unknown> = {
+    model: LUNA_MODEL,
     messages,
     response_format: { type: 'json_object' },
-    temperature: 0.1,
+    reasoning_effort: 'medium',
+    max_completion_tokens: 16384,
     stream: true,
   };
 
-  const response = await fetchWithModelFallback(url, apiKey, basePayload, signal);
+  const response = await callGpt6Luna(url, apiKey, payload, signal);
 
   if (!response.body) throw new SolverError('model_output');
 
@@ -171,7 +170,12 @@ export async function* streamGptSolution(input: SolveInput, signal: AbortSignal)
           const jsonStr = trimmed.slice(6);
           try {
             const parsed = JSON.parse(jsonStr) as {
-              choices?: Array<{ delta?: { content?: string } }>;
+              choices?: Array<{
+                delta?: {
+                  content?: string;
+                  reasoning_content?: string;
+                };
+              }>;
             };
             const chunk = parsed.choices?.[0]?.delta?.content;
             if (chunk) yield chunk;
@@ -192,25 +196,29 @@ export async function* streamGptSolution(input: SolveInput, signal: AbortSignal)
 }
 
 /**
- * Non-streaming single generation for solution retry or repair.
+ * Non-streaming single generation for solution retry or repair using GPT-6 Luna.
  */
 export async function generateGptSolution(
   messages: ChatMessage[],
   signal: AbortSignal,
 ): Promise<string> {
   const apiKey = config.openaiApiKey();
-  if (!apiKey) throw new SolverError('not_configured');
+  if (!apiKey) {
+    throw new SolverError('not_configured', { detail: 'OpenAI API key is missing. Set OPENAI_API_KEY in Vercel.' });
+  }
 
   const url = `${config.openaiBaseUrl().replace(/\/+$/, '')}/chat/completions`;
 
-  const basePayload = {
+  const payload: Record<string, unknown> = {
+    model: LUNA_MODEL,
     messages,
     response_format: { type: 'json_object' },
-    temperature: 0.1,
+    reasoning_effort: 'medium',
+    max_completion_tokens: 16384,
     stream: false,
   };
 
-  const response = await fetchWithModelFallback(url, apiKey, basePayload, signal);
+  const response = await callGpt6Luna(url, apiKey, payload, signal);
 
   try {
     const json = (await response.json()) as {
