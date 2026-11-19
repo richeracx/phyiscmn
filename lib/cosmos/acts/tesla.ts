@@ -304,11 +304,13 @@ export class TeslaAct implements Act {
 
   /**
    * Tesla's autonomous gaze:
-   * Moves smoothly and randomly on his own like a deep, contemplative thinker,
-   * completely independent of the mouse cursor.
-   * Periodically shifts gaze between natural focal directions (forward contemplation,
-   * looking down thoughtfully, glancing sideways across space), smoothed with
-   * critically-damped spring dynamics and subtle continuous micro-drifts.
+   * Replicates natural human oculomotor patterns:
+   * 1. Wide range of motion across the entire socket (down at notes, far left/right,
+   *    upward visionary contemplation, and direct piercing eye contact).
+   * 2. Human saccade dynamics: swift, decisive gaze shifts (~180ms) rather than slow,
+   *    sluggish continuous drifting.
+   * 3. Natural extended fixation: holds each thoughtful gaze for 4 to 8 seconds with
+   *    only subtle biological micro-tremor.
    */
   private updateGaze(dt: number, _gain: number) {
     this.gazeTimeAcc += dt;
@@ -316,49 +318,54 @@ export class TeslaAct implements Act {
 
     if (this.gazeHoldTimer <= 0) {
       const r = Math.random();
-      if (r < 0.40) {
-        // Forward, thoughtful center with subtle micro-focus
-        this.targetGazeX = (Math.random() - 0.5) * 0.28;
-        this.targetGazeY = (Math.random() - 0.5) * 0.22;
-        this.gazeHoldTimer = 1.4 + Math.random() * 2.2;
-      } else if (r < 0.68) {
-        // Looking down thoughtfully (pondering an equation or invention)
+      if (r < 0.28) {
+        // Deep Downward Contemplation (reading equations, notebook on desk)
         this.targetGazeX = (Math.random() - 0.5) * 0.45;
-        this.targetGazeY = 0.28 + Math.random() * 0.42;
-        this.gazeHoldTimer = 1.2 + Math.random() * 1.8;
-      } else if (r < 0.88) {
-        // Sideways glance (observing the surrounding cosmos)
+        this.targetGazeY = 0.72 + Math.random() * 0.24;
+        this.gazeHoldTimer = 4.5 + Math.random() * 3.5;
+      } else if (r < 0.50) {
+        // Direct Piercing Eye Contact with the viewer
+        this.targetGazeX = (Math.random() - 0.5) * 0.18;
+        this.targetGazeY = -0.05 + Math.random() * 0.18;
+        this.gazeHoldTimer = 4.2 + Math.random() * 3.6;
+      } else if (r < 0.72) {
+        // Wide Sideways Look (far left or far right into space)
         const side = Math.random() < 0.5 ? -1 : 1;
-        this.targetGazeX = side * (0.35 + Math.random() * 0.4);
+        this.targetGazeX = side * (0.76 + Math.random() * 0.22);
         this.targetGazeY = (Math.random() - 0.5) * 0.35;
-        this.gazeHoldTimer = 1.0 + Math.random() * 1.6;
-      } else {
-        // Slight glance up and away (creative intuition)
+        this.gazeHoldTimer = 3.8 + Math.random() * 3.2;
+      } else if (r < 0.88) {
+        // Downward-Angle Glance (down-left or down-right)
         const side = Math.random() < 0.5 ? -1 : 1;
-        this.targetGazeX = side * (0.2 + Math.random() * 0.35);
-        this.targetGazeY = -0.25 - Math.random() * 0.35;
-        this.gazeHoldTimer = 0.8 + Math.random() * 1.4;
+        this.targetGazeX = side * (0.62 + Math.random() * 0.28);
+        this.targetGazeY = 0.55 + Math.random() * 0.35;
+        this.gazeHoldTimer = 4.0 + Math.random() * 3.0;
+      } else {
+        // Visionary Upward Glance (visualizing rotating magnetic fields in 3D mind space)
+        const side = Math.random() < 0.5 ? -1 : 1;
+        this.targetGazeX = side * (0.45 + Math.random() * 0.4);
+        this.targetGazeY = -0.65 - Math.random() * 0.25;
+        this.gazeHoldTimer = 3.5 + Math.random() * 2.8;
       }
     }
 
-    // Continuous subtle organic micro-drift (living ocular tremor & respiration)
-    const driftX = Math.sin(this.gazeTimeAcc * 0.85) * 0.05 + Math.sin(this.gazeTimeAcc * 1.9) * 0.02;
-    const driftY = Math.cos(this.gazeTimeAcc * 0.7) * 0.04 + Math.sin(this.gazeTimeAcc * 1.5) * 0.02;
+    // Subtle biological micro-tremor & ocular breathing (keeps eye alive while fixating)
+    const tremorX = Math.sin(this.gazeTimeAcc * 1.6) * 0.016 + Math.sin(this.gazeTimeAcc * 3.4) * 0.007;
+    const tremorY = Math.cos(this.gazeTimeAcc * 1.3) * 0.012 + Math.sin(this.gazeTimeAcc * 2.7) * 0.006;
 
-    const targetX = clamp(this.targetGazeX + driftX, -0.85, 0.85);
-    const targetY = clamp(this.targetGazeY + driftY, -0.75, 0.75);
+    const targetX = clamp(this.targetGazeX + tremorX, -1.0, 1.0);
+    const targetY = clamp(this.targetGazeY + tremorY, -0.95, 0.95);
 
-    // Smooth critically-damped transition to the target gaze
-    [this.currentGazeX, this.gazeVelX] = smoothDamp(this.currentGazeX, targetX, this.gazeVelX, 0.38, dt);
-    [this.currentGazeY, this.gazeVelY] = smoothDamp(this.currentGazeY, targetY, this.gazeVelY, 0.38, dt);
+    // Natural human saccade: crisp, swift shift (~180ms) to the target, then settles firmly
+    [this.currentGazeX, this.gazeVelX] = smoothDamp(this.currentGazeX, targetX, this.gazeVelX, 0.18, dt);
+    [this.currentGazeY, this.gazeVelY] = smoothDamp(this.currentGazeY, targetY, this.gazeVelY, 0.18, dt);
 
     for (const e of this.eyes) {
-      const ax = Math.max(0, e.rx - CELL_W * 1.1);
-      const ay = Math.max(0, e.ry - CELL_H * 0.75);
-      const tx = this.currentGazeX * ax;
-      const ty = this.currentGazeY * ay;
-      [e.px, e.vx] = smoothDamp(e.px, tx, e.vx, 0.1, dt);
-      [e.py, e.vy] = smoothDamp(e.py, ty, e.vy, 0.1, dt);
+      // Allow full wide socket excursion
+      const ax = e.rx * 0.92;
+      const ay = e.ry * 0.85;
+      e.px = this.currentGazeX * ax;
+      e.py = this.currentGazeY * ay;
     }
   }
 

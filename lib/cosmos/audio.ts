@@ -50,55 +50,63 @@ class SoundController {
         }
       };
 
-      this.bgmAudio = load('/audio/background-music.mp3?v=2', 0.35, true);
-      this.explosionAudio = load('/audio/explosion.mp3?v=2', 1.0);
-      this.chargeAudio = load('/audio/charge.mp3?v=2', 0.7);
-      this.gravWaveAudio = load('/audio/grav-wave.mp3?v=2', 0.65);
-      this.warpAudio = load('/audio/warp.mp3?v=2', 0.4);
-      this.buttonHoverAudio = load('/audio/button-hover.mp3?v=2', 0.3);
-      this.buttonClickAudio = load('/audio/button-click.mp3?v=2', 0.5);
-      this.glyphAudio = load('/audio/glyph.mp3?v=2', 0.25);
+      this.bgmAudio = load('/audio/background-music.mp3', 0.55, true);
+      this.explosionAudio = load('/audio/explosion.mp3', 1.0);
+      this.chargeAudio = load('/audio/charge.mp3', 0.7);
+      this.gravWaveAudio = load('/audio/grav-wave.mp3', 0.65);
+      this.warpAudio = load('/audio/warp.mp3', 0.4);
+      this.buttonHoverAudio = load('/audio/button-hover.mp3', 0.35);
+      this.buttonClickAudio = load('/audio/button-click.mp3', 0.55);
+      this.glyphAudio = load('/audio/glyph.mp3', 0.3);
 
-      const events = [
+      const gestureEvents = [
         'pointerdown',
-        'pointermove',
-        'mousemove',
         'mousedown',
-        'mouseup',
         'keydown',
         'touchstart',
-        'touchend',
-        'scroll',
-        'wheel',
-        'focus',
         'click',
-        'mouseenter',
       ];
 
-      // Auto-start audio upon the very first user interaction or mouse movement
-      const startAudio = () => {
+      // Reliable audio startup: only remove listeners once playback has ACTUALLY commenced
+      const tryStartAudio = () => {
         this.initCtx();
-        if (this.bgmAudio && this.bgmAudio.paused) {
-          this.bgmAudio.play().catch(() => this.playSyntheticBgm());
-        }
-        for (const evt of events) {
-          window.removeEventListener(evt, startAudio);
+        if (this.bgmAudio) {
+          if (!this.bgmAudio.paused) {
+            cleanupGestureListeners();
+            return;
+          }
+          const p = this.bgmAudio.play();
+          if (p !== undefined) {
+            p.then(() => {
+              cleanupGestureListeners();
+            }).catch(() => {
+              // Autoplay policy prevented playback, keep listeners active for the next interaction
+            });
+          }
+        } else {
+          this.playSyntheticBgm();
         }
       };
 
-      for (const evt of events) {
-        window.addEventListener(evt, startAudio, { once: true, passive: true });
+      const cleanupGestureListeners = () => {
+        for (const evt of gestureEvents) {
+          window.removeEventListener(evt, tryStartAudio);
+          document.removeEventListener(evt, tryStartAudio);
+        }
+      };
+
+      for (const evt of gestureEvents) {
+        window.addEventListener(evt, tryStartAudio, { passive: true });
+        document.addEventListener(evt, tryStartAudio, { passive: true });
       }
 
-      // Immediate play attempt (succeeds instantly if browser autoplay policy permits)
+      // Immediate play attempt if permitted by browser domain history
       try {
         this.initCtx();
         if (this.bgmAudio) {
           const p = this.bgmAudio.play();
           if (p !== undefined) {
-            p.catch(() => {
-              // Browser blocked background autoplay; will fire instantly on first mousemove / interaction
-            });
+            p.then(() => cleanupGestureListeners()).catch(() => {});
           }
         }
       } catch {}
@@ -145,15 +153,19 @@ class SoundController {
     this.toggleMute();
   }
 
-  public playBgm() {
+  public ensureBgmPlaying() {
+    if (this.muted) return;
     this.initCtx();
-    if (this.bgmAudio) {
-      if (this.bgmAudio.paused) {
-        this.bgmAudio.play().catch(() => this.playSyntheticBgm());
+    if (this.bgmAudio && this.bgmAudio.paused) {
+      const p = this.bgmAudio.play();
+      if (p !== undefined) {
+        p.catch(() => {});
       }
-    } else {
-      this.playSyntheticBgm();
     }
+  }
+
+  public playBgm() {
+    this.ensureBgmPlaying();
   }
 
   public stopAll() {
@@ -237,6 +249,7 @@ class SoundController {
    * UI Glass Button Hover
    */
   public playButtonHover() {
+    this.ensureBgmPlaying();
     if (this.muted) return;
     if (this.buttonHoverAudio) {
       this.buttonHoverAudio.currentTime = 0;
@@ -248,6 +261,7 @@ class SoundController {
    * UI Glass Button Click
    */
   public playButtonClick() {
+    this.ensureBgmPlaying();
     if (this.muted) return;
     if (this.buttonClickAudio) {
       this.buttonClickAudio.currentTime = 0;
