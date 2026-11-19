@@ -3,6 +3,7 @@
 import type { MotionValue } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { CosmosEngine } from '@/lib/cosmos/engine';
+import { soundController } from '@/lib/cosmos/audio';
 
 export function CosmicCanvas({ progress }: { progress: MotionValue<number> }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -10,6 +11,7 @@ export function CosmicCanvas({ progress }: { progress: MotionValue<number> }) {
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
+    soundController.playBgm();
     const engine = new CosmosEngine(canvas);
     engine.setProgress(progress.get());
     const unsubscribe = progress.on('change', (v) => engine.setProgress(v));

@@ -42,6 +42,8 @@ class SoundController {
           const a = new Audio(path);
           a.volume = vol;
           a.loop = loop;
+          a.preload = 'auto';
+          a.load();
           return a;
         } catch {
           return null;
@@ -57,24 +59,49 @@ class SoundController {
       this.buttonClickAudio = load('/audio/button-click.mp3?v=2', 0.5);
       this.glyphAudio = load('/audio/glyph.mp3?v=2', 0.25);
 
-      // Auto-start audio upon the first user interaction to bypass browser autoplay policies
+      const events = [
+        'pointerdown',
+        'pointermove',
+        'mousemove',
+        'mousedown',
+        'mouseup',
+        'keydown',
+        'touchstart',
+        'touchend',
+        'scroll',
+        'wheel',
+        'focus',
+        'click',
+        'mouseenter',
+      ];
+
+      // Auto-start audio upon the very first user interaction or mouse movement
       const startAudio = () => {
         this.initCtx();
         if (this.bgmAudio && this.bgmAudio.paused) {
           this.bgmAudio.play().catch(() => this.playSyntheticBgm());
         }
-        window.removeEventListener('pointerdown', startAudio);
-        window.removeEventListener('keydown', startAudio);
-        window.removeEventListener('touchstart', startAudio);
-        window.removeEventListener('scroll', startAudio);
-        window.removeEventListener('wheel', startAudio);
+        for (const evt of events) {
+          window.removeEventListener(evt, startAudio);
+        }
       };
 
-      window.addEventListener('pointerdown', startAudio, { once: true, passive: true });
-      window.addEventListener('keydown', startAudio, { once: true });
-      window.addEventListener('touchstart', startAudio, { once: true, passive: true });
-      window.addEventListener('scroll', startAudio, { once: true, passive: true });
-      window.addEventListener('wheel', startAudio, { once: true, passive: true });
+      for (const evt of events) {
+        window.addEventListener(evt, startAudio, { once: true, passive: true });
+      }
+
+      // Immediate play attempt (succeeds instantly if browser autoplay policy permits)
+      try {
+        this.initCtx();
+        if (this.bgmAudio) {
+          const p = this.bgmAudio.play();
+          if (p !== undefined) {
+            p.catch(() => {
+              // Browser blocked background autoplay; will fire instantly on first mousemove / interaction
+            });
+          }
+        }
+      } catch {}
     }
   }
 
@@ -116,6 +143,17 @@ class SoundController {
 
   public unmute() {
     this.toggleMute();
+  }
+
+  public playBgm() {
+    this.initCtx();
+    if (this.bgmAudio) {
+      if (this.bgmAudio.paused) {
+        this.bgmAudio.play().catch(() => this.playSyntheticBgm());
+      }
+    } else {
+      this.playSyntheticBgm();
+    }
   }
 
   public stopAll() {
@@ -246,7 +284,7 @@ class SoundController {
     const now = this.ctx.currentTime;
     const masterGain = this.ctx.createGain();
     masterGain.gain.setValueAtTime(0.001, now);
-    masterGain.gain.exponentialRampToValueAtTime(0.12, now + 3);
+    masterGain.gain.exponentialRampToValueAtTime(0.12, now + 0.3);
     masterGain.connect(this.ctx.destination);
     this.syntheticBgmGain = masterGain;
 

@@ -18,19 +18,19 @@ export function CircuitBreakerDemo() {
     const t1 = setTimeout(() => {
       setStepIndex(1);
       soundController.playButtonHover();
-    }, 600);
+    }, 450);
 
     const t2 = setTimeout(() => {
       setStepIndex(2);
       soundController.playButtonHover();
-    }, 1300);
+    }, 950);
 
     const t3 = setTimeout(() => {
       setStepIndex(3);
       if (tab === 'mathjs') soundController.playButtonHover();
       else if (tab === 'repair') soundController.playButtonHover();
       setIsRunning(false);
-    }, 2000);
+    }, 1500);
 
     return () => {
       clearTimeout(t1);
@@ -40,20 +40,20 @@ export function CircuitBreakerDemo() {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-black/80 backdrop-blur-xl">
+    <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-black/80 backdrop-blur-xl font-sans">
       {/* Top Header Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] bg-white/[0.02] px-6 py-4">
         <div>
-          <span className="font-sans text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
-            Canlı Simülasyon Deneyi
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
+            Canlı Simülasyon
           </span>
-          <h4 className="mt-0.5 font-sans text-[16px] font-normal text-white">
-            Nöro-Sembolik Devre Kesici (Circuit-Breaker) Mekanizması
+          <h4 className="mt-0.5 text-[16px] font-normal text-white">
+            Yapay Zeka Hatalarını Nasıl Yakalayıp Düzeltiyoruz?
           </h4>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 p-1 font-sans text-[12px]">
+        <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 p-1 text-[12px]">
           <button
             type="button"
             onClick={() => runSimulation('llm')}
@@ -63,7 +63,7 @@ export function CircuitBreakerDemo() {
                 : 'text-white/60 hover:text-white'
             }`}
           >
-            1. Standart LLM (Denetimsiz)
+            1. Normal Yapay Zeka
           </button>
           <button
             type="button"
@@ -74,7 +74,7 @@ export function CircuitBreakerDemo() {
                 : 'text-white/60 hover:text-white'
             }`}
           >
-            2. mathjs Denetim Tuzağı
+            2. mathjs Kontrolü
           </button>
           <button
             type="button"
@@ -85,23 +85,23 @@ export function CircuitBreakerDemo() {
                 : 'text-white/60 hover:text-white'
             }`}
           >
-            3. Otonom Öz-Düzeltme
+            3. Otomatik Düzeltme
           </button>
         </div>
       </div>
 
       {/* Main Simulation Stage */}
-      <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-12 font-sans">
+      <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-12">
         {/* Left Column: The Problem & Derivation Stream */}
         <div className="space-y-4 lg:col-span-7">
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-4 text-[13.5px]">
-            <span className="text-white/50 text-[11px] uppercase tracking-wider block mb-1">Problem Girdisi</span>
+            <span className="text-white/50 text-[11px] uppercase tracking-wider block mb-1">Örnek Fizik Sorusu</span>
             <p className="text-white font-light">
-              &quot;m = 2 kg kütleli bir cisim v = 10 m/s hızla hareket etmektedir. Kinetik enerjisini bulun.&quot;
+              &quot;2 kg kütleli bir cisim 10 m/s hızla gitmektedir. Kinetik enerjisini bulunuz.&quot;
             </p>
           </div>
 
-          {/* Derivation Steps */}
+          {/* Derivation Steps (Clean, human-readable math without raw LaTeX codes) */}
           <div className="space-y-2.5 text-[13px]">
             {/* Step 1 */}
             <div
@@ -112,11 +112,11 @@ export function CircuitBreakerDemo() {
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-white/50 text-[11px]">Adım 1 // Değişken Tespiti</span>
-                <span className="text-emerald-400 text-[11px]">✓ OCR Başarılı</span>
+                <span className="text-white/50 text-[11px]">1. Verilen Değerleri Belirleme</span>
+                <span className="text-emerald-400 text-[11px]">✓ Bilgiler Eksiksiz Okundu</span>
               </div>
-              <div className="mt-1 font-light">
-                m = 2 kg, \quad v = 10 m/s
+              <div className="mt-1 font-light text-[14px] text-white/90">
+                Kütle: <span className="font-medium text-white">m = 2 kg</span> &nbsp;—&nbsp; Hız: <span className="font-medium text-white">v = 10 m/s</span>
               </div>
             </div>
 
@@ -129,11 +129,11 @@ export function CircuitBreakerDemo() {
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-white/50 text-[11px]">Adım 2 // Formül Kurulumu</span>
-                <span className="text-emerald-400 text-[11px]">✓ MEB Korunum Yasası</span>
+                <span className="text-white/50 text-[11px]">2. Fizik Formülünü Kurma</span>
+                <span className="text-emerald-400 text-[11px]">✓ MEB Müfredat Kuralı</span>
               </div>
-              <div className="mt-1 font-light">
-                E_k = \frac{1}{2} m v^2 = \frac{1}{2} \cdot (2) \cdot (10)^2
+              <div className="mt-1 font-light text-[14px] text-white/90">
+                Kinetik Enerji: <span className="font-medium text-white">Ek = ½ · m · v²</span> = ½ · (2) · (10)²
               </div>
             </div>
 
@@ -151,22 +151,39 @@ export function CircuitBreakerDemo() {
             >
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-medium">
-                  Adım 3 // {activeTab === 'repair' ? 'Düzeltilmiş Nihai Çözüm' : 'Hesaplama & Sonuç'}
+                  3. Hesaplama ve Sonuç Kontrolü
                 </span>
-                {activeTab === 'llm' && <span className="text-red-400 text-[11px]">✗ Aritmetik Halüsinasyon</span>}
-                {activeTab === 'mathjs' && <span className="text-amber-400 text-[11px]">⚠ Devre Kesici Tetiklendi</span>}
-                {activeTab === 'repair' && <span className="text-emerald-400 text-[11px]">✓ mathVerified: true</span>}
+                {activeTab === 'llm' && <span className="text-red-400 text-[11px]">✗ İşlem Hatası Fark Edilmedi</span>}
+                {activeTab === 'mathjs' && <span className="text-amber-400 text-[11px]">⚠ Hatalı Çözüm Durduruldu</span>}
+                {activeTab === 'repair' && <span className="text-emerald-400 text-[11px]">✓ mathjs ile Tam Doğrulandı</span>}
               </div>
 
-              <div className="mt-1.5 text-[15px] font-normal">
+              <div className="mt-1.5 text-[14.5px] font-normal">
                 {activeTab === 'llm' && (
-                  <span>E_k = 999 J <span className="text-[12px] opacity-70">(Yanlış aritmetik hesap öğrenciye sunuldu)</span></span>
+                  <div>
+                    <span className="font-medium text-red-300">Ek = 999 Joule</span>
+                    <span className="block text-[12px] opacity-80 mt-0.5 text-red-200/80">
+                      (Normal yapay zeka çarpma hatası yaptı ve yanlış sonucu doğrudan öğrenciye sundu)
+                    </span>
+                  </div>
                 )}
                 {activeTab === 'mathjs' && (
-                  <span>Model cevabı: 999 J <span className="text-amber-300 font-semibold">≠</span> Gerçek mathjs hesabı: 100.00 J</span>
+                  <div>
+                    <span className="text-amber-200">
+                      Yapay Zeka Tahmini: <span className="line-through text-red-300 font-medium">999 J</span> ≠ mathjs Gerçek Hesabı: <span className="text-emerald-300 font-medium">100 Joule</span>
+                    </span>
+                    <span className="block text-[12px] opacity-80 mt-0.5 text-amber-200/80">
+                      (Hata anında yakalandı, yanlış cevabın ekrana gitmesi engellendi)
+                    </span>
+                  </div>
                 )}
                 {activeTab === 'repair' && (
-                  <span>E_k = 100.00 J <span className="text-emerald-300 text-[12px] font-light">(2. geçişte otonom olarak tamir edildi)</span></span>
+                  <div>
+                    <span className="font-medium text-emerald-300 text-[16px]">Ek = 100 Joule</span>
+                    <span className="block text-[12px] opacity-80 mt-0.5 text-emerald-200/80">
+                      (İşlem hatası siz görmeden önce fark edildi ve baştan çözülerek düzeltildi)
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
@@ -178,7 +195,7 @@ export function CircuitBreakerDemo() {
           <div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <span className="text-[11px] font-medium uppercase tracking-wider text-white/60">
-                Canlı Denetim Teşhisi
+                Canlı Hesap Denetimi
               </span>
               <span
                 className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase ${
@@ -189,7 +206,7 @@ export function CircuitBreakerDemo() {
                     : 'bg-emerald-500/20 text-emerald-400'
                 }`}
               >
-                {activeTab === 'llm' ? 'Denetçi Pasif' : activeTab === 'mathjs' ? 'Devre Kesildi' : 'Onaylandı'}
+                {activeTab === 'llm' ? 'Denetimsiz' : activeTab === 'mathjs' ? 'Hata Yakalandı' : 'Onaylandı'}
               </span>
             </div>
 
@@ -200,17 +217,17 @@ export function CircuitBreakerDemo() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-white/50">mathjs Gerçek Hesap:</span>
-                <span className="text-emerald-400 font-semibold">100.00 J</span>
+                <span className="text-emerald-400 font-semibold">100.00 Joule</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-white/50">Yapay Zeka Tahmini:</span>
-                <span className={activeTab === 'repair' ? 'text-emerald-400' : 'text-red-400'}>
-                  {activeTab === 'repair' ? '100 J' : '999 J'}
+                <span className={activeTab === 'repair' ? 'text-emerald-400 font-medium' : 'text-red-400 font-medium'}>
+                  {activeTab === 'repair' ? '100 Joule' : '999 Joule'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-white/50">Hesap Doğrulaması:</span>
-                <span className={activeTab === 'repair' ? 'text-emerald-400' : 'text-amber-400'}>
+                <span className={activeTab === 'repair' ? 'text-emerald-400 font-medium' : 'text-amber-400 font-medium'}>
                   {activeTab === 'repair' ? 'Tamamen Doğru ✓' : 'İşlem Hatası Yakalandı ✗'}
                 </span>
               </div>

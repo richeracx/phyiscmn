@@ -16,10 +16,6 @@ const FIELD_R = 160;
 /** Horizontal focal point (between the eyes) kept centred on narrow screens. */
 const FOCAL_X = 0.462;
 
-/** Virtual eyeball depth behind the screen, CSS px — larger = calmer, less twitchy gaze. */
-const EYE_DEPTH = 320;
-/** Gaze follow time, seconds (critically damped: no overshoot, no lag tail). */
-const GAZE_TIME = 0.085;
 /** Iris glyph offsets around the pupil, in cell units. */
 const IRIS_RING: [number, number][] = [
   [-1, 0],
@@ -104,6 +100,16 @@ export class TeslaAct implements Act {
   private vy = new Float32Array(0);
 
   private eyes: Eye[] = [0, 1].map(() => ({ cx: 0, cy: 0, rx: 1, ry: 1, px: 0, py: 0, vx: 0, vy: 0, cells: [] }));
+
+  // Autonomous eye wandering state (moves smoothly & randomly on its own, not tracking mouse)
+  private gazeTimeAcc = 0;
+  private gazeHoldTimer = 0;
+  private targetGazeX = 0;
+  private targetGazeY = 0;
+  private currentGazeX = 0;
+  private currentGazeY = 0;
+  private gazeVelX = 0;
+  private gazeVelY = 0;
 
   constructor() {
     if (typeof window === 'undefined') return;
@@ -297,24 +303,62 @@ export class TeslaAct implements Act {
   }
 
   /**
-   * Aim each pupil at the cursor as if the eyeball sat EYE_DEPTH px behind the screen:
-   * the offset is the projected look direction (dx / √(dx² + dy² + Z²)), so it grows
-   * smoothly with distance instead of snapping to the rim, and both eyes converge on the
-   * same point. Tracking uses the raw pointer and a critically-damped follow, so the gaze
-   * starts and stops softly without trailing behind the cursor.
+   * Tesla's autonomous gaze:
+   * Moves smoothly and randomly on his own like a deep, contemplative thinker,
+   * completely independent of the mouse cursor.
+   * Periodically shifts gaze between natural focal directions (forward contemplation,
+   * looking down thoughtfully, glancing sideways across space), smoothed with
+   * critically-damped spring dynamics and subtle continuous micro-drifts.
    */
-  private updateGaze(mx: number, my: number, dt: number, gain: number) {
+  private updateGaze(dt: number, _gain: number) {
+    this.gazeTimeAcc += dt;
+    this.gazeHoldTimer -= dt;
+
+    if (this.gazeHoldTimer <= 0) {
+      const r = Math.random();
+      if (r < 0.40) {
+        // Forward, thoughtful center with subtle micro-focus
+        this.targetGazeX = (Math.random() - 0.5) * 0.28;
+        this.targetGazeY = (Math.random() - 0.5) * 0.22;
+        this.gazeHoldTimer = 1.4 + Math.random() * 2.2;
+      } else if (r < 0.68) {
+        // Looking down thoughtfully (pondering an equation or invention)
+        this.targetGazeX = (Math.random() - 0.5) * 0.45;
+        this.targetGazeY = 0.28 + Math.random() * 0.42;
+        this.gazeHoldTimer = 1.2 + Math.random() * 1.8;
+      } else if (r < 0.88) {
+        // Sideways glance (observing the surrounding cosmos)
+        const side = Math.random() < 0.5 ? -1 : 1;
+        this.targetGazeX = side * (0.35 + Math.random() * 0.4);
+        this.targetGazeY = (Math.random() - 0.5) * 0.35;
+        this.gazeHoldTimer = 1.0 + Math.random() * 1.6;
+      } else {
+        // Slight glance up and away (creative intuition)
+        const side = Math.random() < 0.5 ? -1 : 1;
+        this.targetGazeX = side * (0.2 + Math.random() * 0.35);
+        this.targetGazeY = -0.25 - Math.random() * 0.35;
+        this.gazeHoldTimer = 0.8 + Math.random() * 1.4;
+      }
+    }
+
+    // Continuous subtle organic micro-drift (living ocular tremor & respiration)
+    const driftX = Math.sin(this.gazeTimeAcc * 0.85) * 0.05 + Math.sin(this.gazeTimeAcc * 1.9) * 0.02;
+    const driftY = Math.cos(this.gazeTimeAcc * 0.7) * 0.04 + Math.sin(this.gazeTimeAcc * 1.5) * 0.02;
+
+    const targetX = clamp(this.targetGazeX + driftX, -0.85, 0.85);
+    const targetY = clamp(this.targetGazeY + driftY, -0.75, 0.75);
+
+    // Smooth critically-damped transition to the target gaze
+    [this.currentGazeX, this.gazeVelX] = smoothDamp(this.currentGazeX, targetX, this.gazeVelX, 0.38, dt);
+    [this.currentGazeY, this.gazeVelY] = smoothDamp(this.currentGazeY, targetY, this.gazeVelY, 0.38, dt);
+
     for (const e of this.eyes) {
-      const dx = mx - e.cx;
-      const dy = my - e.cy;
-      const inv = 1 / Math.sqrt(dx * dx + dy * dy + EYE_DEPTH * EYE_DEPTH);
       const ax = Math.max(0, e.rx - CELL_W * 1.1);
       const ay = Math.max(0, e.ry - CELL_H * 0.75);
-      // gentle over-reach so the pupil actually touches the rim when you point far away
-      const tx = clamp(dx * inv * 1.35, -1, 1) * ax * gain;
-      const ty = clamp(dy * inv * 1.35, -1, 1) * ay * gain;
-      [e.px, e.vx] = smoothDamp(e.px, tx, e.vx, GAZE_TIME, dt);
-      [e.py, e.vy] = smoothDamp(e.py, ty, e.vy, GAZE_TIME, dt);
+      const tx = this.currentGazeX * ax;
+      const ty = this.currentGazeY * ay;
+      [e.px, e.vx] = smoothDamp(e.px, tx, e.vx, 0.1, dt);
+      [e.py, e.vy] = smoothDamp(e.py, ty, e.vy, 0.1, dt);
     }
   }
 
@@ -399,7 +443,7 @@ export class TeslaAct implements Act {
     // cursor interactions belong to this act only while it owns the screen
     const gain = interactionGain(weight) * (1 - morphOut);
 
-    this.updateGaze(f.rawMx, f.rawMy, dt, gain);
+    this.updateGaze(dt, gain);
     ctx.globalCompositeOperation = 'lighter';
 
     if (settled) {
