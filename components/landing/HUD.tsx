@@ -9,7 +9,7 @@ import { soundController } from '@/lib/cosmos/audio';
 import { useOdyssey } from './ScrollProvider';
 
 export function HUD() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { activeAct: active, jumpTo } = useOdyssey();
   const [muted, setMuted] = useState(soundController.isMuted);
 
@@ -62,6 +62,23 @@ export function HUD() {
               </button>
             );
           })}
+          <div className="h-4 w-px bg-white/10" />
+          <Link
+            href="/why"
+            onMouseEnter={() => soundController.playButtonHover()}
+            onClick={() => soundController.playButtonClick()}
+            className="text-[13px] font-medium tracking-[0.04em] text-zinc-400 transition-colors duration-300 hover:text-white"
+          >
+            {lang === 'tr' ? 'Neden Physicsmn?' : 'Why Physicsmn?'}
+          </Link>
+          <Link
+            href="/docs"
+            onMouseEnter={() => soundController.playButtonHover()}
+            onClick={() => soundController.playButtonClick()}
+            className="text-[13px] font-medium tracking-[0.04em] text-zinc-400 transition-colors duration-300 hover:text-white"
+          >
+            {lang === 'tr' ? 'Belgeler & Kıyaslama' : 'Docs & Benchmark'}
+          </Link>
         </nav>
 
         <div className="flex items-center gap-4 sm:gap-5">

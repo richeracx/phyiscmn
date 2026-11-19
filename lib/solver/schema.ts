@@ -9,10 +9,14 @@ const prose = (description?: string) =>
 
 const choiceSchema = z.preprocess((val) => {
   if (!val) return '';
-  const s = String(val).trim().toUpperCase();
-  const match = s.match(/\b([A-E])\b/);
+  // Strip any HTML tags (complete or unclosed at the end) and normalize whitespace
+  const clean = String(val)
+    .replace(/<[^>]*>?|<[^>]*$/g, '')
+    .trim()
+    .toUpperCase();
+  const match = clean.match(/\b([A-E])\b/);
   if (match) return match[1];
-  if (['A', 'B', 'C', 'D', 'E'].includes(s[0])) return s[0];
+  if (clean.length > 0 && ['A', 'B', 'C', 'D', 'E'].includes(clean[0])) return clean[0];
   return '';
 }, z.enum(['', 'A', 'B', 'C', 'D', 'E']));
 

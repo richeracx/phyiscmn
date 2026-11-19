@@ -1,0 +1,11 @@
+Filename,Question,Official_Key,Physicsmn_Choice,Gemini_Web_Choice,Math_Verified,Self_Correction_Fired,Extracted_Formula_Units,Latency_ms,Status
+1007a4c2-472d-4ed2-bf38-cc4a814147da.png,1,A,B,,false,true,0.5 * m * v^2 [J] (audit: 100.00 J),1200,MISMATCH
+10bc9a67-efe2-4d7d-88d7-16daea46bbcb.png,1,A,A,,true,false,0.5 * m * v^2 [J] (audit: 100.00 J),1452,CORRECT
+239cd9d7-3156-4a0a-846e-468f10b77761.png,1,A,A,,true,false,0.5 * m * v^2 [J] (audit: 100.00 J),1472,CORRECT
+4501b68f-6af2-4001-a846-cecced89b0a9.png,1,A,A,,true,false,0.5 * m * v^2 [J] (audit: 100.00 J),1242,CORRECT
+52a0ebff-4436-4428-b683-8803059b1da1.png,1,A,A,,true,false,0.5 * m * v^2 [J] (audit: 100.00 J),972,CORRECT
+6bc4cfbc-9e1d-4a73-ad91-aad64d1d7428.png,1,A,A,,true,false,0.5 * m * v^2 [J] (audit: 100.00 J),912,CORRECT
+9f377fae-2936-4a52-9954-6db9b6acb464.png,1,A,A,,true,false,0.5 * m * v^2 [J] (audit: 100.00 J),1116,CORRECT
+a24f6b65-7b93-4023-a3e3-2c3a10b7a58b.png,1,A,A,,true,true,0.5 * m * v^2 [J] (audit: 100.00 J),1397,CORRECT
+afd773ea-2800-49ed-9540-75ff8e7ba4c3.png,1,A,A,,true,false,0.5 * m * v^2 [J] (audit: 100.00 J),1496,CORRECT
+fad9086d-2c7e-416f-b9d4-0f4efcc73e94.png,1,A,A,,true,false,0.5 * m * v^2 [J] (audit: 100.00 J),1323,CORRECT

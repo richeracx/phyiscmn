@@ -46,7 +46,7 @@ export function ActCaption({ act }: { act: 1 }) {
               </ul>
             )}
 
-            <div className="mt-10">
+            <div className="mt-10 flex flex-wrap items-center gap-3.5">
               <Link
                 href="/solve"
                 onMouseEnter={() => soundController.playButtonHover()}
@@ -56,6 +56,14 @@ export function ActCaption({ act }: { act: 1 }) {
                 <span>{c.cta || (tr ? 'Çözücüyü Aç' : 'Open Full Solver')}</span>
                 <ArrowRight size={15} strokeWidth={2} className="transition-transform duration-300 group-hover:translate-x-0.5" />
               </Link>
+              <Link
+                href="/why"
+                onMouseEnter={() => soundController.playButtonHover()}
+                onClick={() => soundController.playButtonClick()}
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.04] px-5 py-3 text-[13px] font-medium text-white/80 backdrop-blur-md transition-all duration-300 hover:border-white/40 hover:bg-white/[0.1] hover:text-white"
+              >
+                <span>{tr ? 'Neden Physicsmn? →' : 'Why Physicsmn? →'}</span>
+              </Link>
             </div>
           </div>
 
@@ -64,6 +72,10 @@ export function ActCaption({ act }: { act: 1 }) {
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
               <span className="text-[#bdbdbd]">{tr ? 'Müfredat Uyumu' : 'Curriculum Standard'}</span>
               <span className="text-white">{tr ? 'MEB Lise Müfredatı' : 'MEB Curriculum'}</span>
+            </div>
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
+              <span className="text-[#bdbdbd]">{tr ? 'Doğrulama Motoru' : 'Verification Engine'}</span>
+              <span className="text-emerald-400 font-medium">mathjs ±2% & [M][L][T]</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
               <span className="text-[#bdbdbd]">{tr ? 'Birim Gösterimi' : 'Unit Representation'}</span>
@@ -76,6 +88,14 @@ export function ActCaption({ act }: { act: 1 }) {
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
               <span className="text-[#bdbdbd]">{tr ? 'Türetim Yapısı' : 'Derivation Structure'}</span>
               <span className="text-white">{tr ? 'Doğrulanabilir Adımlar' : 'Verifiable Steps'}</span>
+            </div>
+            <div className="pt-1 text-right">
+              <Link
+                href="/docs#benchmark"
+                className="font-mono text-[12px] text-white/60 underline underline-offset-4 transition-colors hover:text-[#E5C158]"
+              >
+                {tr ? '57 Soruluk Ampirik Kıyaslama Raporu →' : '57-Question Empirical Benchmark →'}
+              </Link>
             </div>
           </div>
         </div>

@@ -11,7 +11,7 @@ interface SolverHeaderProps {
 }
 
 export function SolverHeader({ historyCount = 0, onOpenHistory }: SolverHeaderProps) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   return (
     <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-black/70 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5 sm:px-8">
@@ -21,6 +21,18 @@ export function SolverHeader({ historyCount = 0, onOpenHistory }: SolverHeaderPr
           </span>
         </Link>
         <div className="flex items-center gap-3 sm:gap-5">
+          <Link
+            href="/why"
+            className="hidden font-mono text-[11px] uppercase tracking-[0.15em] text-[#A1A1AA] transition-colors hover:text-[#F5F5F7] md:inline"
+          >
+            {lang === 'tr' ? 'Neden Physicsmn?' : 'Why Physicsmn?'}
+          </Link>
+          <Link
+            href="/docs"
+            className="hidden font-mono text-[11px] uppercase tracking-[0.15em] text-[#A1A1AA] transition-colors hover:text-[#F5F5F7] md:inline"
+          >
+            {lang === 'tr' ? 'Belgeler & Kıyaslama' : 'Docs & Benchmark'}
+          </Link>
           {onOpenHistory && (
             <button
               type="button"

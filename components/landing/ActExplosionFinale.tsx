@@ -72,6 +72,16 @@ export function ActExplosionFinale() {
             {tr ? 'Örnek Türetimleri İncele →' : 'Explore Sample Derivations →'}
           </Link>
         </div>
+
+        <div className="mt-6 flex items-center gap-5 font-mono text-[11px] tracking-wide text-white/40">
+          <Link href="/why" className="transition-colors duration-200 hover:text-white">
+            {tr ? 'Neden Physicsmn?' : 'Why Physicsmn?'}
+          </Link>
+          <span className="text-white/20">/</span>
+          <Link href="/docs" className="transition-colors duration-200 hover:text-white">
+            {tr ? 'Belgeler & N=57 Kıyaslama' : 'Docs & N=57 Benchmark'}
+          </Link>
+        </div>
       </div>
     </motion.section>
   );
