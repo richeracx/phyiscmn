@@ -21,7 +21,33 @@ export function getHistory(): HistoryItem[] {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as HistoryItem[]) : [];
+    if (!Array.isArray(parsed)) return [];
+
+    // Deduplicate any duplicate entries that may have accumulated in storage
+    const seen = new Set<string>();
+    const deduplicated: HistoryItem[] = [];
+
+    for (const item of parsed as HistoryItem[]) {
+      if (!item || !item.id) continue;
+      // Key by problem snippet or topicTitle + answer/choice
+      const answerKey = item.solution?.answers?.[0]?.expression || item.solution?.choice || item.id;
+      const key =
+        item.problemSnippet && item.problemSnippet.trim().length > 10
+          ? item.problemSnippet.trim()
+          : `${item.topicTitle}-${item.grade}-${answerKey}`;
+
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduplicated.push(item);
+      }
+    }
+
+    // If duplicate records were pruned, update localStorage silently
+    if (deduplicated.length !== parsed.length) {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(deduplicated));
+    }
+
+    return deduplicated;
   } catch {
     return [];
   }
@@ -52,15 +78,45 @@ export function saveToHistory(solution: Solution, problemText?: string): History
       snippet = `${snippet.slice(0, 117)}…`;
     }
 
-    // Avoid duplicate insertions if user re-saves the same solution consecutively
-    const first = existing[0];
-    if (
-      first &&
-      first.topicTitle === topicTitle &&
-      first.grade === grade &&
-      Date.now() - first.timestamp < 5000
-    ) {
-      return first;
+    // Robust deduplication: check if this solution or problem snippet already exists in history
+    const existingIndex = existing.findIndex((item) => {
+      // 1. Same snippet
+      if (snippet && snippet.length > 10 && item.problemSnippet && item.problemSnippet.length > 10) {
+        if (
+          item.problemSnippet === snippet ||
+          snippet.startsWith(item.problemSnippet) ||
+          item.problemSnippet.startsWith(snippet)
+        ) {
+          return true;
+        }
+      }
+      // 2. Same topic, grade, and answers/choice
+      const itemAns = item.solution?.answers?.[0]?.expression || item.solution?.choice;
+      const currAns = solution?.answers?.[0]?.expression || solution?.choice;
+      if (
+        item.topicTitle === topicTitle &&
+        item.grade === grade &&
+        itemAns &&
+        currAns &&
+        itemAns === currAns
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    if (existingIndex !== -1) {
+      // Already in history: update the existing item rather than inserting a duplicate
+      const matched = existing[existingIndex];
+      const updatedItem: HistoryItem = {
+        ...matched,
+        timestamp: Date.now(),
+        solution,
+      };
+      const updated = [updatedItem, ...existing.filter((_, idx) => idx !== existingIndex)].slice(0, MAX_HISTORY_ITEMS);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new Event('physicsmn:history'));
+      return updatedItem;
     }
 
     const newItem: HistoryItem = {

@@ -54,9 +54,9 @@ export function Solver() {
     return () => window.removeEventListener('physicsmn:history', updateCount);
   }, []);
 
-  // Automatically record verified solutions to client-side history vault
+  // Automatically record verified solutions to client-side history vault (only when newly solved, not restored)
   useEffect(() => {
-    if (phase.kind === 'solved') {
+    if (phase.kind === 'solved' && !phase.isRestored) {
       saveToHistory(phase.solution, problem);
     }
   }, [phase, problem]);

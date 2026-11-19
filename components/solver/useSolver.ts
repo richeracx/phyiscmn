@@ -8,7 +8,7 @@ import type { Solution, Stage } from '@/lib/solver/schema';
 export type SolverPhase =
   | { kind: 'idle' }
   | { kind: 'solving'; stage: Stage; startedAt: number }
-  | { kind: 'solved'; solution: Solution }
+  | { kind: 'solved'; solution: Solution; isRestored?: boolean }
   | { kind: 'failed'; error: SolverErrorPayload };
 
 export function useSolver() {
@@ -28,7 +28,7 @@ export function useSolver() {
         onStage: (stage) =>
           setPhase((previous) => (previous.kind === 'solving' ? { ...previous, stage } : previous)),
       });
-      if (!current.signal.aborted) setPhase({ kind: 'solved', solution });
+      if (!current.signal.aborted) setPhase({ kind: 'solved', solution, isRestored: false });
     } catch (error) {
       if (current.signal.aborted) return;
       const failure = error instanceof SolverError ? error : new SolverError('internal', { cause: error });
@@ -45,7 +45,7 @@ export function useSolver() {
 
   const restore = useCallback((solution: Solution) => {
     controller.current?.abort();
-    setPhase({ kind: 'solved', solution });
+    setPhase({ kind: 'solved', solution, isRestored: true });
   }, []);
 
   return { phase, solve, cancel, fail, restore };
