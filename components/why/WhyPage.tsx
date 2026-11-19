@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { AsciiCosmos } from '@/components/shared/AsciiCosmos';
 import { CircuitBreakerDemo } from './CircuitBreakerDemo';
-import { VectorPlayground } from './VectorPlayground';
 
 export function WhyPage() {
   return (
@@ -69,16 +68,16 @@ export function WhyPage() {
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-[#E5C158] backdrop-blur-md">
             <Scale size={13} className="text-[#E5C158]" />
-            <span>Nöro-Sembolik Mimari vs. Olasılıksal Dil Modelleri</span>
+            <span>Tahmin Değil, Gerçek Matematik ve Fizik</span>
           </div>
 
           <h1 className="font-display text-[clamp(2.5rem,5.5vw,4.5rem)] font-light leading-[1.04] tracking-[-0.03em] text-white">
             Fizik tahmin edilemez, <br className="hidden sm:inline" />
-            <span className="text-white/60">ispat edilir ve denetlenir.</span>
+            <span className="text-white/60">hesaplanır ve doğrulanır.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-[16.5px] font-light leading-[1.65] text-[#A1A1AA] sm:text-[18.5px]">
-            Standart üretken yapay zekalar (ChatGPT, Gemini) kelimeleri istatistiksel olasılıkla tamamlar; bu da aritmetik ve birimsel halüsinasyonlara yol açar. Physicsmn ise yapay zekayı deterministik mathjs sembolik denetimi ve otonom öz-düzeltme döngüsü ile birleştirir.
+            Standart yapay zekalar (ChatGPT, Gemini) bir hesap makinesi değildir; sadece kelimeleri tahmin ederler ve basit işlemlerde bile hata yapabilirler. Physicsmn ise soruyu anladıktan sonra tüm hesaplamaları bağımsız matematik motorumuz <strong>mathjs</strong> ile gerçek bir hesap makinesi gibi baştan sona kontrol eder.
           </p>
 
           {/* Interactive ASCII Physics Canvas */}
@@ -86,32 +85,32 @@ export function WhyPage() {
             <AsciiCosmos height={240} />
           </div>
 
-          {/* Key Metric Pills (Minimalist Typography) */}
+          {/* Key Metric Pills (Plain Human Explanations) */}
           <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 text-center backdrop-blur-sm">
               <div className="font-display text-[26px] font-medium text-white sm:text-[30px]">94.7%</div>
               <div className="mt-1 text-[12px] font-light text-white/60">
-                MEB Görsel Doğruluk
+                MEB Testlerinde Doğruluk
               </div>
             </div>
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 text-center backdrop-blur-sm">
-              <div className="font-display text-[26px] font-medium text-[#10B981] sm:text-[30px]">±2%</div>
+              <div className="font-display text-[26px] font-medium text-[#10B981] sm:text-[30px]">mathjs</div>
               <div className="mt-1 text-[12px] font-light text-white/60">
-                Deterministik Tolerans
+                Bağımsız Matematik Motoru
               </div>
             </div>
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 text-center backdrop-blur-sm">
               <div className="font-display text-[26px] font-medium text-[#E5C158] sm:text-[30px]">
-                [M]<sup>a</sup>[L]<sup>b</sup>[T]<sup>c</sup>
+                SI Birimleri
               </div>
               <div className="mt-1 text-[12px] font-light text-white/60">
-                SI Temel Boyut Eşitliği
+                Joule, Newton, Metre Uyumu
               </div>
             </div>
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 text-center backdrop-blur-sm">
               <div className="font-display text-[26px] font-medium text-white sm:text-[30px]">100%</div>
               <div className="mt-1 text-[12px] font-light text-white/60">
-                Yerel Gizlilik (Sıfır İzleme)
+                Gizlilik (Verileriniz Kaydedilmez)
               </div>
             </div>
           </div>
@@ -122,13 +121,13 @@ export function WhyPage() {
       <section className="mx-auto max-w-6xl px-6 py-20 sm:px-10">
         <div className="mb-14 text-center">
           <span className="text-[12px] font-medium uppercase tracking-[0.2em] text-white/50">
-            01 // MİMARİ KARŞILAŞTIRMA
+            01 // NEDEN FARKLIYIZ?
           </span>
           <h2 className="mt-2 font-display text-[30px] font-light tracking-[-0.02em] text-white sm:text-[38px]">
-            Dört Temel Fark: Neden Farklı Sonuç Alıyoruz?
+            Dört Temel Fark: Neden Yanlış Cevap Vermiyoruz?
           </h2>
           <p className="mt-3 text-[16px] font-light text-white/60 max-w-2xl mx-auto">
-            Standart bir dil modeli ile fizik için özel olarak inşa edilmiş nöro-sembolik sistem arasındaki farklar.
+            Sıradan bir sohbet botu ile fizik soruları için özel olarak matematik motoruyla güçlendirilmiş bir sistem arasındaki farklar.
           </p>
         </div>
 
@@ -140,24 +139,24 @@ export function WhyPage() {
                 <Binary size={22} />
               </div>
               <span className="block text-[11px] font-medium uppercase tracking-wider text-white/40">
-                Pillar 01
+                Fark 01
               </span>
               <h3 className="mt-1 font-display text-[22px] font-normal text-white">
-                Olasılıksal Tahmin vs. Deterministik mathjs Denetimi
+                Kelimeleri Tahmin Etmek Yerine mathjs ile Gerçek Hesap
               </h3>
               <p className="mt-3 text-[14.5px] font-light leading-[1.65] text-[#A1A1AA]">
-                Standart üretken modeller sayıları ve formülleri ardışık metin belirteçleri (tokens) olarak tamamlar. Çarpma ve kare alma gibi temel işlemlerde bile sayısal halüsinasyon yapabilirler. Physicsmn ise çıkarılan tüm değişkenleri sembolik mathjs kapsamına yükler, temel SI birimlerini ([M] kütle, [L] uzunluk, [T] zaman) denetler ve sonucu %2 toleransla matematiksel olarak doğrular.
+                Standart yapay zekalar hesap makinesi değildir; sadece kelimelerin devamını tahmin ederler. Bu yüzden basit bir çarpma veya kare alma işleminde bile saçma sonuçlar yazabilirler. Physicsmn ise formüldeki tüm sayıları ve SI birimlerini (metre, saniye, joule) bağımsız matematik motorumuz <strong>mathjs</strong>&apos;e aktarır ve işlemi gerçek bir hesap makinesi gibi kesin olarak çözer.
               </p>
             </div>
 
             <div className="mt-6 rounded-xl border border-white/[0.06] bg-black/60 p-4 text-[12.5px]">
               <div className="flex items-center gap-2 text-red-400">
                 <X size={14} />
-                <span>Standart Model: 0.5 × 2 × 10² = 999 J (Kör Kabul)</span>
+                <span>Standart Yapay Zeka: 0.5 × 2 × 10² = 999 J (İşlem Hatası Fark Edilmedi)</span>
               </div>
               <div className="mt-2 flex items-center gap-2 text-emerald-400">
                 <Check size={14} />
-                <span>Physicsmn: mathjs Denetimi → 100.00 J [M·L²·T⁻²] ✓ Onaylandı</span>
+                <span>Physicsmn: mathjs ile Hesaplandı → 100.00 J (Joule Birimi Onaylandı) ✓</span>
               </div>
             </div>
           </div>
@@ -169,24 +168,24 @@ export function WhyPage() {
                 <RefreshCw size={22} />
               </div>
               <span className="block text-[11px] font-medium uppercase tracking-wider text-white/40">
-                Pillar 02
+                Fark 02
               </span>
               <h3 className="mt-1 font-display text-[22px] font-normal text-white">
-                Otonom Öz-Düzeltme (Self-Correction) Döngüsü
+                Otomatik Hata Düzeltme Mekanizması
               </h3>
               <p className="mt-3 text-[14.5px] font-light leading-[1.65] text-[#A1A1AA]">
-                Standart bir arayüz ilk üretilen cevabı öğrenciye doğrudan gösterir; hata varsa fark edilmez. Physicsmn ise hata kesici devreye (circuit breaker) sahiptir: mathjs denetiminde birim veya hesaplama uyumsuzluğu tespit edildiğinde, sistem öğrenciye göstermeden önce hatanın tam nedenini modele geri besleyerek düzeltilmiş tam çözümü otonom olarak tekrar türetir.
+                Normal bir sohbette yapay zeka işlem hatası yapsa bile bunu fark edemez ve yanlış cevabı doğrudan karşınıza çıkarır. Physicsmn ise akıllı bir hata yakalama devresine sahiptir: mathjs motorumuz hesapta veya birimlerde en ufak bir uyumsuzluk bulursa, sistem siz daha cevabı görmeden hatayı anında yapay zekaya bildirir ve soruyu baştan çözerek hatasız tam sonucu sunar.
               </p>
             </div>
 
             <div className="mt-6 rounded-xl border border-white/[0.06] bg-black/60 p-4 text-[12.5px]">
               <div className="flex items-center gap-2 text-amber-400">
                 <AlertTriangle size={14} />
-                <span>Denetim: &quot;%90 sapma (999 J vs 100 J). Aritmetiği düzeltin.&quot;</span>
+                <span>mathjs Uyarısı: &quot;Çarpma sonucu 100 J olmalı, yazılan 999 J hatalı.&quot;</span>
               </div>
               <div className="mt-2 flex items-center gap-2 text-emerald-400">
                 <Check size={14} />
-                <span>Döngü: 2. geçişte otomatik onarıldı → mathVerified: true</span>
+                <span>Sonuç: Sistem siz görmeden hatayı fark etti ve 100 J olarak düzeltti ✓</span>
               </div>
             </div>
           </div>
@@ -205,13 +204,13 @@ export function WhyPage() {
                 <Layers size={22} />
               </div>
               <span className="block text-[11px] font-medium uppercase tracking-wider text-white/40">
-                Pillar 03
+                Fark 03
               </span>
               <h3 className="mt-1 font-display text-[22px] font-normal text-white">
-                Çok Sorulu MEB Sayfalarını Ayrıştırma
+                Çok Sorulu Test Sayfalarını Tek Tek Ayırma
               </h3>
               <p className="mt-3 text-[14.5px] font-light leading-[1.65] text-[#A1A1AA]">
-                Gerçek test sayfaları genellikle 5 ila 7 soru içerir. Standart yapay zekalar sayfayı tek bir metin yığını olarak okuyarak soruları birbirine karıştırır veya yarıda kesilir. Physicsmn, sayfadaki tüm soruları bağımsız nesneler olarak tespit eder; her birini sekmelere (Soru 1, Soru 2...) ayırır ve her soru için bağımsız doğrulama rozeti üretir.
+                Okulda çözdüğünüz test sayfalarında genellikle 5 ila 7 soru bir arada bulunur. Standart yapay zekalar sayfayı tek bir metin yığını gibi okuyup soruları birbirine karıştırabilir ya da yarım bırakabilir. Physicsmn, sayfadaki her soruyu tek tek bağımsız olarak tespit eder; &quot;Soru 1&quot;, &quot;Soru 2&quot; şeklinde sekmelere ayırır ve her soru için ayrı bir onay rozeti verir.
               </p>
             </div>
 
@@ -222,7 +221,7 @@ export function WhyPage() {
               </div>
               <div className="mt-2 flex items-center gap-2 text-emerald-400">
                 <Check size={14} />
-                <span>Her soru için ayrı &quot;mathVerified: true&quot; rozeti</span>
+                <span>Her soru için ayrı onay rozeti ve adım adım çözüm</span>
               </div>
             </div>
           </div>
@@ -234,32 +233,27 @@ export function WhyPage() {
                 <ShieldCheck size={22} />
               </div>
               <span className="block text-[11px] font-medium uppercase tracking-wider text-white/40">
-                Pillar 04
+                Fark 04
               </span>
               <h3 className="mt-1 font-display text-[22px] font-normal text-white">
-                MEB Müfredat Uyumu ve Yerel Gizlilik
+                MEB Müfredatına Tam Uyum ve Tam Gizlilik
               </h3>
               <p className="mt-3 text-[14.5px] font-light leading-[1.65] text-[#A1A1AA]">
-                Genel yapay zekalar lise öğrencilerine üniversite kalkülüsü (türev/integral), emperyal birimler veya yabancı kabuller sunar. Physicsmn ise MEB 9–12. sınıf müfredatına sadıktır (g = 10 m/s², sin 37° = 0.6, trigonometri ve vektörler). Ayrıca öğrenci verileri merkezi veritabanlarında saklanmaz; çözüm geçmişi yalnızca cihazınızın localStorage belleğinde kalır.
+                Genel yapay zekalar lise öğrencilerine üniversite düzeyinde karmaşık formüller veya müfredat dışı kabuller sunabilir. Physicsmn ise 9–12. sınıf MEB lise fizik müfredatına sadıktır (yerçekimi ivmesi g = 10 m/s², sin 37° = 0.6 gibi MEB sınav kuralları). Ayrıca sorularınız veya fotoğraflarınız sunucularda depolanmaz; çözümleriniz yalnızca kendi cihazınızda kalır.
               </p>
             </div>
 
             <div className="mt-6 rounded-xl border border-white/[0.06] bg-black/60 p-4 text-[12.5px]">
               <div className="flex items-center gap-2 text-white/80">
                 <Lock size={14} className="text-[#E5C158]" />
-                <span>localStorage Tarihçesi · Sıfır Sunucu Kaydı</span>
+                <span>Tam Gizlilik · Sorularınız sunucularda kaydedilmez</span>
               </div>
               <div className="mt-2 flex items-center gap-2 text-emerald-400">
                 <Check size={14} />
-                <span>g = 10 m/s², sin 37° = 0,6 tam MEB standartları</span>
+                <span>g = 10 m/s², sin 37° = 0,6 tam MEB lise sınav standartları</span>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Interactive MEB Vector & Angle Canvas */}
-        <div className="mt-12">
-          <VectorPlayground />
         </div>
       </section>
 
@@ -268,7 +262,7 @@ export function WhyPage() {
         <div className="mx-auto max-w-5xl">
           <div className="mb-12 text-center">
             <span className="text-[12px] font-medium uppercase tracking-[0.2em] text-white/50">
-              02 // KARŞILAŞTIRMA MATRİSİ
+              02 // KARŞILAŞTIRMA TABLOSU
             </span>
             <h2 className="mt-2 font-display text-[28px] font-light tracking-[-0.02em] text-white sm:text-[34px]">
               Physicsmn ile Standart Yapay Zeka Karşılaştırması
@@ -279,46 +273,46 @@ export function WhyPage() {
             <table className="w-full text-left text-[13.5px]">
               <thead>
                 <tr className="border-b border-white/[0.08] bg-white/[0.02] text-[11.5px] uppercase tracking-wider text-white/60">
-                  <th className="px-6 py-4">Özellik / Yetenek</th>
+                  <th className="px-6 py-4">Özellik</th>
                   <th className="px-6 py-4 text-white/40">Standart Yapay Zeka (ChatGPT / Gemini)</th>
-                  <th className="px-6 py-4 text-emerald-400 font-semibold">Physicsmn (Nöro-Sembolik)</th>
+                  <th className="px-6 py-4 text-emerald-400 font-semibold">Physicsmn</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.06] font-light">
                 <tr>
-                  <td className="px-6 py-4 font-medium text-white">Sayısal Doğrulama</td>
-                  <td className="px-6 py-4 text-[#A1A1AA]">Olasılıksal tahmin; sık aritmetik hata</td>
-                  <td className="px-6 py-4 text-emerald-300 font-medium">mathjs ile ±%2 kesin sayısal denetim</td>
+                  <td className="px-6 py-4 font-medium text-white">Matematiksel Hesaplama</td>
+                  <td className="px-6 py-4 text-[#A1A1AA]">Kelimeleri tahmin eder; sık işlem hatası yapar</td>
+                  <td className="px-6 py-4 text-emerald-300 font-medium">mathjs matematik motoru ile her işlem baştan sona hesaplanır</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-medium text-white">SI Birim ve Boyut Analizi</td>
+                  <td className="px-6 py-4 font-medium text-white">Fizik Birimleri (SI)</td>
                   <td className="px-6 py-4 text-[#A1A1AA]">Yüzeysel metin kontrolü; birim çelişkilerini atlar</td>
-                  <td className="px-6 py-4 text-emerald-300 font-medium">[M]ᵃ[L]ᵇ[T]ᶜ temel SI boyut eşitliği doğrulaması</td>
+                  <td className="px-6 py-4 text-emerald-300 font-medium">SI fizik birimlerinin (joule, newton, metre) tam uyumunu denetler</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-medium text-white">Otonom Öz-Düzeltme (Self-Correction)</td>
-                  <td className="px-6 py-4 text-[#A1A1AA]">Yok; ilk üretilen yanlış cevap sunulur</td>
-                  <td className="px-6 py-4 text-emerald-300 font-medium">Denetim hatası modele bildirilerek otomatik onarım</td>
+                  <td className="px-6 py-4 font-medium text-white">Otomatik Hata Düzeltme</td>
+                  <td className="px-6 py-4 text-[#A1A1AA]">Yok; ilk çıkan yanlış cevabı doğrudan gösterir</td>
+                  <td className="px-6 py-4 text-emerald-300 font-medium">mathjs bir hata bulursa siz görmeden önce otomatik düzeltir</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-medium text-white">Çok Sorulu Test Sayfası Desteği</td>
-                  <td className="px-6 py-4 text-[#A1A1AA]">Tek parça metin; soruları atlar veya karıştırır</td>
-                  <td className="px-6 py-4 text-emerald-300 font-medium">Her soru için bağımsız sekme ve çözüm ayrıştırma</td>
+                  <td className="px-6 py-4 font-medium text-white">Çok Sorulu Test Sayfaları</td>
+                  <td className="px-6 py-4 text-[#A1A1AA]">Soruları birbirine karıştırır veya yarıda kesilir</td>
+                  <td className="px-6 py-4 text-emerald-300 font-medium">Her soruyu ayrı sekmede (Soru 1, Soru 2...) bağımsız çözer</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-medium text-white">MEB Lise Müfredat Uyumu</td>
-                  <td className="px-6 py-4 text-[#A1A1AA]">Üniversite kalkülüsü ve yabancı sabitler</td>
-                  <td className="px-6 py-4 text-emerald-300 font-medium">9–12. sınıf MEB formülleri ve kabul standartları</td>
+                  <td className="px-6 py-4 font-medium text-white">MEB Müfredat Uyumu</td>
+                  <td className="px-6 py-4 text-[#A1A1AA]">Üniversite formülleri ve yabancı sabitler kullanabilir</td>
+                  <td className="px-6 py-4 text-emerald-300 font-medium">9–12. sınıf MEB lise formülleri ve sınav kabulleri</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-medium text-white">Kuvvet Diyagramı Görselleştirmesi</td>
-                  <td className="px-6 py-4 text-[#A1A1AA]">Görsel çizim üretmez (yalnızca metin)</td>
-                  <td className="px-6 py-4 text-emerald-300 font-medium">Etkileşimli SVG serbest cisim diyagramı</td>
+                  <td className="px-6 py-4 font-medium text-white">Çözüm Anlatımı</td>
+                  <td className="px-6 py-4 text-[#A1A1AA]">Tek parça metin anlatımı</td>
+                  <td className="px-6 py-4 text-emerald-300 font-medium">Adım adım formüller ve açıklamalı basamaklar</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 font-medium text-white">Öğrenci Gizliliği</td>
-                  <td className="px-6 py-4 text-[#A1A1AA]">Sorular sunucu veritabanlarında saklanır ve eğitilir</td>
-                  <td className="px-6 py-4 text-emerald-300 font-medium">Yalnızca cihazınızın localStorage belleği; sıfır takip</td>
+                  <td className="px-6 py-4 font-medium text-white">Gizlilik ve Güvenlik</td>
+                  <td className="px-6 py-4 text-[#A1A1AA]">Sorularınız sunucu veri tabanlarında kaydedilebilir</td>
+                  <td className="px-6 py-4 text-emerald-300 font-medium">Hiçbir kayıt tutulmaz; çözümler sadece cihazınızda kalır</td>
                 </tr>
               </tbody>
             </table>
@@ -331,13 +325,13 @@ export function WhyPage() {
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-8 text-left backdrop-blur-md">
           <div className="flex items-center gap-2.5 text-[12px] font-medium uppercase tracking-wider text-[#E5C158]">
             <Scale size={16} />
-            <span>Bilimsel Dürüstlük ve Sınırlarımız</span>
+            <span>Dürüstlük ve Netlik İlkesi</span>
           </div>
           <h3 className="mt-3 font-display text-[20px] font-normal text-white">
-            &quot;%100 Kusursuz&quot; İddiasında Bulunmuyoruz.
+            Neden Soruların Net Çekilmesi Önemlidir?
           </h3>
           <p className="mt-3 text-[14.5px] font-light leading-[1.65] text-[#A1A1AA]">
-            Yapay zeka sistemleri için &quot;asla hata yapmaz&quot; demek bilimsel olarak gerçekçi değildir. Eğer öğrencinin yüklediği fotoğraf aşırı bulanıksa veya küçük bir indis görme modeli (Vision OCR) tarafından yanlış okunursa, başlangıç verisi hatalı olabilir. Physicsmn&apos;in garanti ettiği şey şudur: Bir çözüm &quot;mathVerified: true&quot; rozetine sahipse, formülün cebirsel tutarlılığı, SI temel birim eşitliği ve sayısal hesaplaması mathjs tarafından deterministik olarak doğrulanmıştır.
+            Yapay zekanın bir problemi doğru çözebilmesi için fotoğrafın net okunabilmesi şarttır. Eğer yüklenen fotoğraf çok bulanıksa veya küçük bir sayı (örneğin 3 ile 8) silik çıkmışsa, yapay zeka soruyu yanlış okuyabilir. Bizim güvencemiz şudur: Sorudaki sayılar doğru okunduğu andan itibaren, <strong>mathjs</strong> matematik motorumuz sayesinde hiçbir işlem hatası yapılmaz ve çözüm adım adım doğrulanır.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-4 border-t border-white/[0.08] pt-6 text-[12px]">
@@ -345,14 +339,14 @@ export function WhyPage() {
               href="/docs#benchmark"
               className="inline-flex items-center gap-1.5 text-white underline underline-offset-4 transition-colors hover:text-[#E5C158]"
             >
-              <span>57 Soruluk MEB Kıyaslama Raporunu İncele</span>
+              <span>57 Soruluk MEB Başarı Raporunu İncele</span>
               <ArrowRight size={13} />
             </Link>
             <Link
               href="/docs#tests"
               className="inline-flex items-center gap-1.5 text-white/60 transition-colors hover:text-white"
             >
-              <span>Hata Enjeksiyon Testleri</span>
+              <span>Örnek Doğrulama Testleri</span>
               <ArrowRight size={13} />
             </Link>
           </div>

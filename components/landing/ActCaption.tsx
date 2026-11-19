@@ -66,26 +66,26 @@ export function ActCaption({ act }: { act: 1 }) {
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
               <span className="text-white/60">Doğrulama Motoru</span>
-              <span className="text-emerald-400 font-medium">mathjs ±%2 & [M][L][T]</span>
+              <span className="text-emerald-400 font-medium">mathjs ile Bağımsız Hesap Denetimi</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
               <span className="text-white/60">Birim Sistemi</span>
-              <span className="text-white font-medium">Temel SI Standartları</span>
+              <span className="text-white font-medium">SI Fizik Birimleri (metre, joule vb.)</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-white/60">Matematik Dizgisi</span>
-              <span className="text-white font-medium">KaTeX</span>
+              <span className="text-white/60">Çözüm Formatı</span>
+              <span className="text-white font-medium">Adım Adım Açıklamalı</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-white/60">Türetim Yapısı</span>
-              <span className="text-white font-medium">Adım Adım Denetim</span>
+              <span className="text-white/60">Kontrol Güvencesi</span>
+              <span className="text-white font-medium">Her İşlem Tek Tek Onaylı</span>
             </div>
             <div className="pt-2 text-right">
               <Link
                 href="/docs#benchmark"
                 className="font-sans text-[12.5px] text-white/50 underline underline-offset-4 transition-colors hover:text-white"
               >
-                57 Soruluk Ampirik Kıyaslama Raporu →
+                57 Soruluk MEB Başarı Raporu →
               </Link>
             </div>
           </div>

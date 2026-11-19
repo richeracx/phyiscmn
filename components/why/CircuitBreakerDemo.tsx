@@ -195,28 +195,28 @@ export function CircuitBreakerDemo() {
 
             <div className="mt-4 space-y-3 text-[12.5px]">
               <div className="flex items-center justify-between">
-                <span className="text-white/50">Temel SI Boyutu:</span>
-                <span className="text-white font-medium">[M]¹ [L]² [T]⁻² (Joule)</span>
+                <span className="text-white/50">Fiziksel Birim:</span>
+                <span className="text-white font-medium">Joule (Enerji)</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-white/50">mathjs Formül Değeri:</span>
-                <span className="text-emerald-400 font-semibold">100.000 J</span>
+                <span className="text-white/50">mathjs Gerçek Hesap:</span>
+                <span className="text-emerald-400 font-semibold">100.00 J</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-white/50">İddia Edilen Değer:</span>
+                <span className="text-white/50">Yapay Zeka Tahmini:</span>
                 <span className={activeTab === 'repair' ? 'text-emerald-400' : 'text-red-400'}>
                   {activeTab === 'repair' ? '100 J' : '999 J'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-white/50">Sayısal Sapma Farkı:</span>
+                <span className="text-white/50">Hesap Doğrulaması:</span>
                 <span className={activeTab === 'repair' ? 'text-emerald-400' : 'text-amber-400'}>
-                  {activeTab === 'repair' ? '0.0% (Tolerans İçi)' : '%89.99 (Tolerans Dışı)'}
+                  {activeTab === 'repair' ? 'Tamamen Doğru ✓' : 'İşlem Hatası Yakalandı ✗'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-white/50">Sınır Eşiği:</span>
-                <span className="text-white">±%2.0 Maksimum</span>
+                <span className="text-white/50">Kontrol Sistemi:</span>
+                <span className="text-white">mathjs Bağımsız Motor</span>
               </div>
             </div>
 
@@ -234,7 +234,7 @@ export function CircuitBreakerDemo() {
                 <div className="flex items-start gap-2">
                   <X size={15} className="shrink-0 mt-0.5 text-red-400" />
                   <span>
-                    <strong>Sonuç:</strong> Standart üretken model aritmetik hatayı fark etmedi. Öğrenciye 999 J yanlış cevabı sunuldu.
+                    <strong>Sonuç:</strong> Standart yapay zeka işlem hatasını fark edemez. Öğrenciye 999 J yanlış cevabı gösterilir.
                   </span>
                 </div>
               )}
@@ -242,7 +242,7 @@ export function CircuitBreakerDemo() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle size={15} className="shrink-0 mt-0.5 text-amber-400" />
                   <span>
-                    <strong>Devre Kesici:</strong> mathjs %90 sayısal sapma tespit etti. Çözüm sunumu bloke edildi ve onarım uyarısı üretildi.
+                    <strong>mathjs Devreye Girdi:</strong> Matematik motorumuz işlem hatasını anında yakaladı: Çarpma işlemi 100 J vermesi gerekirken yapay zeka 999 J yazmıştı. Yanlış cevap durduruldu.
                   </span>
                 </div>
               )}
@@ -250,7 +250,7 @@ export function CircuitBreakerDemo() {
                 <div className="flex items-start gap-2">
                   <Check size={15} className="shrink-0 mt-0.5 text-emerald-400" />
                   <span>
-                    <strong>Otonom Onarım:</strong> mathjs hata raporu modele iletildi, 2. geçişte aritmetik hatasız 100 J olarak onarılıp onaylandı.
+                    <strong>Otomatik Düzeltildi:</strong> mathjs hatayı yapay zekaya bildirdi ve çözüm daha siz görmeden doğru sonuç olan 100 J olarak anında düzeltildi.
                   </span>
                 </div>
               )}

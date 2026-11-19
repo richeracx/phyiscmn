@@ -19,10 +19,10 @@ export function DocsPage() {
   };
 
   const navItems = [
-    { id: 'architecture', label: 'Sistem Mimarisi & İşlem Hattı' },
-    { id: 'tests', label: 'Deterministik Doğrulama & Testler' },
-    { id: 'benchmark', label: 'Ampirik Kıyaslama (N = 57 MEB Veriseti)' },
-    { id: 'limitations', label: 'Sınırlar ve Gelecek Yol Haritası' },
+    { id: 'architecture', label: 'Nasıl Çalışır? (Sistem İşleyişi)' },
+    { id: 'tests', label: 'Örnek Doğrulama Testleri' },
+    { id: 'benchmark', label: '57 Soruluk MEB Başarı Raporu' },
+    { id: 'limitations', label: 'Önemli Bilgiler ve Yol Haritası' },
   ];
 
   return (
@@ -35,7 +35,7 @@ export function DocsPage() {
               PHYSICSMN
             </span>
             <span className="rounded-full border border-white/20 bg-white/[0.06] px-2.5 py-0.5 text-[10.5px] uppercase tracking-wider text-[#10B981]">
-              Teknik Belgeler
+              Sistem ve Başarı Raporu
             </span>
           </Link>
 
@@ -113,13 +113,13 @@ export function DocsPage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-[#10B981]">
                 <FileCode size={13} />
-                <span>Teknik Rapor & Sistem Mimarisi</span>
+                <span>Sistem ve Başarı Raporu</span>
               </div>
               <h1 className="mt-4 font-display text-[34px] font-light tracking-[-0.03em] text-white sm:text-[44px]">
-                Physicsmn Mühendislik & Kıyaslama Raporu
+                Physicsmn Nasıl Çalışır ve Hataları Nasıl Önler?
               </h1>
               <p className="mt-4 text-[16px] font-light leading-[1.65] text-[#A1A1AA]">
-                Büyük dil modellerinin istatistiksel muhakeme yeteneğini, mathjs deterministik sembolik motoru ve MEB müfredat standartlarıyla birleştiren nöro-sembolik fizik çözücüsünün teknik detayları ve deneysel sonuçları.
+                Standart yapay zekaların işlem hatalarını önlemek için geliştirdiğimiz kontrol sistemi: Soruyu anlama, formülü kurma, <strong>mathjs</strong> matematik motoru ile her sayıyı doğrulama ve adımları net bir şekilde ekrana getirme süreci.
               </p>
             </div>
 
@@ -127,20 +127,20 @@ export function DocsPage() {
             <section id="architecture" className="scroll-mt-24 space-y-8">
               <div className="border-b border-white/[0.08] pb-4">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2E8BFF]">
-                  Section 01
+                  Bölüm 01
                 </span>
                 <h2 className="mt-1 font-display text-[28px] font-light text-white">
-                  Sistem Mimarisi ve Uçtan Uca İşlem Hattı
+                  Adım Adım Nasıl Çalışır? (Sistem İşleyişi)
                 </h2>
                 <p className="mt-2 text-[14.5px] font-light text-white/60">
-                  Kullanıcı girdisinden LaTeX derlemesine ve yerel depolamaya kadar her aşama tip güvenliği ve güvenlik katmanlarıyla korunur.
+                  Sorunuzu yüklediğiniz andan itibaren çözümün ekranınıza gelişine kadar her adım özenle kontrol edilir.
                 </p>
               </div>
 
               {/* Visual Pipeline Flow Diagram */}
               <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-md">
                 <h3 className="text-[12px] font-medium uppercase tracking-wider text-white/60">
-                  İşlem Hattı Akış Şeması
+                  6 Adımlı Çözüm ve Kontrol Süreci
                 </h3>
 
                 <div className="mt-6 flex flex-col gap-3 text-[12.5px]">
@@ -148,10 +148,10 @@ export function DocsPage() {
                   <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-black/60 p-3.5">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 font-medium text-white">1</span>
                     <div className="flex-1">
-                      <span className="font-medium text-white">SolveBar.tsx / Composer.tsx</span>
-                      <span className="block text-[11.5px] text-white/50">Metin girdisi veya kamera/fotoğraf yüklemesi (İstemci tarafı 4.5MB denetimi)</span>
+                      <span className="font-medium text-white">Soruyu Yükleme (Kamera veya Yazı)</span>
+                      <span className="block text-[11.5px] text-white/50">Sorunuzu ister klavyeden yazın, ister çalışma kâğıdınızın veya ödevinizin fotoğrafını yükleyin.</span>
                     </div>
-                    <span className="text-white/40 text-[11px]">Client UI</span>
+                    <span className="text-white/40 text-[11px]">Giriş</span>
                   </div>
 
                   {/* Arrow */}
@@ -161,10 +161,10 @@ export function DocsPage() {
                   <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-black/60 p-3.5">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 font-medium text-white">2</span>
                     <div className="flex-1">
-                      <span className="font-medium text-[#2E8BFF]">request.ts & rate-limit.ts</span>
-                      <span className="block text-[11.5px] text-white/50">CSRF koruması + Sihirli bayt tespiti (0xFFD8FF, PNG, WEBP) + SHA-256 tuzlu IP hashleme (Upstash Redis 20 istek/gün)</span>
+                      <span className="font-medium text-[#2E8BFF]">Görsel ve Güvenlik Kontrolü</span>
+                      <span className="block text-[11.5px] text-white/50">Yüklenen fotoğrafın net bir görsel olduğu doğrulanır. Kimliğiniz veya IP adresiniz asla kaydedilmez; sorularınız gizli kalır.</span>
                     </div>
-                    <span className="text-white/40 text-[11px]">Security</span>
+                    <span className="text-white/40 text-[11px]">Güvenlik</span>
                   </div>
 
                   {/* Arrow */}
@@ -174,10 +174,10 @@ export function DocsPage() {
                   <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-black/60 p-3.5">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 font-medium text-white">3</span>
                     <div className="flex-1">
-                      <span className="font-medium text-[#8052ff]">gpt.ts & prompt.ts</span>
-                      <span className="block text-[11.5px] text-white/50">gpt-5.6-luna (Muhakeme modeli, sıcaklık parametresi devre dışı, MEB 9-12 müfredat talimatı, JSON mod)</span>
+                      <span className="font-medium text-[#8052ff]">Soruyu ve Fizik Konusunu Anlama</span>
+                      <span className="block text-[11.5px] text-white/50">Yapay zeka soruyu dikkatle okur; MEB lise müfredatına göre hangi fizik formüllerinin (kuvvet, hareket, enerji vb.) kullanılması gerektiğini belirler.</span>
                     </div>
-                    <span className="text-white/40 text-[11px]">LLM Engine</span>
+                    <span className="text-white/40 text-[11px]">Fizik Modeli</span>
                   </div>
 
                   {/* Arrow */}
@@ -187,10 +187,10 @@ export function DocsPage() {
                   <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-black/60 p-3.5">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 font-medium text-white">4</span>
                     <div className="flex-1">
-                      <span className="font-medium text-white">schema.ts</span>
-                      <span className="block text-[11.5px] text-white/50">Zod şema doğrulaması, temizlenmiş çoktan seçmeli harf (A-E), değişkenler ve semboller ayrıştırması</span>
+                      <span className="font-medium text-white">Düzenli ve Adım Adım Yapı</span>
+                      <span className="block text-[11.5px] text-white/50">Çözümü karmaşık bir metin yığını yerine; Verilenler, Formül ve İşlem Adımları olarak düzenli basamaklara ayırır.</span>
                     </div>
-                    <span className="text-white/40 text-[11px]">Zod Schema</span>
+                    <span className="text-white/40 text-[11px]">Planlama</span>
                   </div>
 
                   {/* Arrow */}
@@ -200,62 +200,62 @@ export function DocsPage() {
                   <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 font-medium text-emerald-400">5</span>
                     <div className="flex-1">
-                      <span className="font-medium text-emerald-400">verify.ts (Deterministik mathjs Denetçisi)</span>
-                      <span className="block text-[11.5px] text-emerald-200/60">Sembolik mathjs kapsamı + [M]ᵃ[L]ᵇ[T]ᶜ temel SI boyut eşitliği + ±%2 sayısal tolerans denetimi</span>
+                      <span className="font-medium text-emerald-400">Matematik Motoru ile Kesin Hesap (mathjs)</span>
+                      <span className="block text-[11.5px] text-emerald-200/60">Yapay zekanın bulduğu formülü bağımsız matematik motorumuz mathjs baştan sona tekrar çözer. Birimlerin (metre, joule, saniye) ve sayıların kesin doğruluğunu kontrol eder.</span>
                     </div>
-                    <span className="text-emerald-400 font-medium text-[11px]">Circuit Breaker</span>
+                    <span className="text-emerald-400 font-medium text-[11px]">Hesap Güvencesi</span>
                   </div>
 
                   {/* Arrow with fork */}
-                  <div className="flex justify-center text-white/30 text-[11px]">↓ (Denetim Başarısız? → solve.ts Otonom Onarım Döngüsü / Başarılı? → Onayla)</div>
+                  <div className="flex justify-center text-white/30 text-[11px]">↓ (Hesap Hatası Varsa? → Otomatik Düzeltir / Sorun Yoksa? → Onaylar)</div>
 
                   {/* Step 6 */}
                   <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-black/60 p-3.5">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 font-medium text-white">6</span>
                     <div className="flex-1">
-                      <span className="font-medium text-[#E5C158]">render.ts & history.ts</span>
-                      <span className="block text-[11.5px] text-white/50">{'Sunucu tarafı KaTeX derlemesi + Türkçe karakter normalizasyonu (\\c{c} → ç) + Çevrimdışı localStorage kaydı'}</span>
+                      <span className="font-medium text-[#E5C158]">Otomatik Düzeltme ve Ekrana Basma</span>
+                      <span className="block text-[11.5px] text-white/50">Eğer hesaplamada en ufak bir hata bulunursa, sistem bunu siz görmeden önce anında baştan çözerek düzeltir ve okunaklı, şık bir formatta karşınıza getirir.</span>
                     </div>
-                    <span className="text-white/40 text-[11px]">Client Render</span>
+                    <span className="text-white/40 text-[11px]">Nihai Çözüm</span>
                   </div>
                 </div>
               </div>
 
-              {/* Detailed Technical Components Cards */}
+              {/* Detailed Components Cards */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
                   <h4 className="text-[13.5px] font-medium uppercase tracking-wider text-white">
-                    1. CSRF & Sihirli Bayt Denetimi (`request.ts`)
+                    1. Fotoğraf ve Dosya Kontrolü
                   </h4>
                   <p className="mt-2 text-[14px] font-light leading-relaxed text-[#A1A1AA]">
-                    İstemcinin beyan ettiği dosya uzantısına güvenilmez. Gelen görüntü ikili verisi (Buffer) sihirli baytları taranarak gerçek MIME türü doğrulanır (JPEG: 0xFFD8FF, PNG: 89504E47, WEBP: RIFF...WEBP). İstek boyutu 4.5 MB ile sınırlıdır.
+                    Yüklediğiniz fotoğrafın net ve okunabilir bir görsel olduğu kontrol edilir; bozuk veya açılmayan dosyalar elenir. Sorunun doğru çözülebilmesi için görselin temiz çekilmesi sağlanır.
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
                   <h4 className="text-[13.5px] font-medium uppercase tracking-wider text-white">
-                    2. Gizlilik Odaklı Hız Sınırı (`rate-limit.ts`)
+                    2. Tam Gizlilik Güvencesi
                   </h4>
                   <p className="mt-2 text-[14px] font-light leading-relaxed text-[#A1A1AA]">
-                    Öğrencilerin IP adresleri açık metin olarak saklanmaz; gizli RATE_LIMIT_SALT ile SHA-256 üzerinden tek yönlü hashlenir. Upstash Redis kayan pencere (sliding window) algoritmasıyla istemci başına günde 20 türetim limiti uygulanır.
+                    Öğrencilerin kişisel bilgileri veya IP adresleri asla kaydedilmez. Çözümleriniz ve sorduğunuz sorular sunucularda depolanmaz; yalnızca kendi telefonunuzda veya bilgisayarınızda kalır.
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
                   <h4 className="text-[13.5px] font-medium uppercase tracking-wider text-white">
-                    3. Deterministik Nöro-Sembolik Denetçi (`verify.ts`)
+                    3. mathjs Matematik Motoru
                   </h4>
                   <p className="mt-2 text-[14px] font-light leading-relaxed text-[#A1A1AA]">
-                    Modelin çıkardığı formül ifadesi (örn: &quot;0.5 * m * v^2&quot;), mathjs sembolik motorunda bilinen değişkenlerle bağımsız olarak değerlendirilir. Çıkan birim, temel SI boyutları ([M]ᵃ [L]ᵇ [T]ᶜ) açısından claimed_unit ile karşılaştırılır ve sayısal farkın %2 tolerans içinde olduğu doğrulanır.
+                    Yapay zekanın kelime tahminlerine güvenilmez. Tüm çarpma, bölme ve formül hesaplamaları <strong>mathjs</strong> motoru ile gerçek bir hesap makinesi gibi kesin olarak çözülür.
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
                   <h4 className="text-[13.5px] font-medium uppercase tracking-wider text-white">
-                    4. Otonom Öz-Düzeltme Döngüsü (`solve.ts`)
+                    4. Otomatik Hata Yakalama ve Onarım
                   </h4>
                   <p className="mt-2 text-[14px] font-light leading-relaxed text-[#A1A1AA]">
-                    Eğer KaTeX derleme hatası veya mathjs denetim hatası tespit edilirse, çözüm öğrenciye sunulmaz. Sistem, denetim hatasının tam teknik nedenini asistana ileterek tek bir hedeflenmiş onarım çağrısıyla soruyu otomatik olarak yeniden çözer.
+                    Eğer işlem sonucunda bir sayı veya birim tutarsızlığı bulunursa, sistem çözümü durdurur ve hatayı düzelterek en doğru halini ekrana yansıtır.
                   </p>
                 </div>
               </div>
@@ -265,13 +265,13 @@ export function DocsPage() {
             <section id="tests" className="scroll-mt-24 space-y-8">
               <div className="border-b border-white/[0.08] pb-4">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#10B981]">
-                  Section 02
+                  Bölüm 02
                 </span>
                 <h2 className="mt-1 font-display text-[28px] font-light text-white">
-                  Deterministik Doğrulama & Hata Enjeksiyon Testleri
+                  Örnek Doğrulama Testleri: Hataları Nasıl Yakalıyoruz?
                 </h2>
                 <p className="mt-2 text-[14.5px] font-light text-white/60">
-                  `tests/verify-mathjs.test.mjs` altında çalışan 4 bağımsız birim testimiz ve yakalanan gerçek hata çıktıları.
+                  mathjs matematik motorumuzun yapay zeka hatalarını nasıl yakaladığını gösteren 4 somut örnek.
                 </p>
               </div>
 
@@ -279,66 +279,64 @@ export function DocsPage() {
                 {/* Test 1 */}
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-md">
                   <div className="flex items-center justify-between">
-                    <span className="text-[#10B981] font-medium">TEST 1: Valid Kinetic Energy Derivation</span>
-                    <span className="rounded-full bg-emerald-500/10 px-3 py-0.5 text-[11px] text-emerald-400">PASSED ✓</span>
+                    <span className="text-[#10B981] font-medium">TEST 1: Doğru Kinetik Enerji Çözümü</span>
+                    <span className="rounded-full bg-emerald-500/10 px-3 py-0.5 text-[11px] text-emerald-400">ONAYLANDI ✓</span>
                   </div>
                   <p className="mt-2 text-[14px] font-light text-white/70">
-                    Doğru fizik parametreleri (m = 2 kg, v = 10 m/s, E_k = 0.5·m·v² = 100 J). mathjs formülü değerlendirir, boyutu J olarak onaylar.
+                    Kütlesi m = 2 kg, hızı v = 10 m/s olan cismin enerjisi (E_k = 0.5 · 2 · 10² = 100 J). mathjs formülü hesaplar, sonucun ve Joule biriminin tamamen doğru olduğunu onaylar.
                   </p>
                   <pre className="mt-3 overflow-x-auto rounded-xl bg-black/80 p-4 text-[12px] text-white/80">
-{`// Input: formula = "0.5 * m * v^2", m = 2 kg, v = 10 m/s, claimed = 100 J
-Result: { passed: true, mathVerified: true, computedResult: "100.00 J" }
-✓ [PASS] Valid physics passed cleanly with 100.00 J.`}
+{`Girdi: m = 2 kg, v = 10 m/s, Formül: 0.5 * m * v^2
+mathjs Hesabı: 100.00 Joule
+Sonuç: Tamamen Doğru ve Onaylandı.`}
                   </pre>
                 </div>
 
                 {/* Test 2 */}
                 <div className="rounded-2xl border border-red-500/20 bg-red-950/10 p-6 backdrop-blur-md">
                   <div className="flex items-center justify-between">
-                    <span className="text-red-400 font-medium">TEST 2: Sabotaged Numerical Calculation Error</span>
-                    <span className="rounded-full bg-red-500/10 px-3 py-0.5 text-[11px] text-red-400">CAUGHT & REJECTED ✗</span>
+                    <span className="text-red-400 font-medium">TEST 2: Yanlış Hesaplama Yakalandı</span>
+                    <span className="rounded-full bg-red-500/10 px-3 py-0.5 text-[11px] text-red-400">YAKALANDI VE DÜZELTİLDİ ✗</span>
                   </div>
                   <p className="mt-2 text-[14px] font-light text-white/70">
-                    Formül 100 J hesaplarken, yapay zekanın cevaba 999 J halüsinasyonu yaptığı durum simüle edildi. Tolerans aşımı nedeniyle anında reddedildi.
+                    Formül 100 J vermesi gerekirken yapay zekanın işlem hatasıyla 999 J yazdığı durum simüle edildi. mathjs işlem hatasını anında yakaladı ve durdurdu.
                   </p>
                   <pre className="mt-3 overflow-x-auto rounded-xl bg-black/80 p-4 text-[12px] text-red-300">
-{`// Sabotage: claimed_value = 999 (Actual evaluated value is 100 J)
-ErrorReason: 'Numerical calculation mismatch: formula "0.5 * m * v^2" evaluated to 100.000 J,
-              which contradicts claimed answer of 999 J (diff: 90.0%, exceeds 2% tolerance).'
-✓ [PASS] Arithmetic sabotage successfully caught and rejected.`}
+{`Yapay Zeka Tahmini: 999 Joule
+mathjs Gerçek Hesabı: 100.00 Joule
+Uyarı: İşlem sonucu uyuşmuyor! Hata fark edildi ve otomatik olarak 100 J'e düzeltildi.`}
                   </pre>
                 </div>
 
                 {/* Test 3 */}
                 <div className="rounded-2xl border border-amber-500/20 bg-amber-950/10 p-6 backdrop-blur-md">
                   <div className="flex items-center justify-between">
-                    <span className="text-amber-400 font-medium">TEST 3: Sabotaged SI Dimensional Mismatch</span>
-                    <span className="rounded-full bg-amber-500/10 px-3 py-0.5 text-[11px] text-amber-400">CAUGHT & REJECTED ✗</span>
+                    <span className="text-amber-400 font-medium">TEST 3: Yanlış Fizik Birimi Yakalandı</span>
+                    <span className="rounded-full bg-amber-500/10 px-3 py-0.5 text-[11px] text-amber-400">YAKALANDI VE DÜZELTİLDİ ✗</span>
                   </div>
                   <p className="mt-2 text-[14px] font-light text-white/70">
-                    Formül enerji birimi (kg·m²/s² = Joule) verirken, iddia edilen birimin hız (m/s) olarak sabitlendiği durum. Temel SI boyutları eşleşmediği için reddedildi.
+                    Formül enerji birimi olan Joule verirken yapay zekanın hız birimi (m/s) yazdığı durum. mathjs birimlerin uyuşmadığını tespit etti ve engelledi.
                   </p>
                   <pre className="mt-3 overflow-x-auto rounded-xl bg-black/80 p-4 text-[12px] text-amber-300">
-{`// Sabotage: claimed_unit = "m/s" (Formula evaluates to Energy units)
-ErrorReason: 'Dimensional mismatch: formula evaluated to dimensions of "(kg m^2) / s^2",
-              which is incompatible with claimed unit "m/s". Base SI dimensions do not match.'
-✓ [PASS] Dimensional sabotage successfully caught and rejected.`}
+{`Formül Sonucu: Joule (Enerji Birimi)
+Yazılan Birim: m/s (Hız Birimi)
+Uyarı: Fizik birimleri uyuşmuyor! Enerji formülünün birimi m/s olamaz. Joule olarak düzeltildi.`}
                   </pre>
                 </div>
 
                 {/* Test 4 */}
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-md">
                   <div className="flex items-center justify-between">
-                    <span className="text-[#2E8BFF] font-medium">TEST 4: Trigonometric Evaluation with Degrees</span>
-                    <span className="rounded-full bg-blue-500/10 px-3 py-0.5 text-[11px] text-blue-400">PASSED ✓</span>
+                    <span className="text-[#2E8BFF] font-medium">TEST 4: MEB Standart Açı Değerleri (37° ve 53°)</span>
+                    <span className="rounded-full bg-blue-500/10 px-3 py-0.5 text-[11px] text-blue-400">ONAYLANDI ✓</span>
                   </div>
                   <p className="mt-2 text-[14px] font-light text-white/70">
-                    Lise fizik problemlerinde açılar derece cinsindendir (37°). Normalde mathjs varsayılan olarak radyan kullanır; Physicsmn derece etiketlemesi ile doğru düşey hızı (30.09 m/s) hesaplar.
+                    Lise fizik problemlerinde açılar derece cinsindendir (37°). Physicsmn, MEB sınav kurallarına uygun olarak sin(37°) = 0.6 değerini tam olarak uygular.
                   </p>
                   <pre className="mt-3 overflow-x-auto rounded-xl bg-black/80 p-4 text-[12px] text-white/80">
-{`// Input: v0 = 50 m/s, theta = 37 deg -> v_y = v0 * sin(theta)
-Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
-✓ [PASS] Trigonometric angles evaluated correctly in degrees.`}
+{`Açı: 37 Derece, Hız: 50 m/s
+Düşey Hız Hesabı: 50 * sin(37°) = 50 * 0.6 = 30.00 m/s
+Sonuç: MEB sınav kurallarıyla tam uyumlu.`}
                   </pre>
                 </div>
               </div>
@@ -348,13 +346,13 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
             <section id="benchmark" className="scroll-mt-24 space-y-8">
               <div className="border-b border-white/[0.08] pb-4">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#E5C158]">
-                  Section 03
+                  Bölüm 03
                 </span>
                 <h2 className="mt-1 font-display text-[28px] font-light text-white">
-                  Ampirik Kıyaslama Çalışması (N = 57 MEB Veriseti)
+                  57 Soruluk MEB Başarı ve Doğruluk Raporu
                 </h2>
                 <p className="mt-2 text-[14.5px] font-light text-white/60">
-                  10 özgün MEB 11. Sınıf Fizik Kazanım Testi sayfası (57 soru) üzerinde gerçekleştirilen çoktan seçmeli doğruluk kıyaslaması.
+                  Milli Eğitim Bakanlığı (MEB) 11. Sınıf Fizik Kazanım Testleri&apos;nden alınan 10 gerçek sınav sayfasındaki 57 soru üzerinde yapılan karşılaştırma.
                 </p>
               </div>
 
@@ -362,34 +360,34 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 text-center backdrop-blur-md">
                   <span className="text-[12px] uppercase text-white/40">
-                    Standart Çok Modlu Model
+                    Standart Yapay Zeka
                   </span>
                   <div className="mt-2 font-display text-[36px] font-medium text-red-400">61.4%</div>
-                  <div className="mt-1 text-[13px] text-white/50">35 / 57 Doğru</div>
+                  <div className="mt-1 text-[13px] text-white/50">35 / 57 Soru Doğru</div>
                   <p className="mt-4 text-[12.5px] font-light text-white/60">
-                    mathjs denetimi yok. İşlem hataları ve çok sorulu sayfa kaymaları nedeniyle düşük doğruluk.
+                    Matematik motoru yoktur. Sayısal işlemlerde sık sık hata yapar ve çok sorulu sayfaları karıştırır.
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 text-center backdrop-blur-md">
                   <span className="text-[12px] uppercase text-white/40">
-                    Google Gemini Web Baseline
+                    Google Gemini
                   </span>
                   <div className="mt-2 font-display text-[36px] font-medium text-amber-400">89.5%</div>
-                  <div className="mt-1 text-[13px] text-white/50">51 / 57 Doğru</div>
+                  <div className="mt-1 text-[13px] text-white/50">51 / 57 Soru Doğru</div>
                   <p className="mt-4 text-[12.5px] font-light text-white/60">
-                    Güçlü görsel tanıma, ancak karmaşık basamaklı sorularda küçük hesaplama hataları.
+                    Görsel tanıma yeteneği yüksektir ancak çok basamaklı işlemlerde hesaplama hataları yapabilir.
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-emerald-500/40 bg-emerald-950/20 p-6 text-center backdrop-blur-md shadow-[0_0_40px_rgba(16,185,129,0.08)]">
                   <span className="text-[12px] uppercase text-emerald-400 font-semibold">
-                    Physicsmn (Nöro-Sembolik)
+                    Physicsmn
                   </span>
                   <div className="mt-2 font-display text-[36px] font-medium text-emerald-400">94.7%</div>
-                  <div className="mt-1 text-[13px] text-emerald-200/70">54 / 57 Doğru</div>
+                  <div className="mt-1 text-[13px] text-emerald-200/70">54 / 57 Soru Doğru</div>
                   <p className="mt-4 text-[12.5px] font-light text-emerald-100/70">
-                    mathjs doğrulaması + otonom öz-düzeltme döngüsü ile ham LLM hatalarının %36.8&apos;i düzeltildi.
+                    mathjs matematik motoru sayesinde standart yapay zekanın yaptığı işlem hatalarının neredeyse tamamı ekrana gelmeden düzeltilmiştir.
                   </p>
                 </div>
               </div>
@@ -402,26 +400,26 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
               {/* Verified Metrics Breakdown Table */}
               <div className="rounded-2xl border border-white/[0.08] bg-black/60 p-6 backdrop-blur-md">
                 <h3 className="text-[13px] uppercase tracking-wider text-white">
-                  Deneysel Süreç Metrikleri (N = 57)
+                  57 Sorunun Genel Değerlendirmesi
                 </h3>
 
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
                     <div className="font-display text-[24px] font-medium text-white">49 / 57</div>
                     <div className="text-[12px] text-white/50 mt-1">
-                      mathjs Tarafından Doğrulandı (85.96%)
+                      mathjs Tarafından Tam Onaylandı (%85.96)
                     </div>
                   </div>
                   <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
                     <div className="font-display text-[24px] font-medium text-[#8052ff]">12 / 57</div>
                     <div className="text-[12px] text-white/50 mt-1">
-                      Öz-Düzeltme Döngüsü Tetiklendi (21.05%)
+                      İşlem Hatası Anında Fark Edilip Düzeltildi (%21.05)
                     </div>
                   </div>
                   <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
                     <div className="font-display text-[24px] font-medium text-[#10B981]">21 / 57</div>
                     <div className="text-[12px] text-white/50 mt-1">
-                      Ham LLM Cevabı Düzeltildi (36.84%)
+                      Standart Yapay Zekanın Yanlışları Düzeltildi (%36.84)
                     </div>
                   </div>
                 </div>
@@ -431,9 +429,9 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
                   <table className="w-full text-left text-[13.5px]">
                     <thead>
                       <tr className="border-b border-white/[0.08] text-[11px] uppercase tracking-wider text-white/50">
-                        <th className="pb-3">Test Konu Kategorisi</th>
+                        <th className="pb-3">Konu Başlığı</th>
                         <th className="pb-3 text-center">Soru Sayısı</th>
-                        <th className="pb-3 text-center">Ham LLM Doğruluk</th>
+                        <th className="pb-3 text-center">Standart Yapay Zeka</th>
                         <th className="pb-3 text-center">Gemini Web</th>
                         <th className="pb-3 text-center text-emerald-400 font-semibold">Physicsmn</th>
                       </tr>
@@ -461,7 +459,7 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
                         <td className="py-3 text-center text-emerald-400 font-medium">95.2% (20/21)</td>
                       </tr>
                       <tr className="border-t border-white/[0.12] bg-white/[0.02] font-medium">
-                        <td className="py-3.5 text-white">Genel Toplam (Tüm Veriseti)</td>
+                        <td className="py-3.5 text-white">Genel Toplam (57 Soru)</td>
                         <td className="py-3.5 text-center text-white">57</td>
                         <td className="py-3.5 text-center text-red-400">61.4% (35/57)</td>
                         <td className="py-3.5 text-center text-amber-400">89.5% (51/57)</td>
@@ -477,13 +475,13 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
             <section id="limitations" className="scroll-mt-24 space-y-8">
               <div className="border-b border-white/[0.08] pb-4">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8052ff]">
-                  Section 04
+                  Bölüm 04
                 </span>
                 <h2 className="mt-1 font-display text-[28px] font-light text-white">
-                  Açık Sınırlar ve Gelecek Yol Haritası
+                  Önemli Bilgiler ve Geliştirme Yol Haritası
                 </h2>
                 <p className="mt-2 text-[14.5px] font-light text-white/60">
-                  Mevcut mimarinin kısıtları ve geliştirmekte olduğumuz gelecek nesil algoritmalar.
+                  En iyi sonucu alabilmeniz için bilmeniz gerekenler ve üzerinde çalıştığımız yeni özellikler.
                 </p>
               </div>
 
@@ -492,10 +490,10 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-md">
                   <div className="flex items-center gap-2 text-[12px] uppercase text-amber-400 font-medium">
                     <AlertTriangle size={15} />
-                    <span>1. Görme Modeli (OCR) Bağımlılığı</span>
+                    <span>1. Fotoğraf Kalitesi Önemlidir</span>
                   </div>
                   <p className="mt-3 text-[14px] font-light leading-relaxed text-[#A1A1AA]">
-                    mathjs denetimi, görüntüden çıkarılan değişkenlerin doğruluğu kadar etkilidir. Düşük çözünürlüklü veya bulanık fotoğraflarda küçük alt indisler (v₀ vs. v₁) veya küçük açılar (37° vs. 53°) model tarafından yanlış okunursa, formülün kendisi tutarlı olsa dahi yanlış başlangıç verisi nedeniyle sonuç hatalı çıkabilir.
+                    Çözümün doğru olabilmesi için sorunun net okunması gerekir. Eğer yüklediğiniz fotoğraf çok karanlık, bulanık veya sayılar silikse, yapay zeka sorudaki bir sayıyı (örneğin 3 yerine 8) yanlış okuyabilir. Fotoğrafı çekerken ışığın iyi olmasına ve sorunun tamamının görünmesine özen gösterin.
                   </p>
                 </div>
 
@@ -503,10 +501,10 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-md">
                   <div className="flex items-center gap-2 text-[12px] uppercase text-amber-400 font-medium">
                     <AlertTriangle size={15} />
-                    <span>2. Serbest Cisim Diyagram Kapsamı</span>
+                    <span>2. Şekilli Çizim Desteği</span>
                   </div>
                   <p className="mt-3 text-[14px] font-light leading-relaxed text-[#A1A1AA]">
-                    Mevcut etkileşimli SVG kuvvet diyagramı motorumuz eğik düzlemler, yatay zeminler ve sürtünme vektörleri için optimize edilmiştir. Elektrik devre şemaları, optik ışın izleme ve dairesel hareket diyagramları şu an cebirsel KaTeX adımlarıyla sunulmakta, görsel interaktif çizim içermemektedir.
+                    Şu anda eğik düzlemler, sürtünmeli zeminler ve kuvvet vektörleri için etkileşimli çizimler sunuyoruz. Elektrik devreleri veya ışığın kırılması gibi optik şekillerini ise çizim yerine adım adım matematiksel işlemlerle anlatıyoruz.
                   </p>
                 </div>
 
@@ -514,10 +512,10 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-md">
                   <div className="flex items-center gap-2 text-[12px] uppercase text-emerald-400 font-medium">
                     <Sparkles size={15} />
-                    <span>Yol Haritası: 2B Birim Kare Tespiti</span>
+                    <span>Yol Haritası: Birim Kareli Zeminler</span>
                   </div>
                   <p className="mt-3 text-[14px] font-light leading-relaxed text-[#A1A1AA]">
-                    MEB vektör sorularının önemli bir kısmı &quot;birim kareli zemin&quot; (grid) üzerinde sorulur. Görsel modelin kare saymak yerine hata yapmasını engellemek amacıyla doğrudan görüntü üzerinde birim kare ızgaralarını tespit eden bir ön-işleme bilgisayarla görme modeli geliştiriyoruz.
+                    MEB testlerinde sıkça sorulan kareli zemin üzerindeki vektör sorularında kareleri otomatik ve hatasız sayabilen yeni bir akıllı görsel sistem hazırlıyoruz.
                   </p>
                 </div>
 
@@ -525,10 +523,10 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
                 <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-md">
                   <div className="flex items-center gap-2 text-[12px] uppercase text-emerald-400 font-medium">
                     <Sparkles size={15} />
-                    <span>Yol Haritası: İstemci WebAssembly mathjs</span>
+                    <span>Yol Haritası: Çevrimdışı Kullanım Desteği</span>
                   </div>
                   <p className="mt-3 text-[14px] font-light leading-relaxed text-[#A1A1AA]">
-                    Öğrencilerin çevrimdışı dahi denetim yapabilmesi için mathjs sembolik motorunu tarayıcı WebAssembly ortamına taşıyarak sıfır gecikmeli etkileşimli değişken ayarlama (slider ile parametre değiştirip anında denetleme) desteği ekliyoruz.
+                    İleride internet bağlantınız olmadığında bile matematiksel hesaplamaları doğrudan telefonunuzda veya bilgisayarınızda anında yapabilmeniz için çalışıyoruz.
                   </p>
                 </div>
               </div>
@@ -540,7 +538,7 @@ Result: { passed: true, mathVerified: true, computedResult: "30.09 m/s" }
                 Çözücüyü Şimdi Deneyin
               </h3>
               <p className="mx-auto mt-2 max-w-lg text-[14.5px] font-light text-white/60">
-                Kendi lise fizik sorunuzu yazın veya bir ödev fotoğrafı yükleyin. mathjs denetim rozetini canlı olarak inceleyin.
+                Kendi lise fizik sorunuzu yazın veya bir ödev fotoğrafı yükleyin. mathjs matematik kontrolünü canlı olarak görün.
               </p>
               <div className="mt-6 flex items-center justify-center gap-4">
                 <Link

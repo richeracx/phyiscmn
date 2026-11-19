@@ -124,15 +124,15 @@ export const copy: Record<Lang, Copy> = {
     },
     acts: [
       {
-        kicker: '02 // AKADEMİK TİTİZLİK',
-        title: 'Deterministik doğrulama.',
-        body: 'İstatistiksel tahmin değil. mathjs ile sembolik birim ve sayısal denetim.',
-        label: 'TİTİZLİK',
+        kicker: '02 // HESAP GÜVENCESİ',
+        title: 'Tahmin değil, gerçek matematik.',
+        body: 'Yapay zekanın tahminlerine güvenmek yerine, bağımsız matematik motorumuz mathjs ile her işlemi ve SI birimlerini baştan sona kontrol ederiz.',
+        label: 'GÜVENCE',
         features: [
-          'MEB 9-12 müfredat standartları',
-          'mathjs ±%2 ve SI boyut denetimi',
-          'Otonom öz-düzeltme devresi',
-          'Doğal KaTeX matematik dizgisi',
+          'MEB 9-12 fizik müfredatına tam uyum',
+          'mathjs ile bağımsız matematik ve SI birim kontrolü',
+          'İşlem hatalarını anında otomatik düzeltme',
+          'Anlaşılır ve adım adım çözümler',
         ],
         cta: 'Neden Physicsmn? →',
       },

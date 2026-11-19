@@ -28,7 +28,7 @@ interface WorksheetMeta {
 const WORKSHEETS: WorksheetMeta[] = [
   {
     id: 'sheet-1',
-    name: '1007a4c2-472d... (Test 01)',
+    name: 'MEB Kazanım Testi 01',
     topic: 'Vektörler ve Kartezyen Bileşenler (11. Sınıf)',
     questions: 6,
     rawLlmCorrect: 4,
@@ -47,7 +47,7 @@ const WORKSHEETS: WorksheetMeta[] = [
   },
   {
     id: 'sheet-2',
-    name: '10bc9a67-efe2... (Test 03)',
+    name: 'MEB Kazanım Testi 02',
     topic: '1B Sabit İvmeli Hareket & Hız-Zaman Grafikleri',
     questions: 6,
     rawLlmCorrect: 3,
@@ -66,7 +66,7 @@ const WORKSHEETS: WorksheetMeta[] = [
   },
   {
     id: 'sheet-7',
-    name: '9f377fae-2936... (Test 07)',
+    name: 'MEB Kazanım Testi 03',
     topic: 'İki Boyutta Atış Hareketleri & Eğik Atış',
     questions: 6,
     rawLlmCorrect: 3,
@@ -85,7 +85,7 @@ const WORKSHEETS: WorksheetMeta[] = [
   },
   {
     id: 'sheet-10',
-    name: 'fad9086d-2c7e... (Test 10)',
+    name: 'MEB Kazanım Testi 04',
     topic: 'Newton Hareket Yasaları, Sürtünme ve Eğik Düzlem',
     questions: 6,
     rawLlmCorrect: 4,
@@ -166,7 +166,7 @@ export function BenchmarkVisualizer() {
                   <span className="text-white/30">•</span>
                   <span className="text-amber-400">Gemini: {w.geminiCorrect}/{w.questions}</span>
                   <span className="text-white/30">•</span>
-                  <span className="text-red-400">Ham LLM: {w.rawLlmCorrect}/{w.questions}</span>
+                  <span className="text-red-400">Standart Yapay Zeka: {w.rawLlmCorrect}/{w.questions}</span>
                 </div>
               </button>
             );
@@ -200,10 +200,10 @@ export function BenchmarkVisualizer() {
                 <thead>
                   <tr className="border-b border-white/[0.08] text-[11px] uppercase text-white/40 pb-2">
                     <th className="pb-2">Soru</th>
-                    <th className="pb-2 text-center">Ham LLM</th>
+                    <th className="pb-2 text-center">Standart Yapay Zeka</th>
                     <th className="pb-2 text-center text-emerald-400">Physicsmn</th>
-                    <th className="pb-2 text-center">mathjs</th>
-                    <th className="pb-2 text-center">Öz-Düzeltme</th>
+                    <th className="pb-2 text-center">mathjs Kontrolü</th>
+                    <th className="pb-2 text-center">Otomatik Düzeltme</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.04] font-light">
@@ -215,7 +215,7 @@ export function BenchmarkVisualizer() {
                       <td className="py-2.5 text-center">
                         {q.verified ? (
                           <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400">
-                            <Check size={12} /> Onaylı
+                            <Check size={12} /> Onaylandı
                           </span>
                         ) : (
                           <span className="text-white/40 text-[11px]">-</span>
@@ -224,7 +224,7 @@ export function BenchmarkVisualizer() {
                       <td className="py-2.5 text-center">
                         {q.repaired ? (
                           <span className="inline-flex items-center gap-1 text-[11px] text-purple-300 font-medium">
-                            <Sparkles size={11} /> Onarıldı
+                            <Sparkles size={11} /> Düzeltildi
                           </span>
                         ) : (
                           <span className="text-white/40 text-[11px]">İlk Geçiş</span>
@@ -240,16 +240,16 @@ export function BenchmarkVisualizer() {
           {/* Telemetry Summary Box */}
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.01] p-4 text-[12.5px] space-y-2">
             <div className="flex items-center justify-between text-white/70">
-              <span>mathjs Doğrulanma Oranı:</span>
+              <span>mathjs ile Onaylanan Soru:</span>
               <span className="text-white font-medium">{selectedSheet.verifiedCount} / {selectedSheet.questions} Soru</span>
             </div>
             <div className="flex items-center justify-between text-white/70">
-              <span>Otonom Öz-Düzeltme ile Kurtarılan Hata:</span>
+              <span>mathjs ile Yakalanıp Düzeltilen Hata:</span>
               <span className="text-purple-300 font-medium">{selectedSheet.repairedCount} Soru</span>
             </div>
             <div className="flex items-center justify-between text-white/70">
-              <span>Genel Veriseti Sonucu (N = 57):</span>
-              <span className="text-emerald-400 font-semibold">%94.7 (54/57) Doğruluk</span>
+              <span>Toplam 57 Soruda Genel Başarı:</span>
+              <span className="text-emerald-400 font-semibold">%94.7 (54 / 57 Soru Doğru)</span>
             </div>
           </div>
         </div>

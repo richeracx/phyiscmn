@@ -34,7 +34,7 @@ export function AsciiCosmos({ height = 280 }: { height?: number }) {
     const formulas = [
       'F = m·a',
       'E_k = ½·m·v²',
-      '[M]¹[L]²[T]⁻²',
+      'SI Birimi: Joule',
       'sin(37°) = 0.6',
       'g = 10 m/s²',
       'W_net = ΔE_k',
