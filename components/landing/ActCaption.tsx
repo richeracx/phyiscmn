@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { soundController } from '@/lib/cosmos/audio';
 import { useLanguage } from '@/components/shared/LanguageProvider';
@@ -9,11 +9,10 @@ import { useOdyssey } from './ScrollProvider';
 import { useActVisibility } from './useActVisibility';
 
 export function ActCaption({ act }: { act: 1 }) {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const { progress } = useOdyssey();
   const { opacity, y, pointerEvents, visibility } = useActVisibility(progress, act);
   const c = t.acts[0];
-  const tr = lang === 'tr';
 
   return (
     <motion.section
@@ -25,76 +24,68 @@ export function ActCaption({ act }: { act: 1 }) {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Left: Text & Explanation */}
           <div className="flex flex-col items-start lg:col-span-7">
-            <span className="mb-4 inline-block font-sans text-[13px] font-medium uppercase tracking-[0.22em] text-white/60">
+            <span className="mb-4 inline-block font-sans text-[12px] font-medium uppercase tracking-[0.25em] text-white/50">
               {c.kicker}
             </span>
-            <h2 className="font-sans text-[clamp(2.4rem,4.8vw,4.6rem)] font-normal leading-[1.02] tracking-[-0.04em] text-white">
+            <h2 className="font-display text-[clamp(2.4rem,4.8vw,4.4rem)] font-light leading-[1.02] tracking-[-0.03em] text-white">
               {c.title}
             </h2>
-            <p className="mt-6 max-w-xl font-sans text-[18px] font-extralight leading-[1.6] text-[#bdbdbd]">
+            <p className="mt-5 max-w-xl font-sans text-[16px] font-light leading-[1.6] text-[#A1A1AA] sm:text-[17px]">
               {c.body}
             </p>
 
             {c.features && (
-              <ul className="mt-8 flex flex-col gap-3 font-sans text-[14px] text-[#ffffff]/90">
+              <ul className="mt-8 flex flex-col gap-3 font-sans text-[14px] text-white/90">
                 {c.features.map((f) => (
                   <li key={f} className="flex items-center gap-3">
-                    <CheckCircle2 size={16} className="text-white" />
-                    <span className="font-extralight text-[#ffffff]">{f}</span>
+                    <CheckCircle2 size={16} className="text-white/70" />
+                    <span className="font-light text-white/90">{f}</span>
                   </li>
                 ))}
               </ul>
             )}
 
-            <div className="mt-10 flex flex-wrap items-center gap-3.5">
-              <Link
-                href="/solve"
-                onMouseEnter={() => soundController.playButtonHover()}
-                onClick={() => soundController.playButtonClick()}
-                className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[13.5px] font-medium uppercase tracking-[0.03em] text-black transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98]"
-              >
-                <span>{c.cta || (tr ? 'Çözücüyü Aç' : 'Open Full Solver')}</span>
-                <ArrowRight size={15} strokeWidth={2} className="transition-transform duration-300 group-hover:translate-x-0.5" />
-              </Link>
+            {/* Link to Why Physicsmn (solving bar/button removed) */}
+            <div className="mt-9 flex items-center">
               <Link
                 href="/why"
                 onMouseEnter={() => soundController.playButtonHover()}
                 onClick={() => soundController.playButtonClick()}
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.04] px-5 py-3 text-[13px] font-medium text-white/80 backdrop-blur-md transition-all duration-300 hover:border-white/40 hover:bg-white/[0.1] hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-6 py-3.5 font-sans text-[13.5px] font-medium text-white shadow-[0_0_25px_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-white/40 hover:bg-white/[0.14] hover:shadow-[0_0_35px_rgba(255,255,255,0.12)] active:scale-[0.98]"
               >
-                <span>{tr ? 'Neden Physicsmn? →' : 'Why Physicsmn? →'}</span>
+                <span>Neden Physicsmn? →</span>
               </Link>
             </div>
           </div>
 
-          {/* Right: Validation telemetry badge */}
-          <div className="flex flex-col gap-5 font-mono text-[13.5px] text-[#9a9a9a] lg:col-span-5 lg:pl-8">
+          {/* Right: Validation telemetry specs (minimalist sans typography) */}
+          <div className="flex flex-col gap-4 font-sans text-[13.5px] text-[#A1A1AA] lg:col-span-5 lg:pl-8">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-[#bdbdbd]">{tr ? 'Müfredat Uyumu' : 'Curriculum Standard'}</span>
-              <span className="text-white">{tr ? 'MEB Lise Müfredatı' : 'MEB Curriculum'}</span>
+              <span className="text-white/60">Müfredat Uyumu</span>
+              <span className="text-white font-medium">MEB Lise Müfredatı</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-[#bdbdbd]">{tr ? 'Doğrulama Motoru' : 'Verification Engine'}</span>
-              <span className="text-emerald-400 font-medium">mathjs ±2% & [M][L][T]</span>
+              <span className="text-white/60">Doğrulama Motoru</span>
+              <span className="text-emerald-400 font-medium">mathjs ±%2 & [M][L][T]</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-[#bdbdbd]">{tr ? 'Birim Gösterimi' : 'Unit Representation'}</span>
-              <span className="text-white">{tr ? 'SI Standartları' : 'SI Standards'}</span>
+              <span className="text-white/60">Birim Sistemi</span>
+              <span className="text-white font-medium">Temel SI Standartları</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-[#bdbdbd]">{tr ? 'LaTeX Matematik Dizgisi' : 'LaTeX Typesetting'}</span>
-              <span className="text-white">KaTeX Native</span>
+              <span className="text-white/60">Matematik Dizgisi</span>
+              <span className="text-white font-medium">KaTeX</span>
             </div>
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
-              <span className="text-[#bdbdbd]">{tr ? 'Türetim Yapısı' : 'Derivation Structure'}</span>
-              <span className="text-white">{tr ? 'Doğrulanabilir Adımlar' : 'Verifiable Steps'}</span>
+              <span className="text-white/60">Türetim Yapısı</span>
+              <span className="text-white font-medium">Adım Adım Denetim</span>
             </div>
-            <div className="pt-1 text-right">
+            <div className="pt-2 text-right">
               <Link
                 href="/docs#benchmark"
-                className="font-mono text-[12px] text-white/60 underline underline-offset-4 transition-colors hover:text-[#E5C158]"
+                className="font-sans text-[12.5px] text-white/50 underline underline-offset-4 transition-colors hover:text-white"
               >
-                {tr ? '57 Soruluk Ampirik Kıyaslama Raporu →' : '57-Question Empirical Benchmark →'}
+                57 Soruluk Ampirik Kıyaslama Raporu →
               </Link>
             </div>
           </div>

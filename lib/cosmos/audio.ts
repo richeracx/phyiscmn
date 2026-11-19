@@ -19,7 +19,7 @@
 
 class SoundController {
   private ctx: AudioContext | null = null;
-  private muted = true;
+  private muted = false; // Always on per requirements
   private bgmAudio: HTMLAudioElement | null = null;
   private explosionAudio: HTMLAudioElement | null = null;
   private chargeAudio: HTMLAudioElement | null = null;
@@ -56,6 +56,25 @@ class SoundController {
       this.buttonHoverAudio = load('/audio/button-hover.mp3?v=2', 0.3);
       this.buttonClickAudio = load('/audio/button-click.mp3?v=2', 0.5);
       this.glyphAudio = load('/audio/glyph.mp3?v=2', 0.25);
+
+      // Auto-start audio upon the first user interaction to bypass browser autoplay policies
+      const startAudio = () => {
+        this.initCtx();
+        if (this.bgmAudio && this.bgmAudio.paused) {
+          this.bgmAudio.play().catch(() => this.playSyntheticBgm());
+        }
+        window.removeEventListener('pointerdown', startAudio);
+        window.removeEventListener('keydown', startAudio);
+        window.removeEventListener('touchstart', startAudio);
+        window.removeEventListener('scroll', startAudio);
+        window.removeEventListener('wheel', startAudio);
+      };
+
+      window.addEventListener('pointerdown', startAudio, { once: true, passive: true });
+      window.addEventListener('keydown', startAudio, { once: true });
+      window.addEventListener('touchstart', startAudio, { once: true, passive: true });
+      window.addEventListener('scroll', startAudio, { once: true, passive: true });
+      window.addEventListener('wheel', startAudio, { once: true, passive: true });
     }
   }
 
@@ -70,7 +89,7 @@ class SoundController {
   }
 
   public get isMuted() {
-    return this.muted;
+    return false;
   }
 
   public subscribe(fn: (muted: boolean) => void) {
@@ -81,32 +100,22 @@ class SoundController {
   }
 
   private notify() {
-    for (const fn of this.listeners) fn(this.muted);
+    for (const fn of this.listeners) fn(false);
   }
 
   public toggleMute() {
+    // Sound is permanently on; ensure active
     this.initCtx();
-    this.muted = !this.muted;
-    if (!this.muted) {
-      if (this.bgmAudio) {
-        this.bgmAudio.play().catch(() => {
-          this.playSyntheticBgm();
-        });
-      } else {
-        this.playSyntheticBgm();
-      }
-    } else {
-      if (this.bgmAudio) this.bgmAudio.pause();
-      if (this.syntheticBgmGain) {
-        this.syntheticBgmGain.gain.setTargetAtTime(0, this.ctx?.currentTime || 0, 0.2);
-      }
+    this.muted = false;
+    if (this.bgmAudio && this.bgmAudio.paused) {
+      this.bgmAudio.play().catch(() => this.playSyntheticBgm());
     }
     this.notify();
-    return this.muted;
+    return false;
   }
 
   public unmute() {
-    if (this.muted) this.toggleMute();
+    this.toggleMute();
   }
 
   public stopAll() {
@@ -119,7 +128,6 @@ class SoundController {
         this.syntheticBgmGain.gain.setValueAtTime(0, this.ctx?.currentTime || 0);
       } catch {}
     }
-    this.muted = true;
     this.notify();
   }
 

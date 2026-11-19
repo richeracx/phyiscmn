@@ -3,13 +3,13 @@ import { display, inter, mono } from '@/lib/fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Physicsmn — AI-Assisted High School Physics Solver',
+  title: 'Physicsmn — MEB Müfredatına Uygun Adım Adım Fizik Çözücü',
   description:
-    'Type or photograph high school physics problems. Physicsmn generates step-by-step LaTeX derivations aligned with the MEB curriculum for students to review and verify.',
+    'Lise fizik problemlerini yazın veya fotoğrafını yükleyin. Physicsmn, MEB müfredatına tam uyumlu, LaTeX formatında adım adım türetimler üretir.',
   openGraph: {
-    title: 'Physicsmn — AI-Assisted High School Physics Solver',
+    title: 'Physicsmn — MEB Müfredatına Uygun Adım Adım Fizik Çözücü',
     description:
-      'Type or photograph high school physics problems. Physicsmn generates step-by-step LaTeX derivations aligned with the MEB curriculum for students to review and verify.',
+      'Lise fizik problemlerini yazın veya fotoğrafını yükleyin. Physicsmn, MEB müfredatına tam uyumlu, LaTeX formatında adım adım türetimler üretir.',
     type: 'website',
   },
   icons: { icon: '/favicon.svg' },
@@ -27,7 +27,7 @@ export const viewport: Viewport = {
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${inter.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang="tr" className={`${display.variable} ${inter.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );
