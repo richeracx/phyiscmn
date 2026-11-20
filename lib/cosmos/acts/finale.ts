@@ -369,7 +369,9 @@ export class FinaleAct implements Act {
       // PHYSICSMN ILLUMINATION & RADIANT GLOW
       // When settle > 0.02, the wordmark lights up with an ethereal starlight bloom
       if (settle > 0.02 && this.wordWidth > 10) {
-        const settleAura = smoothstep(0.02, 0.75, settle) * weight;
+        // Fade the canvas glow out as the HTML wordmark materialises (settle > 0.5)
+        const glowFade = settle < 0.5 ? 1 : smoothstep(1, 0.5, settle);
+        const settleAura = smoothstep(0.02, 0.75, settle) * weight * glowFade;
         const breathe = 0.88 + 0.12 * Math.sin(t * 2.8);
         const intensity = settleAura * breathe;
 
@@ -465,15 +467,18 @@ export class FinaleAct implements Act {
         const size = (3.6 + 4 * (1 - e)) * (1 - ci) + sizeSettled * ci;
         const near = gain > 0.01 ? 1 + 0.35 * Math.max(0, 1 - Math.hypot(x - mx, y - my) / HOVER_R) : 1;
         
-        // Particles scale up and brighten as PHYSICSMN lights up
-        const lightUpScale = 1 + 0.35 * settle;
-        const lightUpAlpha = (0.8 + 0.2 * ci) * twinkle * weight * (1 + 0.45 * settle);
+        // Particles dissolve as the HTML wordmark materialises over them.
+        // They peak at ~settle=0.5 (fully bright), then fade to near-zero by settle=1
+        // so the crisp HTML text becomes the final face of PHYSICSMN.
+        const dissolveFade = settle < 0.5 ? 1 : smoothstep(1, 0.5, settle);
+        const lightUpScale = 1 + 0.35 * Math.min(settle, 0.5) * 2;
+        const lightUpAlpha = (0.8 + 0.2 * ci) * twinkle * weight * (1 + 0.45 * Math.min(settle, 0.5) * 2) * dissolveFade;
         drawSprite(ctx, sprite, x, y, size * near * lightUpScale, lightUpAlpha);
 
         // Extra radiant starlight sparkle on selected particles during settle
-        if (settle > 0.15 && i % 6 === 0) {
+        if (settle > 0.15 && settle < 0.8 && i % 6 === 0) {
           const spSpark = 0.5 + 0.5 * Math.sin(t * 5.0 + this.tw[i] * 3.0);
-          drawSprite(ctx, sprites.white, x, y, size * 2.2, 0.45 * settle * spSpark * weight);
+          drawSprite(ctx, sprites.white, x, y, size * 2.2, 0.45 * Math.min(settle, 0.5) * 2 * spSpark * weight * dissolveFade);
         }
       }
       this.streaks.flush(ctx);
