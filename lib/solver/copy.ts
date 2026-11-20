@@ -201,7 +201,7 @@ export const solverCopy: Record<'en' | 'tr', SolverCopy> = {
     stages: {
       read: { title: 'Problem okunuyor', detail: 'Verilenler, istenenler ve birimler' },
       laws: { title: 'Yasalar seçiliyor', detail: 'MEB ünitesi ve ilkesi eşleştiriliyor' },
-      derive: { title: 'Türetiliyor', detail: 'Adım adım, birimler korunarak' },
+      derive: { title: 'Çözülüyor', detail: 'Adım adım, formüllerle hesaplanıyor' },
       verify: { title: 'Doğrulanıyor', detail: 'Birimler, işlemler ve her denklem' },
     },
     elapsed: (s) => `${s} sn`,
@@ -247,7 +247,7 @@ export const solverCopy: Record<'en' | 'tr', SolverCopy> = {
       request_too_large: { title: 'Yükleme çok büyük', body: 'Daha küçük bir fotoğraf gönder ya da metni kısalt.' },
       bad_request: { title: 'İstek hatalı', body: 'Sayfayı yenileyip tekrar dene.' },
       forbidden: { title: 'İstek engellendi', body: 'Çözücü yalnızca bu siteden gelen istekleri kabul eder. Sayfayı yenileyip tekrar dene.' },
-      rate_limited: { title: 'Günlük limit doldu', body: 'Günde en fazla 20 fizik türetimi yapabilirsiniz. Lütfen yarın tekrar deneyin.' },
+      rate_limited: { title: 'Günlük limit doldu', body: 'Günde en fazla 20 fizik sorusu çözebilirsiniz. Lütfen yarın tekrar deneyin.' },
       not_physics: { title: 'Bu bir fizik problemi gibi görünmüyor', body: 'Physicsmn, MEB lise fizik problemlerini çözer.' },
       unreadable: { title: 'Fotoğraf güvenilir şekilde okunamadı', body: 'İyi ışıkta, karşıdan ve problemin tamamı görünecek şekilde yeniden çek.' },
       insufficient_data: { title: 'Bazı bilgiler eksik', body: 'Problem tek bir cevap için yeterli veri içermiyor. Kesilen bir kısım olmadığından emin ol.' },

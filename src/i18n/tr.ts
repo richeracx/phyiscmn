@@ -34,7 +34,7 @@ export const tr: TranslationDictionary = {
     title: "Müsvedde el yazısı notlardan adım adım LaTeX çözümlerine.",
     subtitle: "Kitaptan veya defterden bir soru fotoğrafı yükleyin. Physicsmn verilen parametreleri listeler, ilgili fizik yasalarını belirler ve adım adım çözümü sunar.",
     imageCard: {
-      alt: "Kuvvet vektörleri ve türetimleri içeren 35 derece eğik düzlem problemine açık el yazısı fizik not defteri",
+      alt: "Kuvvet vektörleri ve formülleri içeren 35 derece eğik düzlem problemine açık el yazısı fizik not defteri",
       overlayBadgeLines: [
         "GİRDİ_KAYNAĞI: OPTİK_YAKALAMA_01.JPG",
         "ÇÖZÜNÜRLÜK: 4032x3024 // TARAMA_GÜVENİ: %99.4",
@@ -67,7 +67,7 @@ export const tr: TranslationDictionary = {
         inclineAngle: "35°",
         surfaceAxis: "x' (rampa)",
       },
-      derivationHeading: "Numaralandırılmış Analitik Türetimler",
+      derivationHeading: "Adım Adım Detaylı Çözüm",
       steps: [
         {
           stepNumber: "01",
@@ -202,7 +202,7 @@ export const tr: TranslationDictionary = {
       },
       {
         stepNumber: "04",
-        title: "Türet ve Açıkla",
+        title: "Adım Adım Çöz ve Açıkla",
         description: "Cebirsel işlemleri ve formülleri adım adım LaTeX ile biçimlendirir, birimleri ve fiziksel bağıntıları açıkça gösterir.",
         subtext: "Öğrencinin kolayca kontrol edebileceği, KaTeX formatında adım adım cebirsel işlemler.",
       },

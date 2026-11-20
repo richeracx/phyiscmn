@@ -221,6 +221,6 @@ export function deriveFromQuery(raw: string, lang: Lang): Derivation {
   return {
     given,
     principle: tr ? 'Temel korunum yasaları ve formül modeli kurulumu' : 'Model set-up from conservation laws and governing equations',
-    result: tr ? 'Açıklamalı çözüm tam çözücüde adım adım türetilecek' : 'Step-by-step solution derived in the full solver',
+    result: tr ? 'Açıklamalı çözüm tam çözücüde adım adım gösterilecek' : 'Step-by-step solution shown in the full solver',
   };
 }

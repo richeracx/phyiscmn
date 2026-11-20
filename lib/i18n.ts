@@ -112,9 +112,9 @@ export const copy: Record<Lang, Copy> = {
     openSolver: 'Çözücüyü Aç',
     langLabel: 'Dil',
     hero: {
-      eyebrow: 'Nöro-Sembolik Fizik Çözücü',
+      eyebrow: 'Akıllı Fizik Çözücü',
       title: 'Fizik, adım adım.',
-      subtitle: 'MEB müfredatına tam uyumlu deterministik türetimler.',
+      subtitle: 'MEB müfredatına tam uyumlu, hata yapmayan adım adım çözümler.',
       placeholder: '2 kg’lık blok, μ = 0,2 olan 35° eğik düzlem…',
       upload: 'Fotoğraf Yükle',
       solve: 'Çöz',
@@ -138,7 +138,7 @@ export const copy: Record<Lang, Copy> = {
       },
     ],
     launch: {
-      title: 'Türetimine başla.',
+      title: 'Sorunu çözmeye başla.',
       samples: [
         {
           label: '35° Eğik Düzlem',

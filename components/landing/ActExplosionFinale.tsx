@@ -45,7 +45,7 @@ export function ActExplosionFinale() {
         </span>
 
         <p className="mt-1.5 sm:mt-2 max-w-lg font-sans text-[14.5px] sm:text-[16px] lg:text-[18px] font-light leading-relaxed text-[#A1A1AA]">
-          MEB lise fizik müfredatına tam uyumlu adım adım LaTeX türetimleri.
+          MEB lise fizik müfredatına tam uyumlu, adım adım garantili çözümler.
         </p>
 
         {/* Translucent Frosted Glass Pill Button saying "ÇÖZÜME BAŞLA" */}

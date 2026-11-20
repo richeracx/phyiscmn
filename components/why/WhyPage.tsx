@@ -359,7 +359,7 @@ export function WhyPage() {
           Fizik Probleminizi Şimdi Denetleyin.
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-[15px] font-light text-white/60">
-          Bir soru yazın veya ödev sayfanızın fotoğrafını yükleyin. Adım adım MEB türetimini inceleyin.
+          Bir soru yazın veya ödev sayfanızın fotoğrafını yükleyin. MEB müfredatına uygun adım adım çözümü görün.
         </p>
 
         <div className="mt-8 flex items-center justify-center gap-4">

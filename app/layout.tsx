@@ -5,11 +5,11 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Physicsmn — MEB Müfredatına Uygun Adım Adım Fizik Çözücü',
   description:
-    'Lise fizik problemlerini yazın veya fotoğrafını yükleyin. Physicsmn, MEB müfredatına tam uyumlu, LaTeX formatında adım adım türetimler üretir.',
+    'Lise fizik problemlerini yazın veya fotoğrafını yükleyin. Physicsmn, MEB müfredatına tam uyumlu, adım adım detaylı çözümler sunar.',
   openGraph: {
     title: 'Physicsmn — MEB Müfredatına Uygun Adım Adım Fizik Çözücü',
     description:
-      'Lise fizik problemlerini yazın veya fotoğrafını yükleyin. Physicsmn, MEB müfredatına tam uyumlu, LaTeX formatında adım adım türetimler üretir.',
+      'Lise fizik problemlerini yazın veya fotoğrafını yükleyin. Physicsmn, MEB müfredatına tam uyumlu, adım adım detaylı çözümler sunar.',
     type: 'website',
   },
   icons: { icon: '/favicon.svg' },
