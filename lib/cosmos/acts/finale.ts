@@ -166,28 +166,28 @@ export class FinaleAct implements Act {
       }
     };
 
-    // 1. Solid crisp typography with punchy drop-shadow
+    // 1. Solid crisp typography with clean subtle edge definition
     const cSolid = document.createElement('canvas');
     cSolid.width = canvasW;
     cSolid.height = canvasH;
     const gSolid = cSolid.getContext('2d', { willReadFrequently: true })!;
-    renderWordTo(gSolid, '#FFFFFF', 'rgba(255, 255, 255, 0.85)', 10 * dpr);
+    renderWordTo(gSolid, '#FFFFFF', 'rgba(255, 255, 255, 0.45)', 5 * dpr);
     this.wordSolid = cSolid;
 
-    // 2. Medium radiant bloom
+    // 2. Medium refined bloom (gentle luminance, not blown-out)
     const cGlow = document.createElement('canvas');
     cGlow.width = canvasW;
     cGlow.height = canvasH;
     const gGlow = cGlow.getContext('2d')!;
-    renderWordTo(gGlow, 'rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.95)', 26 * dpr);
+    renderWordTo(gGlow, 'rgba(255, 255, 255, 0.25)', 'rgba(255, 255, 255, 0.35)', 16 * dpr);
     this.wordGlow = cGlow;
 
-    // 3. Wide ethereal atmospheric halo
+    // 3. Wide subtle atmospheric halo
     const cHalo = document.createElement('canvas');
     cHalo.width = canvasW;
     cHalo.height = canvasH;
     const gHalo = cHalo.getContext('2d')!;
-    renderWordTo(gHalo, 'rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.60)', 55 * dpr);
+    renderWordTo(gHalo, 'rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.18)', 36 * dpr);
     this.wordHalo = cHalo;
 
     // Sample pixels from the rendered crisp text
@@ -415,30 +415,30 @@ export class FinaleAct implements Act {
     // ejecta → logo --------------------------------------------------------
     if (blown && this.n > 0) {
       // 1. Render the illuminated wordmark (solid letters + medium glow + wide halo)
-      // As particles arrive (c > 0.35), the letters ignite into full brilliance.
+      // As particles arrive (c > 0.35), the letters ignite into clean, legible brilliance.
       if (this.wordSolid && this.wordLw > 0) {
-        const haloA = smoothstep(0.35, 0.85, c) * weight * 0.75;
-        const glowA = smoothstep(0.50, 0.90, c) * weight * 0.90;
+        const haloA = smoothstep(0.35, 0.85, c) * weight * 0.35;
+        const glowA = smoothstep(0.50, 0.90, c) * weight * 0.45;
         const solidA = smoothstep(0.68, 0.95, c) * weight;
 
-        const breathe = 0.95 + 0.05 * Math.sin(t * 2.8);
+        const breathe = 0.97 + 0.03 * Math.sin(t * 2.5);
 
         ctx.save();
         ctx.globalCompositeOperation = 'lighter';
 
-        // Wide atmospheric halo
+        // Wide atmospheric halo (subtle background ambiance)
         if (haloA > 0.005 && this.wordHalo) {
           ctx.globalAlpha = haloA * breathe;
           ctx.drawImage(this.wordHalo, this.wordLx, this.wordLy, this.wordLw, this.wordLh);
         }
 
-        // Medium radiant bloom
+        // Medium radiant bloom (clean aura around strokes)
         if (glowA > 0.005 && this.wordGlow) {
           ctx.globalAlpha = glowA * breathe;
           ctx.drawImage(this.wordGlow, this.wordLx, this.wordLy, this.wordLw, this.wordLh);
         }
 
-        // Crisp solid typography
+        // Crisp solid typography (sharp, high-contrast, pure white)
         if (solidA > 0.005) {
           ctx.globalAlpha = solidA;
           ctx.drawImage(this.wordSolid, this.wordLx, this.wordLy, this.wordLw, this.wordLh);
@@ -447,26 +447,14 @@ export class FinaleAct implements Act {
         ctx.restore();
       }
 
-      // 2. Anamorphic horizontal gleam and starlight pillars
+      // 2. Refined horizontal starlight gleam (thin, elegant lens flare)
       if (settle > 0.02 && this.wordWidth > 10) {
         const settleAura = smoothstep(0.02, 0.75, settle) * weight;
-        const breathe = 0.88 + 0.12 * Math.sin(t * 2.8);
-        const intensity = settleAura * breathe;
+        const intensity = settleAura * (0.92 + 0.08 * Math.sin(t * 2.5));
+        const gleamA = 0.28 * intensity;
 
-        // Soft wide radial halo behind the letters
-        drawSprite(ctx, sprites.whiteHalo, this.wordCx, this.wordCy, this.wordWidth * 1.5, 0.48 * intensity);
-
-        // White starlight glow centers spread across the word
-        const nPillars = 5;
-        for (let p = 0; p < nPillars; p++) {
-          const px = this.wordCx - this.wordWidth * 0.4 + (this.wordWidth * 0.8 * p) / (nPillars - 1);
-          drawSprite(ctx, sprites.white, px, this.wordCy, 80, 0.2 * intensity);
-        }
-
-        // Horizontal starlight flare beam through the wordmark
-        const gleamA = 0.52 * intensity;
-        if (gleamA > 0.01) {
-          const halfSpan = this.wordWidth * 0.75;
+        if (gleamA > 0.005) {
+          const halfSpan = this.wordWidth * 0.65;
           const gl = ctx.createLinearGradient(
             this.wordCx - halfSpan,
             this.wordCy,
@@ -474,12 +462,12 @@ export class FinaleAct implements Act {
             this.wordCy,
           );
           gl.addColorStop(0, 'rgba(255,255,255,0)');
-          gl.addColorStop(0.2, `rgba(255,255,255,${(gleamA * 0.35).toFixed(3)})`);
+          gl.addColorStop(0.25, `rgba(255,255,255,${(gleamA * 0.25).toFixed(3)})`);
           gl.addColorStop(0.5, `rgba(255,255,255,${gleamA.toFixed(3)})`);
-          gl.addColorStop(0.8, `rgba(255,255,255,${(gleamA * 0.35).toFixed(3)})`);
+          gl.addColorStop(0.75, `rgba(255,255,255,${(gleamA * 0.25).toFixed(3)})`);
           gl.addColorStop(1, 'rgba(255,255,255,0)');
           ctx.fillStyle = gl;
-          const beamH = 2.4 + 1.4 * Math.sin(t * 3.5);
+          const beamH = 1.2 + 0.6 * Math.sin(t * 3.0);
           ctx.fillRect(this.wordCx - halfSpan, this.wordCy - beamH / 2, halfSpan * 2, beamH);
         }
       }
@@ -546,17 +534,17 @@ export class FinaleAct implements Act {
         const size = (3.6 + 4 * (1 - e)) * (1 - ci) + sizeSettled * ci;
         const near = gain > 0.01 ? 1 + 0.35 * Math.max(0, 1 - Math.hypot(x - mx, y - my) / HOVER_R) : 1;
 
-        // When in flight (ci < 0.8), particles are bright, hot embers.
+        // When in flight (ci < 0.75), particles are bright, hot embers.
         // As they hit the letterforms (ci -> 1), their impact ignites the letter,
-        // and the particle seamlessly integrates into the glowing letter's stardust texture.
-        const flightAlpha = (1 - smoothstep(0.75, 1.0, ci) * 0.65);
-        const pAlpha = (0.85 + 0.15 * ci) * twinkle * weight * flightAlpha;
+        // and they settle into a subtle, clean stardust texture without glare.
+        const flightAlpha = (1 - smoothstep(0.70, 1.0, ci) * 0.78);
+        const pAlpha = (0.75 + 0.15 * ci) * twinkle * weight * flightAlpha;
         drawSprite(ctx, sprite, x, y, size * near, pAlpha);
 
-        // Extra radiant starlight sparkles dancing along the letter contours
-        if (ci > 0.85 && i % 5 === 0) {
-          const spSpark = 0.5 + 0.5 * Math.sin(t * 5.0 + this.tw[i] * 3.0);
-          drawSprite(ctx, sprites.white, x, y, size * 2.2, 0.6 * spSpark * weight * (0.4 + 0.6 * settle));
+        // Subtle twinkling starlight sparkles along the letter contours
+        if (ci > 0.85 && i % 6 === 0) {
+          const spSpark = 0.5 + 0.5 * Math.sin(t * 4.5 + this.tw[i] * 3.0);
+          drawSprite(ctx, sprites.white, x, y, size * 1.6, 0.35 * spSpark * weight * (0.3 + 0.7 * settle));
         }
       }
       this.streaks.flush(ctx);
