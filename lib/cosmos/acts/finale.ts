@@ -6,7 +6,7 @@ import type { Act, Frame } from '../types';
 const SWIRL = 420;
 const HOVER_R = 120;
 const WORD = 'PHYSICSMN';
-const TRACK = 0.18;
+const TRACK = 0.11;
 /** Seconds for the whole finale clock (singularity → supernova → cosmic stardust). */
 const FINALE_SECONDS = 9;
 /** Share of the clock the scroll morph pre-charges before the finale runs on its own. */
@@ -32,10 +32,19 @@ export class FinaleAct implements Act {
   private h = 1;
   private dpr = 1;
   private displayFamily = 'sans-serif';
-  private dot = 3;
+  private dot = 3.2;
   private wordCx = 0;
   private wordCy = 0;
   private wordWidth = 0;
+
+  // Pre-rendered offscreen wordmark layers for seamless particle convergence & luminous glow
+  private wordSolid: HTMLCanvasElement | null = null;
+  private wordGlow: HTMLCanvasElement | null = null;
+  private wordHalo: HTMLCanvasElement | null = null;
+  private wordLx = 0;
+  private wordLy = 0;
+  private wordLw = 0;
+  private wordLh = 0;
 
   private n = 0;
   private tx = new Float32Array(0);
@@ -96,76 +105,115 @@ export class FinaleAct implements Act {
     const { w, h, dpr } = this;
     const mobile = w < 768;
     const meas = document.createElement('canvas').getContext('2d')!;
+    const weight = '700';
+    const fontStr = (size: number) => `${weight} ${size}px ${this.displayFamily}, sans-serif`;
+
     const widthAt = (size: number) => {
-      meas.font = `600 ${size}px ${this.displayFamily}`;
+      meas.font = fontStr(size);
       let tw = 0;
       for (const ch of WORD) tw += meas.measureText(ch).width;
       return tw + size * TRACK * (WORD.length - 1);
     };
 
-    let fs = clamp(w * (mobile ? 0.095 : 0.075), 32, 100);
+    let fs = clamp(w * (mobile ? 0.095 : 0.075), 34, 100);
     let tw = widthAt(fs);
-    const maxW = w * (mobile ? 0.88 : 0.72);
+    const maxW = w * (mobile ? 0.88 : 0.74);
     if (tw > maxW) {
       fs *= maxW / tw;
       tw = widthAt(fs);
     }
 
     // Place the wordmark in the upper-third of the screen so HTML text below NEVER collides
-    const cy = h * (mobile ? 0.24 : 0.26);
-    const top = cy - (fs * 0.72) / 2;
-    const pad = 12;
-    const lw = Math.ceil(tw) + pad * 2;
-    const lh = Math.ceil(fs * 1.1) + pad * 2;
-    const lx = Math.floor((w - tw) / 2) - pad;
-    const ly = Math.floor(top) - pad;
+    const cy = h * (mobile ? 0.22 : 0.25);
+    const top = cy - (fs * 0.75) / 2;
+    const pad = Math.round(Math.max(48, fs * 0.65) * dpr);
+    const lw = Math.ceil(tw) + (pad * 2) / dpr;
+    const lh = Math.ceil(fs * 1.35) + (pad * 2) / dpr;
+    const lx = Math.floor((w - tw) / 2) - pad / dpr;
+    const ly = Math.floor(top) - pad / dpr;
 
     this.wordCx = w / 2;
     this.wordCy = cy;
     this.wordWidth = tw;
+    this.wordLx = lx;
+    this.wordLy = ly;
+    this.wordLw = lw;
+    this.wordLh = lh;
 
-    const c = document.createElement('canvas');
-    c.width = Math.max(1, Math.round(lw * dpr));
-    c.height = Math.max(1, Math.round(lh * dpr));
-    const g = c.getContext('2d', { willReadFrequently: true })!;
+    const canvasW = Math.max(1, Math.round(lw * dpr));
+    const canvasH = Math.max(1, Math.round(lh * dpr));
 
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    g.font = `600 ${fs}px ${this.displayFamily}`;
-    g.textBaseline = 'alphabetic';
-    g.fillStyle = '#FFFFFF';
+    const renderWordTo = (
+      ctx2d: CanvasRenderingContext2D,
+      fillStyle: string,
+      shadowColor?: string,
+      shadowBlur?: number,
+    ) => {
+      ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx2d.font = fontStr(fs);
+      ctx2d.textBaseline = 'alphabetic';
+      ctx2d.fillStyle = fillStyle;
+      if (shadowColor && shadowBlur) {
+        ctx2d.shadowColor = shadowColor;
+        ctx2d.shadowBlur = shadowBlur;
+      }
+      let curX = pad / dpr;
+      const base = pad / dpr + fs * 0.78;
+      meas.font = fontStr(fs);
+      for (const ch of WORD) {
+        ctx2d.fillText(ch, curX, base);
+        curX += meas.measureText(ch).width + fs * TRACK;
+      }
+    };
 
-    let curX = pad;
-    const base = pad + fs * 0.75;
-    for (const ch of WORD) {
-      g.fillText(ch, curX, base);
-      meas.font = g.font;
-      curX += meas.measureText(ch).width + fs * TRACK;
-    }
+    // 1. Solid crisp typography with punchy drop-shadow
+    const cSolid = document.createElement('canvas');
+    cSolid.width = canvasW;
+    cSolid.height = canvasH;
+    const gSolid = cSolid.getContext('2d', { willReadFrequently: true })!;
+    renderWordTo(gSolid, '#FFFFFF', 'rgba(255, 255, 255, 0.85)', 10 * dpr);
+    this.wordSolid = cSolid;
 
-    // Sample pixels from the rendered text
-    const imgData = g.getImageData(0, 0, c.width, c.height).data;
+    // 2. Medium radiant bloom
+    const cGlow = document.createElement('canvas');
+    cGlow.width = canvasW;
+    cGlow.height = canvasH;
+    const gGlow = cGlow.getContext('2d')!;
+    renderWordTo(gGlow, 'rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.95)', 26 * dpr);
+    this.wordGlow = cGlow;
+
+    // 3. Wide ethereal atmospheric halo
+    const cHalo = document.createElement('canvas');
+    cHalo.width = canvasW;
+    cHalo.height = canvasH;
+    const gHalo = cHalo.getContext('2d')!;
+    renderWordTo(gHalo, 'rgba(255, 255, 255, 0.35)', 'rgba(255, 255, 255, 0.60)', 55 * dpr);
+    this.wordHalo = cHalo;
+
+    // Sample pixels from the rendered crisp text
+    const imgData = gSolid.getImageData(0, 0, canvasW, canvasH).data;
     const xs: number[] = [];
     const ys: number[] = [];
     const cs: number[] = [];
 
-    // Step size tuned to dpr so density is consistent
-    const step = Math.max(2, Math.round(2.2 * dpr));
-    for (let py = 0; py < c.height; py += step) {
-      for (let px = 0; px < c.width; px += step) {
-        const idx = (py * c.width + px) * 4;
+    // Dense step size for rich particle coverage
+    const step = Math.max(2, Math.round(1.8 * dpr));
+    for (let py = 0; py < canvasH; py += step) {
+      for (let px = 0; px < canvasW; px += step) {
+        const idx = (py * canvasW + px) * 4;
         const a = imgData[idx + 3];
-        if (a > 110) {
+        if (a > 120) {
           xs.push(lx + px / dpr);
           ys.push(ly + py / dpr);
           const r = Math.random();
-          cs.push(r < 0.65 ? 0 : 1); // pure white and silver stardust
+          cs.push(r < 0.7 ? 0 : 1); // pure white and silver stardust
         }
       }
     }
 
     const n = xs.length;
     this.n = n;
-    this.dot = 3.0;
+    this.dot = 3.2;
     const F = (len: number) => new Float32Array(len);
     this.tx = F(n);
     this.ty = F(n);
@@ -226,7 +274,7 @@ export class FinaleAct implements Act {
     const flash = blown ? Math.exp(-since * 3.2) : 0; // white-out
     const boom = blown ? Math.exp(-since * 0.9) : 0; // lingering bloom
     const e = easeOutExpo(clamp((L - D) / 0.3)); // ejecta: instant burst, long hang
-    const c = clamp((L - 0.54) / 0.37); // coalescence
+    const c = clamp((L - 0.54) / 0.37); // coalescence (particles flying to wordmark)
     const settle = smoothstep(0.86, 0.97, L);
     const R = Math.hypot(w, h) * 0.55;
 
@@ -366,12 +414,42 @@ export class FinaleAct implements Act {
 
     // ejecta → logo --------------------------------------------------------
     if (blown && this.n > 0) {
-      // PHYSICSMN ILLUMINATION & RADIANT GLOW
-      // When settle > 0.02, the wordmark lights up with an ethereal starlight bloom
+      // 1. Render the illuminated wordmark (solid letters + medium glow + wide halo)
+      // As particles arrive (c > 0.35), the letters ignite into full brilliance.
+      if (this.wordSolid && this.wordLw > 0) {
+        const haloA = smoothstep(0.35, 0.85, c) * weight * 0.75;
+        const glowA = smoothstep(0.50, 0.90, c) * weight * 0.90;
+        const solidA = smoothstep(0.68, 0.95, c) * weight;
+
+        const breathe = 0.95 + 0.05 * Math.sin(t * 2.8);
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+
+        // Wide atmospheric halo
+        if (haloA > 0.005 && this.wordHalo) {
+          ctx.globalAlpha = haloA * breathe;
+          ctx.drawImage(this.wordHalo, this.wordLx, this.wordLy, this.wordLw, this.wordLh);
+        }
+
+        // Medium radiant bloom
+        if (glowA > 0.005 && this.wordGlow) {
+          ctx.globalAlpha = glowA * breathe;
+          ctx.drawImage(this.wordGlow, this.wordLx, this.wordLy, this.wordLw, this.wordLh);
+        }
+
+        // Crisp solid typography
+        if (solidA > 0.005) {
+          ctx.globalAlpha = solidA;
+          ctx.drawImage(this.wordSolid, this.wordLx, this.wordLy, this.wordLw, this.wordLh);
+        }
+
+        ctx.restore();
+      }
+
+      // 2. Anamorphic horizontal gleam and starlight pillars
       if (settle > 0.02 && this.wordWidth > 10) {
-        // Fade the canvas glow out in phase 2 (settle 0.55→0.82) — matches particle dissolve
-        const glowFade = clamp(1 - smoothstep(0.55, 0.82, settle), 0, 1);
-        const settleAura = smoothstep(0.02, 0.55, settle) * weight * glowFade;
+        const settleAura = smoothstep(0.02, 0.75, settle) * weight;
         const breathe = 0.88 + 0.12 * Math.sin(t * 2.8);
         const intensity = settleAura * breathe;
 
@@ -406,6 +484,7 @@ export class FinaleAct implements Act {
         }
       }
 
+      // 3. Particles flying in, igniting the letters, and sparkling
       const gain = interactionGain(weight) * settle;
       const step = Math.min(3, dt * 60);
       const spriteBy = [sprites.white, sprites.silver];
@@ -463,25 +542,21 @@ export class FinaleAct implements Act {
 
         const twinkle = 0.78 + 0.22 * Math.sin(t * 2.6 * motion + this.tw[i]);
         const hotSprite = sprites.white;
-        const sprite = ci > 0.55 ? spriteBy[this.col[i]] : hotSprite;
+        const sprite = ci > 0.65 ? spriteBy[this.col[i]] : hotSprite;
         const size = (3.6 + 4 * (1 - e)) * (1 - ci) + sizeSettled * ci;
         const near = gain > 0.01 ? 1 + 0.35 * Math.max(0, 1 - Math.hypot(x - mx, y - my) / HOVER_R) : 1;
-        
-        // Phase 1 (settle 0→0.55): particles brighten and assemble — HTML not visible yet.
-        // Phase 2 (settle 0.55→0.82): particles dissolve away completely — clean slate.
-        // Phase 3 (settle 0.82→1.0): HTML wordmark fades in on empty space.
-        // dissolveFade goes 1→0 strictly within settle 0.55–0.82 so both layers
-        // never co-exist and the swap feels like a clean cut-through-light.
-        const dissolveFade = clamp(1 - smoothstep(0.55, 0.82, settle), 0, 1);
-        const peakSettle = Math.min(settle, 0.55) / 0.55; // 0→1 during phase 1 only
-        const lightUpScale = 1 + 0.3 * peakSettle;
-        const lightUpAlpha = (0.8 + 0.2 * ci) * twinkle * weight * (1 + 0.4 * peakSettle) * dissolveFade;
-        drawSprite(ctx, sprite, x, y, size * near * lightUpScale, lightUpAlpha);
 
-        // Extra radiant starlight sparkle — only during phase 1
-        if (settle > 0.15 && settle < 0.55 && i % 6 === 0) {
+        // When in flight (ci < 0.8), particles are bright, hot embers.
+        // As they hit the letterforms (ci -> 1), their impact ignites the letter,
+        // and the particle seamlessly integrates into the glowing letter's stardust texture.
+        const flightAlpha = (1 - smoothstep(0.75, 1.0, ci) * 0.65);
+        const pAlpha = (0.85 + 0.15 * ci) * twinkle * weight * flightAlpha;
+        drawSprite(ctx, sprite, x, y, size * near, pAlpha);
+
+        // Extra radiant starlight sparkles dancing along the letter contours
+        if (ci > 0.85 && i % 5 === 0) {
           const spSpark = 0.5 + 0.5 * Math.sin(t * 5.0 + this.tw[i] * 3.0);
-          drawSprite(ctx, sprites.white, x, y, size * 2.2, 0.4 * peakSettle * spSpark * weight);
+          drawSprite(ctx, sprites.white, x, y, size * 2.2, 0.6 * spSpark * weight * (0.4 + 0.6 * settle));
         }
       }
       this.streaks.flush(ctx);

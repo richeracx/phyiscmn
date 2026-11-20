@@ -145,7 +145,7 @@ export class CosmosEngine {
     try {
       await Promise.all([
         document.fonts.load(`400 12px ${this.monoFamily}`, '.·:+*#%@∑ΔθλπΩ'),
-        document.fonts.load(`400 100px ${display}`, 'PHYSICSMN'),
+        document.fonts.load(`700 100px ${display}`, 'PHYSICSMN'),
       ]);
       await document.fonts.ready;
     } catch {
