@@ -18,8 +18,8 @@ export function Odyssey() {
   return (
     <main ref={containerRef} style={{ height: '300vh', position: 'relative' }}>
       <div
-        style={{ width: '100vw', height: '100vh', position: 'sticky', top: 0 }}
-        className="overflow-hidden bg-black"
+        style={{ width: '100vw', height: '100dvh', position: 'sticky', top: 0 }}
+        className="overflow-hidden bg-black h-screen h-[100dvh]"
       >
         <CosmicCanvas progress={progress} />
 

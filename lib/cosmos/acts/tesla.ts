@@ -176,8 +176,8 @@ export class TeslaAct implements Act {
     const dw = img.naturalWidth * s;
     const dh = img.naturalHeight * s;
     const ox = clamp(this.w / 2 - FOCAL_X * dw, this.w - dw, 0);
-    // < 768px: shift the face upward so the bottom caption never covers it
-    const lift = this.w < 768 ? this.h * 0.1 : 0;
+    // < 1024px: shift the face upward into the upper viewport so the bottom card never collides with it
+    const lift = this.w < 1024 ? this.h * 0.16 : 0;
     const oy = (this.h - dh) / 2 - lift;
     return { dw, dh, ox, oy };
   }

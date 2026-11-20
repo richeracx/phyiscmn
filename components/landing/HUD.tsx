@@ -10,7 +10,7 @@ export function HUD() {
   const { activeAct: active, jumpTo } = useOdyssey();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 sm:px-10">
+    <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-3.5 sm:px-10 sm:py-6 bg-gradient-to-b from-black/80 via-black/30 to-transparent backdrop-blur-[2px]">
       <button
         type="button"
         onClick={() => jumpTo(0)}
@@ -21,6 +21,27 @@ export function HUD() {
           PHYSICSMN
         </span>
       </button>
+
+      {/* Mobile Chapter Progress Dots */}
+      <div className="flex items-center gap-2 lg:hidden">
+        {t.chapters.map(([num, name], i) => {
+          const on = i === active;
+          return (
+            <button
+              key={num}
+              type="button"
+              onClick={() => {
+                soundController.playButtonClick();
+                jumpTo(i);
+              }}
+              aria-label={`Bölüm ${num}: ${name}`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                on ? 'w-5 bg-white' : 'w-1.5 bg-white/30 hover:bg-white/60'
+              }`}
+            />
+          );
+        })}
+      </div>
 
       <div className="flex items-center gap-6 lg:gap-10">
         <nav aria-label="Bölümler" className="hidden items-center gap-6 lg:flex xl:gap-8 font-sans">
@@ -74,7 +95,7 @@ export function HUD() {
             href="/solve"
             onMouseEnter={() => soundController.playButtonHover()}
             onClick={() => soundController.playButtonClick()}
-            className="rounded-full bg-white px-5 py-2 font-sans text-[13px] font-medium text-black transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98]"
+            className="rounded-full bg-white px-4 py-1.5 sm:px-5 sm:py-2 font-sans text-[12.5px] sm:text-[13px] font-medium text-black transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98]"
           >
             {t.openSolver}
           </Link>

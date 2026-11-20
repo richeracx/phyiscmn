@@ -15,7 +15,7 @@ import { useOdyssey } from './ScrollProvider';
  *
  * Positioned in the lower half of the screen with a smooth upward pull
  * so it NEVER collides with the particle wordmark PHYSICSMN.
- * Features a frosted glass pill button saying "START SOLVING".
+ * Features a frosted glass pill button saying "ÇÖZÜME BAŞLA".
  */
 export function ActExplosionFinale() {
   const { activeAct } = useOdyssey();
@@ -36,32 +36,32 @@ export function ActExplosionFinale() {
   return (
     <motion.section
       style={{ opacity, y, pointerEvents, visibility }}
-      className="absolute inset-x-0 bottom-8 top-[38%] z-20 flex flex-col items-center justify-start px-6 text-center md:top-[36%]"
+      className="absolute inset-x-0 bottom-6 sm:bottom-8 top-[35%] sm:top-[38%] z-20 flex flex-col items-center justify-start px-4 sm:px-6 text-center"
     >
       <div className="flex max-w-2xl flex-col items-center">
-        <span className="mb-3 inline-flex items-center gap-2 font-sans text-[12px] font-medium uppercase tracking-[0.25em] text-white/50">
+        <span className="mb-2.5 sm:mb-3 inline-flex items-center gap-2 font-sans text-[11px] sm:text-[12px] font-medium uppercase tracking-[0.25em] text-white/50">
           <Sparkles size={13} className="text-white/70" />
           <span>03 // ÇÖZÜM</span>
         </span>
 
-        <p className="mt-2 max-w-lg font-sans text-[16px] font-light leading-relaxed text-[#A1A1AA] sm:text-[18px]">
+        <p className="mt-1.5 sm:mt-2 max-w-lg font-sans text-[14.5px] sm:text-[16px] lg:text-[18px] font-light leading-relaxed text-[#A1A1AA]">
           MEB lise fizik müfredatına tam uyumlu adım adım LaTeX türetimleri.
         </p>
 
         {/* Translucent Frosted Glass Pill Button saying "ÇÖZÜME BAŞLA" */}
-        <div className="mt-8 flex flex-col items-center">
+        <div className="mt-6 sm:mt-8 flex flex-col items-center">
           <Link
             href="/solve"
             onMouseEnter={() => soundController.playButtonHover()}
             onClick={() => soundController.playButtonClick()}
-            className="group relative inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/[0.08] px-10 py-4 font-sans text-[14px] font-medium tracking-[0.08em] text-white shadow-[0_0_30px_rgba(255,255,255,0.06),inset_0_1px_1px_rgba(255,255,255,0.3)] backdrop-blur-xl transition-all duration-300 hover:scale-[1.03] hover:border-white/40 hover:bg-white/[0.16] hover:shadow-[0_0_40px_rgba(255,255,255,0.18)] active:scale-[0.98]"
+            className="group relative inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/[0.08] px-7 py-3.5 sm:px-10 sm:py-4 font-sans text-[13px] sm:text-[14px] font-medium tracking-[0.08em] text-white shadow-[0_0_30px_rgba(255,255,255,0.06),inset_0_1px_1px_rgba(255,255,255,0.3)] backdrop-blur-xl transition-all duration-300 hover:scale-[1.03] hover:border-white/40 hover:bg-white/[0.16] hover:shadow-[0_0_40px_rgba(255,255,255,0.18)] active:scale-[0.98]"
           >
             <span>ÇÖZÜME BAŞLA</span>
             <ArrowRight size={17} strokeWidth={2} className="transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>
 
-        <div className="mt-8 flex items-center gap-5 font-sans text-[12px] tracking-wide text-white/40">
+        <div className="mt-6 sm:mt-8 flex items-center gap-4 sm:gap-5 font-sans text-[11.5px] sm:text-[12px] tracking-wide text-white/40">
           <Link href="/why" className="transition-colors duration-200 hover:text-white">
             Neden Physicsmn?
           </Link>
