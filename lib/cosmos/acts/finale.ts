@@ -369,9 +369,9 @@ export class FinaleAct implements Act {
       // PHYSICSMN ILLUMINATION & RADIANT GLOW
       // When settle > 0.02, the wordmark lights up with an ethereal starlight bloom
       if (settle > 0.02 && this.wordWidth > 10) {
-        // Fade the canvas glow out as the HTML wordmark materialises (settle > 0.5)
-        const glowFade = settle < 0.5 ? 1 : smoothstep(1, 0.5, settle);
-        const settleAura = smoothstep(0.02, 0.75, settle) * weight * glowFade;
+        // Fade the canvas glow out in phase 2 (settle 0.55→0.82) — matches particle dissolve
+        const glowFade = clamp(1 - smoothstep(0.55, 0.82, settle), 0, 1);
+        const settleAura = smoothstep(0.02, 0.55, settle) * weight * glowFade;
         const breathe = 0.88 + 0.12 * Math.sin(t * 2.8);
         const intensity = settleAura * breathe;
 
@@ -467,18 +467,21 @@ export class FinaleAct implements Act {
         const size = (3.6 + 4 * (1 - e)) * (1 - ci) + sizeSettled * ci;
         const near = gain > 0.01 ? 1 + 0.35 * Math.max(0, 1 - Math.hypot(x - mx, y - my) / HOVER_R) : 1;
         
-        // Particles dissolve as the HTML wordmark materialises over them.
-        // They peak at ~settle=0.5 (fully bright), then fade to near-zero by settle=1
-        // so the crisp HTML text becomes the final face of PHYSICSMN.
-        const dissolveFade = settle < 0.5 ? 1 : smoothstep(1, 0.5, settle);
-        const lightUpScale = 1 + 0.35 * Math.min(settle, 0.5) * 2;
-        const lightUpAlpha = (0.8 + 0.2 * ci) * twinkle * weight * (1 + 0.45 * Math.min(settle, 0.5) * 2) * dissolveFade;
+        // Phase 1 (settle 0→0.55): particles brighten and assemble — HTML not visible yet.
+        // Phase 2 (settle 0.55→0.82): particles dissolve away completely — clean slate.
+        // Phase 3 (settle 0.82→1.0): HTML wordmark fades in on empty space.
+        // dissolveFade goes 1→0 strictly within settle 0.55–0.82 so both layers
+        // never co-exist and the swap feels like a clean cut-through-light.
+        const dissolveFade = clamp(1 - smoothstep(0.55, 0.82, settle), 0, 1);
+        const peakSettle = Math.min(settle, 0.55) / 0.55; // 0→1 during phase 1 only
+        const lightUpScale = 1 + 0.3 * peakSettle;
+        const lightUpAlpha = (0.8 + 0.2 * ci) * twinkle * weight * (1 + 0.4 * peakSettle) * dissolveFade;
         drawSprite(ctx, sprite, x, y, size * near * lightUpScale, lightUpAlpha);
 
-        // Extra radiant starlight sparkle on selected particles during settle
-        if (settle > 0.15 && settle < 0.8 && i % 6 === 0) {
+        // Extra radiant starlight sparkle — only during phase 1
+        if (settle > 0.15 && settle < 0.55 && i % 6 === 0) {
           const spSpark = 0.5 + 0.5 * Math.sin(t * 5.0 + this.tw[i] * 3.0);
-          drawSprite(ctx, sprites.white, x, y, size * 2.2, 0.45 * Math.min(settle, 0.5) * 2 * spSpark * weight * dissolveFade);
+          drawSprite(ctx, sprites.white, x, y, size * 2.2, 0.4 * peakSettle * spSpark * weight);
         }
       }
       this.streaks.flush(ctx);

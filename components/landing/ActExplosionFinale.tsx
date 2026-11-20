@@ -15,104 +15,86 @@ import { soundController } from '@/lib/cosmos/audio';
 import { useOdyssey } from './ScrollProvider';
 
 /**
- * Act III Finale overlay.
+ * Act III Finale overlay — two sequenced layers:
  *
- * Two independent layers:
+ * PHASE 1 (canvas, settle 0→0.55): particles brighten & assemble.
+ * PHASE 2 (canvas, settle 0.55→0.82): particles dissolve away — empty stage.
+ * PHASE 3 (HTML, finale 0.90→1.0): crisp wordmark + CTA fade in on clean slate.
  *
- * 1. WORDMARK (top ~26% of screen, `absolute top-[22%]`):
- *    Large crisp HTML "PHYSICSMN" that fades in as the canvas particles dissolve.
- *    Layered CSS glow (blur-sm + drop-shadow stack) for the cinematic look.
- *
- * 2. CTA PANEL (bottom, `justify-end`):
- *    Tagline → stats → solid-white CTA → ghost links
- *
- * Both are gated behind telemetry.finale > 0.86 so the canvas explosion always
- * takes visual precedence.
+ * The two phases never overlap, so the swap always looks like a clean cut-through-light.
  */
 export function ActExplosionFinale() {
   const { activeAct } = useOdyssey();
-  const rawOpacity = useMotionValue(0);
+
+  // CTA panel: starts at finale=0.86
+  const rawCtaOpacity = useMotionValue(0);
+  // Wordmark: delayed — starts only at finale=0.91, after particles are fully gone
+  const rawWordOpacity = useMotionValue(0);
 
   useAnimationFrame(() => {
-    const target = activeAct === 2 ? smoothstep(0.86, 0.96, telemetry.finale) : 0;
-    if (Math.abs(target - rawOpacity.get()) > 0.001) rawOpacity.set(target);
+    const isActive = activeAct === 2;
+    const ctaTarget = isActive ? smoothstep(0.86, 0.96, telemetry.finale) : 0;
+    const wordTarget = isActive ? smoothstep(0.91, 1.0, telemetry.finale) : 0;
+    if (Math.abs(ctaTarget - rawCtaOpacity.get()) > 0.001) rawCtaOpacity.set(ctaTarget);
+    if (Math.abs(wordTarget - rawWordOpacity.get()) > 0.001) rawWordOpacity.set(wordTarget);
   });
 
-  const opacity = useSpring(rawOpacity, { stiffness: 60, damping: 20 });
-  const y = useTransform(opacity, [0, 1], [52, 0]);
-  const pointerEvents = useTransform(rawOpacity, (v) => (v > 0.5 ? 'auto' : 'none'));
-  const visibility = useTransform(rawOpacity, (v) => (v < 0.01 ? 'hidden' : 'visible'));
+  // CTA panel: gentle rise with upward translate
+  const ctaOpacity = useSpring(rawCtaOpacity, { stiffness: 55, damping: 22 });
+  const ctaY = useTransform(ctaOpacity, [0, 1], [40, 0]);
+  const ctaPointer = useTransform(rawCtaOpacity, (v) => (v > 0.5 ? 'auto' : 'none'));
+  const ctaVisibility = useTransform(rawCtaOpacity, (v) => (v < 0.01 ? 'hidden' : 'visible'));
 
-  // Wordmark: starts fading in slightly ahead of the CTA panel
-  const wordmarkScale = useTransform(opacity, [0, 1], [0.88, 1]);
+  // Wordmark: very stiff spring for a snappy, confident reveal — no scale transform
+  const wordOpacity = useSpring(rawWordOpacity, { stiffness: 80, damping: 18 });
+  const wordVisibility = useTransform(rawWordOpacity, (v) => (v < 0.01 ? 'hidden' : 'visible'));
 
   const tagline = 'MEB müfredatına uygun · adım adım garantili';
   const letters = tagline.split('');
 
   return (
-    <motion.section
-      style={{ opacity, pointerEvents, visibility }}
-      className="absolute inset-0 z-20 flex flex-col items-center"
-    >
-      {/* ── WORDMARK ─────────────────────────────────────────────────────────────
-          Positioned in the same upper-third band as the canvas word so it
-          materialises exactly on top of the dissolving particles.
-          Three stacked filter layers create the cinematic luminous glow. */}
+    // Wrapper — no opacity here; each child drives its own
+    <div className="absolute inset-0 z-20 pointer-events-none">
+
+      {/* ── WORDMARK ───────────────────────────────────────────────────────────
+          Fades in after particles dissolve (finale ≥ 0.91).
+          Three blur layers give cinematic luminous depth without motion blur. */}
       <motion.div
-        style={{ scale: wordmarkScale }}
-        className="absolute top-[18%] sm:top-[20%] inset-x-0 flex items-center justify-center px-4"
+        style={{ opacity: wordOpacity, visibility: wordVisibility }}
+        className="absolute top-[18%] sm:top-[20%] inset-x-0 flex items-center justify-center px-4 pointer-events-none select-none"
       >
-        {/* Outermost: wide, very soft halo */}
-        <div
+        {/* Layer 1 — wide soft corona */}
+        <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 flex items-center justify-center"
+          className="absolute font-display font-black tracking-[0.08em] uppercase
+            text-[clamp(2.6rem,10vw,7.5rem)] text-white/12 blur-3xl"
         >
-          <span
-            className="
-              font-display font-black tracking-[0.08em] uppercase select-none
-              text-[clamp(2.6rem,10vw,7.5rem)]
-              text-white/10
-              blur-2xl
-            "
-          >
-            PHYSICSMN
-          </span>
-        </div>
-        {/* Middle: medium bloom */}
-        <div
+          PHYSICSMN
+        </span>
+        {/* Layer 2 — medium bloom */}
+        <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 flex items-center justify-center"
+          className="absolute font-display font-black tracking-[0.08em] uppercase
+            text-[clamp(2.6rem,10vw,7.5rem)] text-white/22 blur-lg"
         >
-          <span
-            className="
-              font-display font-black tracking-[0.08em] uppercase select-none
-              text-[clamp(2.6rem,10vw,7.5rem)]
-              text-white/20
-              blur-md
-            "
-          >
-            PHYSICSMN
-          </span>
-        </div>
-        {/* Foreground: sharp white letterforms with drop-shadow glow */}
+          PHYSICSMN
+        </span>
+        {/* Layer 3 — crisp foreground with glow */}
         <h1
-          className="
-            relative font-display font-black tracking-[0.08em] uppercase
-            text-[clamp(2.6rem,10vw,7.5rem)]
-            text-white
-            drop-shadow-[0_0_28px_rgba(255,255,255,0.75)]
-            [text-shadow:0_0_60px_rgba(255,255,255,0.45),0_0_120px_rgba(255,255,255,0.2)]
-            select-none
-          "
+          className="relative font-display font-black tracking-[0.08em] uppercase
+            text-[clamp(2.6rem,10vw,7.5rem)] text-white
+            drop-shadow-[0_0_32px_rgba(255,255,255,0.8)]
+            [text-shadow:0_0_80px_rgba(255,255,255,0.5),0_0_160px_rgba(255,255,255,0.18)]"
         >
           PHYSICSMN
         </h1>
       </motion.div>
 
-      {/* ── CTA PANEL ────────────────────────────────────────────────────────── */}
+      {/* ── CTA PANEL ──────────────────────────────────────────────────────────
+          Bottom-anchored — rises up and fades in independently. */}
       <motion.div
-        style={{ y }}
-        className="mt-auto w-full flex flex-col items-center pb-8 sm:pb-12 px-5 text-center"
+        style={{ opacity: ctaOpacity, y: ctaY, visibility: ctaVisibility, pointerEvents: ctaPointer }}
+        className="absolute inset-x-0 bottom-0 flex flex-col items-center pb-8 sm:pb-12 px-5 text-center"
       >
         {/* Tagline */}
         <div aria-label={tagline} className="mb-6 sm:mb-7 overflow-hidden">
@@ -132,20 +114,19 @@ export function ActExplosionFinale() {
           </p>
         </div>
 
-        {/* Stats row */}
+        {/* Stats — Kıyaslama Sorusu removed per user request */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-7 sm:mb-8 flex items-center gap-6 sm:gap-10"
+          className="mb-7 sm:mb-8 flex items-center gap-8 sm:gap-14"
         >
           {[
             { value: '94.7%', label: 'MEB Başarısı' },
-            { value: 'N=57', label: 'Kıyaslama Sorusu' },
             { value: '9–12', label: 'Sınıf Kapsamı' },
           ].map(({ value, label }) => (
             <div key={label} className="flex flex-col items-center gap-1">
-              <span className="font-display text-[18px] sm:text-[22px] font-semibold tracking-tight text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]">
+              <span className="font-display text-[20px] sm:text-[24px] font-semibold tracking-tight text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]">
                 {value}
               </span>
               <span className="font-sans text-[9.5px] sm:text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
@@ -157,7 +138,7 @@ export function ActExplosionFinale() {
 
         {/* Primary CTA */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.9, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-center gap-4"
@@ -173,11 +154,7 @@ export function ActExplosionFinale() {
               aria-hidden
             />
             <span className="relative">ÇÖZÜME BAŞLA</span>
-            <ArrowRight
-              size={16}
-              strokeWidth={2.5}
-              className="relative transition-transform duration-300 group-hover:translate-x-1"
-            />
+            <ArrowRight size={16} strokeWidth={2.5} className="relative transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
 
           {/* Ghost links */}
@@ -192,6 +169,6 @@ export function ActExplosionFinale() {
           </div>
         </motion.div>
       </motion.div>
-    </motion.section>
+    </div>
   );
 }
