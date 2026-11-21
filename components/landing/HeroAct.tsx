@@ -17,8 +17,11 @@ export function HeroAct() {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const sectionFilter = isMobile ? undefined : blur;
   const sectionScale = isMobile ? 1 : scale;
-  const h1InitialFilter = isMobile ? undefined : 'blur(10px)';
-  const h1AnimateFilter = isMobile ? undefined : 'blur(0px)';
+  const h1Initial = isMobile
+    ? { opacity: 1, y: 0 }
+    : { opacity: 0, y: 24, filter: 'blur(10px)' };
+  const h1Animate = isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: 'blur(0px)' };
+  const h1Transition = isMobile ? { duration: 0 } : { duration: 1.5, delay: 1.3, ease };
 
   return (
     <motion.section
@@ -37,10 +40,10 @@ export function HeroAct() {
       <motion.h1
         id="hero-title"
         key={t.hero.title}
-        initial={{ opacity: 0, y: 24, filter: h1InitialFilter }}
-        animate={{ opacity: 1, y: 0, filter: h1AnimateFilter }}
-        transition={{ duration: 1.5, delay: 1.3, ease }}
-        className="max-w-[16ch] font-display text-[clamp(2.4rem,7vw,7.5rem)] font-light leading-[0.98] tracking-[-0.03em] text-white max-md:font-semibold max-md:tracking-normal max-md:subpixel-antialiased"
+        initial={h1Initial}
+        animate={h1Animate}
+        transition={h1Transition}
+        className="max-w-[16ch] font-display text-[clamp(2.4rem,7vw,7.5rem)] font-light leading-[0.98] tracking-[-0.03em] text-white max-md:font-bold max-md:tracking-normal max-md:antialiased max-md:z-30"
       >
         {t.hero.title}
       </motion.h1>
