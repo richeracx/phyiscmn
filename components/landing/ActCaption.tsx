@@ -21,7 +21,7 @@ export function ActCaption({ act }: { act: 1 }) {
     >
       {/* Mobile: Anchored bottom frosted card to give Tesla full breathing room in top half.
           Desktop: Full-width transparent row flanked far left and far right. */}
-      <div className="w-full max-w-lg lg:max-w-none flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 lg:gap-16 bg-zinc-950/85 lg:bg-transparent backdrop-blur-2xl lg:backdrop-blur-none border border-white/10 lg:border-none rounded-2xl lg:rounded-none p-5 sm:p-6 lg:p-0 shadow-[0_16px_48px_rgba(0,0,0,0.85)] lg:shadow-none pointer-events-auto">
+      <div className="w-full max-w-lg lg:max-w-none flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 lg:gap-16 bg-zinc-950/85 lg:bg-transparent backdrop-blur-2xl lg:backdrop-blur-none max-md:backdrop-blur-none border border-white/10 lg:border-none rounded-2xl lg:rounded-none p-5 sm:p-6 lg:p-0 shadow-[0_16px_48px_rgba(0,0,0,0.85)] lg:shadow-none max-md:shadow-none pointer-events-auto">
         {/* Left: Text & Explanation */}
         <div className="flex w-full max-w-md xl:max-w-lg flex-col items-start shrink-0">
           <span className="mb-2 sm:mb-3.5 inline-block font-sans text-[11px] sm:text-[11.5px] font-medium uppercase tracking-[0.25em] text-white/50">
@@ -72,7 +72,7 @@ export function ActCaption({ act }: { act: 1 }) {
               href="/why"
               onMouseEnter={() => soundController.playButtonHover()}
               onClick={() => soundController.playButtonClick()}
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-4 py-2 sm:px-5 sm:py-3 font-sans text-[12.5px] sm:text-[13px] font-medium text-white shadow-[0_0_25px_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-white/40 hover:bg-white/[0.14] hover:shadow-[0_0_35px_rgba(255,255,255,0.12)] active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-4 py-2 sm:px-5 sm:py-3 font-sans text-[12.5px] sm:text-[13px] font-medium text-white shadow-[0_0_25px_rgba(255,255,255,0.05)] backdrop-blur-xl max-md:backdrop-blur-none transition-all duration-300 hover:border-white/40 hover:bg-white/[0.14] hover:shadow-[0_0_35px_rgba(255,255,255,0.12)] max-md:shadow-none max-md:hover:shadow-none active:scale-[0.98]"
             >
               <span>Neden Physicsmn? →</span>
             </Link>

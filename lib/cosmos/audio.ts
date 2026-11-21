@@ -19,7 +19,7 @@
 
 class SoundController {
   private ctx: AudioContext | null = null;
-  private muted = false; // Always on per requirements
+  private muted = false;
   private bgmAudio: HTMLAudioElement | null = null;
   private explosionAudio: HTMLAudioElement | null = null;
   private chargeAudio: HTMLAudioElement | null = null;
@@ -124,7 +124,7 @@ class SoundController {
   }
 
   public get isMuted() {
-    return false;
+    return this.muted;
   }
 
   public subscribe(fn: (muted: boolean) => void) {
@@ -135,22 +135,30 @@ class SoundController {
   }
 
   private notify() {
-    for (const fn of this.listeners) fn(false);
+    for (const fn of this.listeners) fn(this.muted);
   }
 
-  public toggleMute() {
-    // Sound is permanently on; ensure active
+  public mute() {
+    this.muted = true;
     this.initCtx();
-    this.muted = false;
-    if (this.bgmAudio && this.bgmAudio.paused) {
-      this.bgmAudio.play().catch(() => this.playSyntheticBgm());
-    }
+    if (this.bgmAudio) this.bgmAudio.muted = true;
     this.notify();
-    return false;
   }
 
   public unmute() {
-    this.toggleMute();
+    this.muted = false;
+    this.initCtx();
+    if (this.bgmAudio) this.bgmAudio.muted = false;
+    if (this.bgmAudio?.paused) {
+      this.bgmAudio.play().catch(() => this.playSyntheticBgm());
+    }
+    this.notify();
+  }
+
+  public toggleMute() {
+    if (this.muted) this.unmute();
+    else this.mute();
+    return this.muted;
   }
 
   public ensureBgmPlaying() {

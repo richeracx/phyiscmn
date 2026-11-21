@@ -71,50 +71,27 @@ async function callGpt6Luna(
     const errText = await res.text().catch(() => '');
     console.error(`[solver] GPT-6 Luna request failed (HTTP ${res.status}): ${errText}`);
 
-    let parsedError: { error?: { message?: string; type?: string; code?: string } } | null = null;
-    try {
-      parsedError = JSON.parse(errText);
-    } catch {}
-
-    const errorMessage = parsedError?.error?.message || errText || 'Unknown provider error';
-    const errorCode = parsedError?.error?.code;
-
     if (res.status === 401 || res.status === 403) {
-      throw new SolverError('not_configured', {
-        detail: `OpenAI authentication failed (${res.status}): ${errorMessage}`,
-      });
+      throw new SolverError('not_configured');
     }
 
     if (res.status === 429) {
-      const isQuota = errorCode === 'insufficient_quota' || errorMessage.toLowerCase().includes('quota');
-      throw new SolverError('model_busy', {
-        detail: isQuota
-          ? 'OpenAI quota exceeded. GPT-6 Luna requires a paid tier (Build/Launch/Grow) with available credits.'
-          : `OpenAI rate limit exceeded: ${errorMessage}`,
-      });
+      throw new SolverError('model_busy', { detail: 'The AI service is busy. Please try again in a moment.' });
     }
 
     if (res.status === 404) {
-      throw new SolverError('model_busy', {
-        detail: `GPT-6 Luna model access error: ${errorMessage}`,
-      });
+      throw new SolverError('model_busy', { detail: 'The AI model is not available right now. Please try again later.' });
     }
 
     if (res.status === 400) {
-      throw new SolverError('bad_request', {
-        detail: `OpenAI API request validation error: ${errorMessage}`,
-      });
+      throw new SolverError('bad_request', { detail: 'The AI service rejected the request. Please try again with a shorter problem.' });
     }
 
     if (res.status >= 500) {
-      throw new SolverError('model_busy', {
-        detail: `OpenAI service error (${res.status}). Please try again shortly.`,
-      });
+      throw new SolverError('model_busy', { detail: 'The AI service is temporarily unavailable. Please try again later.' });
     }
 
-    throw new SolverError('model_busy', {
-      detail: `GPT-6 Luna error (${res.status}): ${errorMessage}`,
-    });
+    throw new SolverError('model_busy', { detail: 'The AI service is temporarily unavailable. Please try again later.' });
   } catch (err) {
     if (err instanceof SolverError) throw err;
     if (signal.aborted) throw new SolverError('model_timeout', { cause: err });
@@ -129,7 +106,7 @@ async function callGpt6Luna(
 export async function* streamGptSolution(input: SolveInput, signal: AbortSignal): AsyncGenerator<string> {
   const apiKey = config.openaiApiKey();
   if (!apiKey) {
-    throw new SolverError('not_configured', { detail: 'OpenAI API key is missing. Set OPENAI_API_KEY in Vercel.' });
+    throw new SolverError('not_configured');
   }
 
   const url = `${config.openaiBaseUrl().replace(/\/+$/, '')}/chat/completions`;
@@ -203,7 +180,7 @@ export async function generateGptSolution(
 ): Promise<string> {
   const apiKey = config.openaiApiKey();
   if (!apiKey) {
-    throw new SolverError('not_configured', { detail: 'OpenAI API key is missing. Set OPENAI_API_KEY in Vercel.' });
+    throw new SolverError('not_configured');
   }
 
   const url = `${config.openaiBaseUrl().replace(/\/+$/, '')}/chat/completions`;

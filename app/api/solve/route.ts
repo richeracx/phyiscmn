@@ -24,10 +24,12 @@ function errorResponse(error: SolverError) {
 }
 
 function logFailure(stage: string, error: unknown) {
-  const code = error instanceof SolverError ? error.code : 'internal';
-  const cause = error instanceof SolverError ? error.cause : error;
-  const name = cause instanceof Error ? cause.name : typeof cause;
-  console.error(`[solver] ${stage} failed: ${code} (${name})`);
+  if (error instanceof SolverError) {
+    const detail = error.options.detail ? ` - ${error.options.detail}` : '';
+    console.error(`[solver] ${stage} failed: ${error.code}${detail}`, error.options.cause ?? '');
+  } else {
+    console.error(`[solver] ${stage} failed: internal`, error);
+  }
 }
 
 export async function POST(request: Request) {
@@ -39,10 +41,11 @@ export async function POST(request: Request) {
     assertSameOrigin(request);
     const limit = await rateLimit(clientAddress(request));
     if (!limit.ok) {
-      throw new SolverError('rate_limited', {
-        retryAfter: limit.retryAfter,
-        detail: 'Daily limit reached (20 derivations per day). Please return tomorrow.',
-      });
+      const detail =
+        limit.window === 'day'
+          ? 'Daily limit reached (20 derivations per day). Please return tomorrow.'
+          : `Too many requests. Please wait ${limit.retryAfter} seconds.`;
+      throw new SolverError('rate_limited', { retryAfter: limit.retryAfter, detail });
     }
     remaining = limit.remaining;
     resetAfter = limit.resetAfter;

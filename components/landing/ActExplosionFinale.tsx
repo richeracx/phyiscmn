@@ -73,7 +73,7 @@ export function ActExplosionFinale() {
           { value: '9–12', label: 'Sınıf Kapsamı' },
         ].map(({ value, label }) => (
           <div key={label} className="flex flex-col items-center gap-1">
-            <span className="font-display text-[20px] sm:text-[24px] font-semibold tracking-tight text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]">
+            <span className="font-display text-[20px] sm:text-[24px] font-semibold tracking-tight text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.6)] max-md:drop-shadow-none">
               {value}
             </span>
             <span className="font-sans text-[9.5px] sm:text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
@@ -94,7 +94,7 @@ export function ActExplosionFinale() {
           href="/solve"
           onMouseEnter={() => soundController.playButtonHover()}
           onClick={() => soundController.playButtonClick()}
-          className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-white px-8 py-3.5 sm:px-11 sm:py-4 font-sans text-[13.5px] sm:text-[14.5px] font-semibold tracking-[0.06em] text-black shadow-[0_0_40px_rgba(255,255,255,0.22),0_0_80px_rgba(255,255,255,0.08)] transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_60px_rgba(255,255,255,0.35),0_0_120px_rgba(255,255,255,0.14)] active:scale-[0.98]"
+          className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-white px-8 py-3.5 sm:px-11 sm:py-4 font-sans text-[13.5px] sm:text-[14.5px] font-semibold tracking-[0.06em] text-black shadow-[0_0_40px_rgba(255,255,255,0.22),0_0_80px_rgba(255,255,255,0.08)] max-md:shadow-none transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_60px_rgba(255,255,255,0.35),0_0_120px_rgba(255,255,255,0.14)] max-md:hover:shadow-none active:scale-[0.98]"
         >
           <span
             className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full"

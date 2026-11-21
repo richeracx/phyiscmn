@@ -1,8 +1,9 @@
 import 'server-only';
+import { isIPv4, isIPv6 } from 'node:net';
 import type { Lang } from '@/lib/i18n';
 import { SolverError } from '../errors';
 import { IMAGE_TYPES, LIMITS, type ImageType } from '../limits';
-import { config } from './config';
+import { config, normalizeOrigin } from './config';
 
 export interface SolveInput {
   problem: string;
@@ -10,30 +11,28 @@ export interface SolveInput {
   image?: { data: Buffer; mimeType: ImageType };
 }
 
-/** Rejects cross-site calls: the endpoint only serves this site's own pages. */
+const isValidAddress = (value: string) => Boolean(value) && (isIPv4(value) || isIPv6(value));
+
+/**
+ * Rejects cross-site calls. The allowlist contains platform-authenticated production
+ * hosts on Vercel plus explicit `SOLVER_ALLOWED_ORIGINS`. Client-supplied
+ * `x-forwarded-host` is intentionally not trusted.
+ */
 export function assertSameOrigin(request: Request) {
   const origin = request.headers.get('origin');
   const site = request.headers.get('sec-fetch-site');
   if (!origin || (site && site !== 'same-origin')) throw new SolverError('forbidden');
 
-  const allowed = config.allowedOrigins();
-  if (allowed.length > 0) {
-    if (!allowed.includes(origin)) throw new SolverError('forbidden');
-    return;
-  }
-  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
-  let originHost: string;
-  try {
-    originHost = new URL(origin).host;
-  } catch {
-    throw new SolverError('forbidden');
-  }
-  if (!host || originHost !== host) throw new SolverError('forbidden');
+  const normalized = normalizeOrigin(origin);
+  if (!normalized || !config.allowedOrigins().includes(normalized)) throw new SolverError('forbidden');
 }
 
 export function clientAddress(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  return request.headers.get('x-real-ip')?.trim() || forwarded || 'unknown';
+  const isOnVercel = Boolean(process.env.VERCEL);
+  const candidate = isOnVercel
+    ? request.headers.get('x-vercel-forwarded-for')?.trim() || request.headers.get('x-real-ip')?.trim() || 'unknown'
+    : 'unknown';
+  return isValidAddress(candidate) ? candidate : 'unknown';
 }
 
 const MAGIC: ReadonlyArray<{ type: ImageType; matches: (b: Buffer) => boolean }> = [

@@ -90,7 +90,7 @@ function parse(text: string): WorksheetResponse {
 export async function* solve(input: SolveInput, signal: AbortSignal): AsyncGenerator<SolverEvent> {
   const apiKey = config.openaiApiKey();
   if (!apiKey) {
-    throw new SolverError('not_configured', { detail: 'OpenAI API key is missing. Set OPENAI_API_KEY in Vercel.' });
+    throw new SolverError('not_configured');
   }
 
   yield { type: 'stage', stage: 'read' };

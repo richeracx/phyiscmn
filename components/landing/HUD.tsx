@@ -4,13 +4,15 @@ import Link from 'next/link';
 import { useLanguage } from '@/components/shared/LanguageProvider';
 import { soundController } from '@/lib/cosmos/audio';
 import { useOdyssey } from './ScrollProvider';
+import { MuteButton } from './MuteButton';
 
 export function HUD() {
   const { t } = useLanguage();
   const { activeAct: active, jumpTo } = useOdyssey();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-3.5 sm:px-10 sm:py-6 bg-gradient-to-b from-black/80 via-black/30 to-transparent backdrop-blur-[2px]">
+    <>
+      <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-3.5 sm:px-10 sm:py-6 bg-gradient-to-b from-black/80 via-black/30 to-transparent backdrop-blur-[2px] max-md:backdrop-blur-none">
       <button
         type="button"
         onClick={() => jumpTo(0)}
@@ -101,6 +103,8 @@ export function HUD() {
           </Link>
         </div>
       </div>
-    </header>
+      </header>
+      <MuteButton />
+    </>
   );
 }

@@ -21,6 +21,7 @@ export const telemetry = {
 };
 
 const MOUSE_LERP = 0.08;
+const MOBILE = typeof window !== 'undefined' && window.innerWidth < 768;
 
 export class CosmosEngine {
   private ctx: CanvasRenderingContext2D;
@@ -60,7 +61,8 @@ export class CosmosEngine {
     this.finale = new FinaleAct();
     this.acts = [new GenesisAct(), this.tesla, this.finale];
 
-    const ANCHORS_N = 600;
+    const ANCHORS_N = MOBILE ? 400 : 600;
+    const ATOMS_N = MOBILE ? 64 : 96;
     const bridgeX = new Float32Array(ANCHORS_N);
     const bridgeY = new Float32Array(ANCHORS_N);
     const bridgeOk = new Uint8Array(ANCHORS_N).fill(1);
@@ -82,14 +84,14 @@ export class CosmosEngine {
         const cx = f.w / 2;
         const cy = f.h / 2;
         const rMax = Math.min(f.w, f.h) * 0.42;
-        for (let i = 0; i < 96; i++) {
-          const u = i / 96;
+        for (let i = 0; i < ATOMS_N; i++) {
+          const u = i / ATOMS_N;
           const th = u * Math.PI * 2 * 3.618;
           const rad = Math.sqrt(u) * rMax;
           bridgeX[i] = cx + Math.cos(th) * rad;
           bridgeY[i] = cy + Math.sin(th) * rad * 0.82;
         }
-        return { x: bridgeX, y: bridgeY, n: 96 };
+        return { x: bridgeX, y: bridgeY, n: ATOMS_N };
       },
     };
 
@@ -167,7 +169,7 @@ export class CosmosEngine {
     const rect = this.canvas.getBoundingClientRect();
     const w = Math.max(1, Math.round(rect.width));
     const h = Math.max(1, Math.round(rect.height));
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, MOBILE ? 1.5 : 2);
     if (w === this.w && h === this.h && dpr === this.dpr) return;
     this.w = w;
     this.h = h;

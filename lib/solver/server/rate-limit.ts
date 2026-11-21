@@ -3,12 +3,14 @@ import { createHash } from 'node:crypto';
 import { config } from './config';
 
 interface Window {
-  name: string;
+  name: 'minute' | 'day';
   limit: number;
   seconds: number;
 }
 
 export const DAILY_LIMIT = 20;
+
+const MAX_MEMORY_KEYS = 2_000;
 
 const WINDOWS: readonly Window[] = [
   { name: 'minute', limit: 5, seconds: 60 },
@@ -17,7 +19,7 @@ const WINDOWS: readonly Window[] = [
 
 export type RateLimitResult =
   | { ok: true; remaining: number; resetAfter: number }
-  | { ok: false; retryAfter: number; remaining: 0 };
+  | { ok: false; retryAfter: number; remaining: 0; window: 'minute' | 'day' };
 
 interface Store {
   /** Increments the counter for `key` and returns its value and seconds until it resets. */
@@ -32,15 +34,21 @@ class MemoryStore implements Store {
     const entry = this.counters.get(key);
     if (!entry || entry.resetAt <= now) {
       this.counters.set(key, { count: 1, resetAt: now + seconds * 1000 });
-      if (this.counters.size > 10_000) this.prune(now);
+      this.prune(now);
       return { count: 1, resetIn: seconds };
     }
     entry.count += 1;
+    this.prune(now);
     return { count: entry.count, resetIn: Math.ceil((entry.resetAt - now) / 1000) };
   }
 
   private prune(now: number) {
     for (const [key, entry] of this.counters) if (entry.resetAt <= now) this.counters.delete(key);
+    while (this.counters.size > MAX_MEMORY_KEYS) {
+      const oldest = this.counters.keys().next();
+      if (oldest.done) break;
+      this.counters.delete(oldest.value);
+    }
   }
 }
 
@@ -80,17 +88,24 @@ const anonymise = (address: string) =>
 export async function rateLimit(address: string): Promise<RateLimitResult> {
   const id = anonymise(address);
   let retryAfter = 0;
+  let window: 'minute' | 'day' = 'day';
   let remaining = DAILY_LIMIT;
   let resetAfter = 86_400;
 
-  for (const window of WINDOWS) {
-    const { count, resetIn } = await getStore().hit(`solver:${window.name}:${id}`, window.seconds);
-    if (window.name === 'day') {
-      remaining = Math.max(0, window.limit - count);
+  for (const current of WINDOWS) {
+    const { count, resetIn } = await getStore().hit(`solver:${current.name}:${id}`, current.seconds);
+
+    if (count > current.limit && resetIn > retryAfter) {
+      retryAfter = resetIn;
+      window = current.name;
+    }
+
+    if (current.name === 'day') {
+      remaining = Math.max(0, current.limit - count);
       resetAfter = resetIn;
     }
-    if (count > window.limit) retryAfter = Math.max(retryAfter, resetIn);
   }
 
-  return retryAfter > 0 ? { ok: false, retryAfter, remaining: 0 } : { ok: true, remaining, resetAfter };
+  if (retryAfter > 0) return { ok: false, retryAfter, remaining: 0, window };
+  return { ok: true, remaining, resetAfter };
 }

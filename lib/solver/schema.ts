@@ -63,23 +63,26 @@ const diagramSchema = z.preprocess(
 ).default({ kind: 'none', surface: 'none', inclineDeg: 0, forces: [] });
 
 export const VerificationVariable = z.object({
-  symbol: z.string().describe('Alphanumeric symbol, e.g. m, v, theta, g'),
+  symbol: z.string().max(64).describe('Alphanumeric symbol, e.g. m, v, theta, g'),
   value: z.preprocess((val) => {
     const num = Number(val);
     return Number.isNaN(num) ? 0 : num;
   }, z.number()),
-  unit: z.preprocess((val) => (val == null ? '' : String(val).trim()), z.string().default('')),
+  unit: z.preprocess((val) => (val == null ? '' : String(val).trim()), z.string().max(64).default('')),
 });
 
 export const VerificationBlock = z.object({
-  variables: z.preprocess((val) => (Array.isArray(val) ? val : []), z.array(VerificationVariable)).default([]),
-  formula_expression: z.preprocess((val) => (val == null ? '' : String(val).trim()), z.string().default('')),
+  variables: z
+    .preprocess((val) => (Array.isArray(val) ? val : []), z.array(VerificationVariable).max(30))
+    .default([]),
+  formula_expression: z
+    .preprocess((val) => (val == null ? '' : String(val).trim()), z.string().max(500).default('')),
   claimed_value: z.preprocess((val) => {
     if (val == null || val === '') return undefined;
     const num = Number(val);
     return Number.isNaN(num) ? undefined : num;
   }, z.number().optional()),
-  claimed_unit: z.preprocess((val) => (val == null ? '' : String(val).trim()), z.string().default('')),
+  claimed_unit: z.preprocess((val) => (val == null ? '' : String(val).trim()), z.string().max(64).default('')),
 });
 
 export type VerificationBlock = z.infer<typeof VerificationBlock>;
@@ -270,7 +273,7 @@ export const SingleProblemSolution = z.object({
             )
             .default([]),
         }),
-      ),
+      ).max(25),
     )
     .default([]),
   answers: z
@@ -337,7 +340,7 @@ export const WorksheetResponse = z.preprocess((val) => {
   // Backward compatibility: If the model returned a single problem object directly
   return { problems: [raw] };
 }, z.object({
-  problems: z.array(SingleProblemSolution).min(1),
+  problems: z.array(SingleProblemSolution).min(1).max(10),
 }));
 
 export type WorksheetResponse = z.infer<typeof WorksheetResponse>;

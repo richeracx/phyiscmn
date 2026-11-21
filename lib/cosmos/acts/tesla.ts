@@ -15,6 +15,7 @@ const ROWS_TOTAL = LEVELS + 4;
 const FIELD_R = 160;
 /** Horizontal focal point (between the eyes) kept centred on narrow screens. */
 const FOCAL_X = 0.462;
+const MOBILE = typeof window !== 'undefined' && window.innerWidth < 768;
 
 /** Iris glyph offsets around the pupil, in cell units. */
 const IRIS_RING: [number, number][] = [
@@ -175,11 +176,15 @@ export class TeslaAct implements Act {
     const s = Math.max(this.w / img.naturalWidth, this.h / img.naturalHeight);
     const dw = img.naturalWidth * s;
     const dh = img.naturalHeight * s;
-    const ox = clamp(this.w / 2 - FOCAL_X * dw, this.w - dw, 0);
     // < 1024px: shift the face upward into the upper viewport so the bottom card never collides with it
     const lift = this.w < 1024 ? this.h * 0.16 : 0;
-    const oy = (this.h - dh) / 2 - lift;
-    return { dw, dh, ox, oy };
+    // Mobile-only downscale so Tesla fits mobile viewports without clipping or horizontal overflow.
+    const scale = MOBILE ? 0.9 : 1;
+    const dwM = dw * scale;
+    const dhM = dh * scale;
+    const ox = clamp(this.w / 2 - FOCAL_X * dwM, this.w - dwM, 0);
+    const oy = (this.h - dhM) / 2 - lift;
+    return { dw: dwM, dh: dhM, ox, oy };
   }
 
   private sample() {

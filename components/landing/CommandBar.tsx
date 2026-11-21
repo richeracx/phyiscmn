@@ -45,7 +45,7 @@ export function CommandBar() {
       <form
         onSubmit={submit}
         data-no-shock
-        className="flex w-full max-w-2xl items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.03] px-5 py-2.5 backdrop-blur-xl transition-colors duration-300 focus-within:border-white/40"
+        className="flex w-full max-w-2xl items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.03] px-5 py-2.5 backdrop-blur-xl max-md:backdrop-blur-none transition-colors duration-300 focus-within:border-white/40"
       >
         <input
           ref={inputRef}

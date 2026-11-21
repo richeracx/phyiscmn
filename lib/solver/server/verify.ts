@@ -1,4 +1,15 @@
-import { evaluate, isUnit, unit, type Unit } from 'mathjs';
+import {
+  parse,
+  isUnit,
+  unit,
+  type Unit,
+  type MathNode,
+  type ConstantNode,
+  type SymbolNode,
+  type OperatorNode,
+  type ParenthesisNode,
+  type FunctionNode,
+} from 'mathjs';
 import type { ModelSolution } from '../schema';
 
 export interface VerificationResult {
@@ -55,6 +66,70 @@ export function isDimensionless(u: string): boolean {
   return !u || /^(?:birim|unit|none|-|dimensionless|oran|adet)$/i.test(u);
 }
 
+// Strict AST allowlist for model-controlled verification formulas.
+const ALLOWED_OPERATOR_FNS = new Set(['add', 'subtract', 'multiply', 'divide', 'pow', 'mod', 'unaryPlus', 'unaryMinus']);
+const ALLOWED_FNS = new Set([
+  'sin',
+  'cos',
+  'tan',
+  'asin',
+  'acos',
+  'atan',
+  'atan2',
+  'sqrt',
+  'cbrt',
+  'abs',
+  'log',
+  'log10',
+  'exp',
+  'pow',
+  'min',
+  'max',
+  'round',
+  'floor',
+  'ceil',
+  'sign',
+]);
+const ALLOWED_SYMBOLS = new Set(['pi', 'e', 'tau', 'sqrt2', 'phi', 'Infinity']);
+
+const MAX_NODES = 150;
+const MAX_DEPTH = 64;
+
+function isSafeAst(node: MathNode, scope: Record<string, number | Unit>, state: { count: number; depth: number }): boolean {
+  state.count += 1;
+  if (state.count > MAX_NODES) return false;
+  state.depth += 1;
+  if (state.depth > MAX_DEPTH) return false;
+  try {
+    switch (node.type) {
+      case 'ConstantNode':
+        return typeof (node as ConstantNode).value === 'number';
+      case 'SymbolNode': {
+        const name = (node as SymbolNode).name;
+        return Object.prototype.hasOwnProperty.call(scope, name) || ALLOWED_SYMBOLS.has(name);
+      }
+      case 'OperatorNode': {
+        const opNode = node as OperatorNode;
+        if (typeof opNode.fn !== 'string' || !ALLOWED_OPERATOR_FNS.has(opNode.fn)) return false;
+        return opNode.args.every((arg) => isSafeAst(arg, scope, state));
+      }
+      case 'ParenthesisNode':
+        return isSafeAst((node as ParenthesisNode).content, scope, state);
+      case 'FunctionNode': {
+        const fnNode = node as FunctionNode;
+        if (fnNode.fn.type !== 'SymbolNode') return false;
+        const name = (fnNode.fn as SymbolNode).name;
+        if (!ALLOWED_FNS.has(name)) return false;
+        return fnNode.args.every((arg) => isSafeAst(arg, scope, state));
+      }
+      default:
+        return false;
+    }
+  } finally {
+    state.depth -= 1;
+  }
+}
+
 /**
  * Deterministic neuro-symbolic verifier using mathjs.
  * Audits numerical consistency and SI base dimensional equality ([M]^a [L]^b [T]^c).
@@ -99,10 +174,18 @@ export function verifyPhysicsSolution(solution: ModelSolution): VerificationResu
   expr = expr.replace(/\\left|\\right/g, '');
   expr = expr.replace(/\\sin/g, 'sin').replace(/\\cos/g, 'cos').replace(/\\tan/g, 'tan');
 
-  // 3. Evaluate inside mathjs
+  // 3. Parse and audit the AST before evaluation
   let evaluated: unknown;
   try {
-    evaluated = evaluate(expr, scope);
+    const root = parse(expr);
+    if (!isSafeAst(root, scope, { count: 0, depth: 0 })) {
+      return {
+        passed: false,
+        mathVerified: false,
+        errorReason: `Unsafe formula expression rejected by the verifier for "${expr}". Use only basic arithmetic and math functions such as sin, cos, sqrt, log, or exp.`,
+      };
+    }
+    evaluated = root.evaluate(scope);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     return {

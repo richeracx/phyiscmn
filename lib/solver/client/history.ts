@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import type { Solution } from '../schema';
 
 export interface HistoryItem {
@@ -15,6 +16,104 @@ export interface HistoryItem {
 const STORAGE_KEY = 'physicsmn.solution_history';
 const MAX_HISTORY_ITEMS = 30;
 
+const MAX_TEXT = 20_000;
+const MAX_HTML = 50_000;
+const MAX_ARRAY = 50;
+
+const richTextSchema = z
+  .array(
+    z.discriminatedUnion('kind', [
+      z.object({ kind: z.literal('text'), value: z.string().max(MAX_TEXT) }),
+      z.object({ kind: z.literal('math'), html: z.string().max(MAX_HTML) }),
+    ]),
+  )
+  .max(MAX_ARRAY);
+
+const compiledProblemSchema = z.object({
+  topic: z.object({
+    grade: z.number().int().min(9).max(12),
+    unit: z.string().max(200),
+    title: z.string().max(500),
+  }),
+  statement: richTextSchema,
+  given: z
+    .array(
+      z.object({
+        symbol: z.string().max(MAX_HTML),
+        value: z.string().max(MAX_HTML),
+        meaning: richTextSchema,
+      }),
+    )
+    .max(MAX_ARRAY),
+  find: z
+    .array(
+      z.object({
+        symbol: z.string().max(MAX_HTML),
+        meaning: richTextSchema,
+      }),
+    )
+    .max(MAX_ARRAY),
+  assumptions: z.array(richTextSchema).max(MAX_ARRAY),
+  principles: z
+    .array(
+      z.object({
+        name: z.string().max(1_000),
+        formula: z.string().max(MAX_HTML),
+      }),
+    )
+    .max(MAX_ARRAY),
+  steps: z
+    .array(
+      z.object({
+        title: z.string().max(1_000),
+        text: richTextSchema,
+        equations: z.array(z.string().max(MAX_HTML)).max(MAX_ARRAY),
+      }),
+    )
+    .max(25),
+  answers: z
+    .array(
+      z.object({
+        label: z.string().max(2_000),
+        expression: z.string().max(MAX_HTML),
+      }),
+    )
+    .max(MAX_ARRAY),
+  choice: z.enum(['', 'A', 'B', 'C', 'D', 'E']),
+  check: richTextSchema,
+  diagram: z.object({
+    kind: z.enum(['none', 'forces']),
+    surface: z.enum(['none', 'floor', 'incline']),
+    inclineDeg: z.number().min(0).max(89),
+    forces: z
+      .array(
+        z.object({
+          label: z.string().max(MAX_HTML),
+          angleDeg: z.number().min(0).max(360),
+          magnitude: z.number().min(0).max(1),
+        }),
+      )
+      .max(30),
+  }),
+  mathVerified: z.boolean().optional(),
+});
+
+const solutionSchema = compiledProblemSchema.extend({
+  problems: z.array(compiledProblemSchema).max(10).optional(),
+});
+
+const historyItemSchema = z.object({
+  id: z.string().min(1).max(200),
+  timestamp: z.number().nonnegative(),
+  topicTitle: z.string().max(500),
+  grade: z.number().int().min(9).max(12),
+  unit: z.string().max(200),
+  problemCount: z.number().int().min(1).max(10),
+  hasMathVerified: z.boolean(),
+  problemSnippet: z.string().max(200),
+  solution: solutionSchema,
+});
+
 export function getHistory(): HistoryItem[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -23,26 +122,28 @@ export function getHistory(): HistoryItem[] {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
 
-    // Deduplicate any duplicate entries that may have accumulated in storage
-    const seen = new Set<string>();
     const deduplicated: HistoryItem[] = [];
+    const seen = new Set<string>();
 
-    for (const item of parsed as HistoryItem[]) {
-      if (!item || !item.id) continue;
-      // Key by problem snippet or topicTitle + answer/choice
-      const answerKey = item.solution?.answers?.[0]?.expression || item.solution?.choice || item.id;
+    for (const item of parsed) {
+      const result = historyItemSchema.safeParse(item);
+      if (!result.success) continue;
+      const validItem = result.data as HistoryItem;
+
+      if (!validItem.id) continue;
+      const answerKey = validItem.solution?.answers?.[0]?.expression || validItem.solution?.choice || validItem.id;
       const key =
-        item.problemSnippet && item.problemSnippet.trim().length > 10
-          ? item.problemSnippet.trim()
-          : `${item.topicTitle}-${item.grade}-${answerKey}`;
+        validItem.problemSnippet && validItem.problemSnippet.trim().length > 10
+          ? validItem.problemSnippet.trim()
+          : `${validItem.topicTitle}-${validItem.grade}-${answerKey}`;
 
       if (!seen.has(key)) {
         seen.add(key);
-        deduplicated.push(item);
+        deduplicated.push(validItem);
       }
     }
 
-    // If duplicate records were pruned, update localStorage silently
+    // If duplicate records or malformed entries were pruned, update localStorage silently
     if (deduplicated.length !== parsed.length) {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(deduplicated));
     }
