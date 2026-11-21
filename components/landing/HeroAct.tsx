@@ -16,13 +16,14 @@ export function HeroAct() {
   const blur = useTransform(progress, [0.06, 0.15], ['blur(0px)', 'blur(6px)']);
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const sectionFilter = isMobile ? undefined : blur;
+  const sectionScale = isMobile ? 1 : scale;
   const h1InitialFilter = isMobile ? undefined : 'blur(10px)';
   const h1AnimateFilter = isMobile ? undefined : 'blur(0px)';
 
   return (
     <motion.section
       aria-labelledby="hero-title"
-      style={{ opacity, y, scale, filter: sectionFilter, pointerEvents, visibility }}
+      style={{ opacity, y, scale: sectionScale, filter: sectionFilter, pointerEvents, visibility }}
       className="absolute inset-0 z-20 flex flex-col items-center justify-center px-4 sm:px-6 text-center"
     >
       <motion.p
@@ -39,7 +40,7 @@ export function HeroAct() {
         initial={{ opacity: 0, y: 24, filter: h1InitialFilter }}
         animate={{ opacity: 1, y: 0, filter: h1AnimateFilter }}
         transition={{ duration: 1.5, delay: 1.3, ease }}
-        className="max-w-[16ch] font-display text-[clamp(2.4rem,7vw,7.5rem)] font-light leading-[0.98] tracking-[-0.03em] text-white max-md:font-medium max-md:tracking-normal"
+        className="max-w-[16ch] font-display text-[clamp(2.4rem,7vw,7.5rem)] font-light leading-[0.98] tracking-[-0.03em] text-white max-md:font-semibold max-md:tracking-normal max-md:subpixel-antialiased"
       >
         {t.hero.title}
       </motion.h1>
