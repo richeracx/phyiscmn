@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { History as HistoryIcon } from 'lucide-react';
 import { useLanguage } from '@/components/shared/LanguageProvider';
-import { SolvingLockGuard } from '@/lib/solver/client/solvingLock';
+import { SolvingLockGuard, useSolvingLock } from '@/lib/solver/client/solvingLock';
 
 interface SolverHeaderProps {
   historyCount?: number;
@@ -12,10 +12,13 @@ interface SolverHeaderProps {
 
 export function SolverHeader({ historyCount = 0, onOpenHistory }: SolverHeaderProps) {
   const { t } = useLanguage();
+  const isLocked = useSolvingLock();
+  const navLock = isLocked ? 'pointer-events-none opacity-50 select-none' : '';
+  const navDisabled = isLocked ? true : undefined;
   return (
     <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-black/70 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="group flex items-center text-[#F5F5F7]" aria-label={t.solver.back}>
+        <Link href="/" aria-disabled={navDisabled} className={`group flex items-center text-[#F5F5F7] ${navLock}`} aria-label={t.solver.back}>
           <span className="font-display text-[14px] font-semibold tracking-[0.16em]">
             PHYSICSMN
           </span>
@@ -23,13 +26,15 @@ export function SolverHeader({ historyCount = 0, onOpenHistory }: SolverHeaderPr
         <div className="flex items-center gap-4 sm:gap-6 font-sans">
           <Link
             href="/why"
-            className="hidden text-[12.5px] font-medium tracking-wide text-[#A1A1AA] transition-colors hover:text-[#F5F5F7] md:inline"
+            aria-disabled={navDisabled}
+            className={`hidden text-[12.5px] font-medium tracking-wide text-[#A1A1AA] transition-colors hover:text-[#F5F5F7] md:inline ${navLock}`}
           >
             Neden Physicsmn?
           </Link>
           <Link
             href="/docs"
-            className="hidden text-[12.5px] font-medium tracking-wide text-[#A1A1AA] transition-colors hover:text-[#F5F5F7] md:inline"
+            aria-disabled={navDisabled}
+            className={`hidden text-[12.5px] font-medium tracking-wide text-[#A1A1AA] transition-colors hover:text-[#F5F5F7] md:inline ${navLock}`}
           >
             Belgeler & Kıyaslama
           </Link>
@@ -37,7 +42,8 @@ export function SolverHeader({ historyCount = 0, onOpenHistory }: SolverHeaderPr
             <button
               type="button"
               onClick={onOpenHistory}
-              className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[12px] font-medium text-[#A1A1AA] transition-all duration-200 hover:border-white/20 hover:bg-white/[0.08] hover:text-[#F5F5F7]"
+              aria-disabled={navDisabled}
+              className={`flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[12px] font-medium text-[#A1A1AA] transition-all duration-200 hover:border-white/20 hover:bg-white/[0.08] hover:text-[#F5F5F7] ${navLock}`}
               title={t.solver.history.title}
             >
               <HistoryIcon size={13} className="text-[#E5C158]" />
@@ -51,7 +57,8 @@ export function SolverHeader({ historyCount = 0, onOpenHistory }: SolverHeaderPr
           )}
           <Link
             href="/"
-            className="hidden text-[12px] text-[#71717A] transition-colors hover:text-[#F5F5F7] sm:inline"
+            aria-disabled={navDisabled}
+            className={`hidden text-[12px] text-[#71717A] transition-colors hover:text-[#F5F5F7] sm:inline ${navLock}`}
           >
             ← {t.solver.back}
           </Link>

@@ -5,11 +5,14 @@ import { useLanguage } from '@/components/shared/LanguageProvider';
 import { soundController } from '@/lib/cosmos/audio';
 import { useOdyssey } from './ScrollProvider';
 import { MuteButton } from './MuteButton';
-import { SolvingLockGuard } from '@/lib/solver/client/solvingLock';
+import { SolvingLockGuard, useSolvingLock } from '@/lib/solver/client/solvingLock';
 
 export function HUD() {
   const { t } = useLanguage();
   const { activeAct: active, jumpTo } = useOdyssey();
+  const isLocked = useSolvingLock();
+  const navLock = isLocked ? 'pointer-events-none opacity-50 select-none' : '';
+  const navDisabled = isLocked ? true : undefined;
 
   return (
     <>
@@ -17,8 +20,9 @@ export function HUD() {
       <button
         type="button"
         onClick={() => jumpTo(0)}
-        className="flex items-center text-white transition-opacity hover:opacity-80"
+        className={`flex items-center text-white transition-opacity hover:opacity-80 ${navLock}`}
         aria-label="Physicsmn — ana sayfaya dön"
+        aria-disabled={navDisabled}
       >
         <span className="font-display text-[15px] font-semibold tracking-[0.14em] text-white">
           PHYSICSMN
@@ -38,7 +42,8 @@ export function HUD() {
                 jumpTo(i);
               }}
               aria-label={`Bölüm ${num}: ${name}`}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
+              aria-disabled={navDisabled}
+              className={`h-1.5 rounded-full transition-all duration-300 ${navLock} ${
                 on ? 'w-5 bg-white' : 'w-1.5 bg-white/30 hover:bg-white/60'
               }`}
             />
@@ -60,7 +65,8 @@ export function HUD() {
                   jumpTo(i);
                 }}
                 aria-current={on ? 'step' : undefined}
-                className={`group relative text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 ${
+                aria-disabled={navDisabled}
+                className={`group relative text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 ${navLock} ${
                   on ? 'text-white' : 'text-zinc-500 hover:text-white'
                 }`}
               >
@@ -79,7 +85,8 @@ export function HUD() {
             href="/why"
             onMouseEnter={() => soundController.playButtonHover()}
             onClick={() => soundController.playButtonClick()}
-            className="text-[13px] font-medium tracking-[0.02em] text-zinc-400 transition-colors duration-300 hover:text-white"
+            aria-disabled={navDisabled}
+            className={`text-[13px] font-medium tracking-[0.02em] text-zinc-400 transition-colors duration-300 hover:text-white ${navLock}`}
           >
             Neden Physicsmn?
           </Link>
@@ -87,7 +94,8 @@ export function HUD() {
             href="/docs"
             onMouseEnter={() => soundController.playButtonHover()}
             onClick={() => soundController.playButtonClick()}
-            className="text-[13px] font-medium tracking-[0.02em] text-zinc-400 transition-colors duration-300 hover:text-white"
+            aria-disabled={navDisabled}
+            className={`text-[13px] font-medium tracking-[0.02em] text-zinc-400 transition-colors duration-300 hover:text-white ${navLock}`}
           >
             Belgeler & Kıyaslama
           </Link>
@@ -98,7 +106,8 @@ export function HUD() {
             href="/solve"
             onMouseEnter={() => soundController.playButtonHover()}
             onClick={() => soundController.playButtonClick()}
-            className="rounded-full bg-white px-4 py-1.5 sm:px-5 sm:py-2 font-sans text-[12.5px] sm:text-[13px] font-medium text-black transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98]"
+            aria-disabled={navDisabled}
+            className={`rounded-full bg-white px-4 py-1.5 sm:px-5 sm:py-2 font-sans text-[12.5px] sm:text-[13px] font-medium text-black transition-all duration-300 hover:bg-neutral-200 active:scale-[0.98] ${navLock}`}
           >
             {t.openSolver}
           </Link>

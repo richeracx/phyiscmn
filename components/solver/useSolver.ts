@@ -19,11 +19,11 @@ export function useSolver() {
   useEffect(() => () => controller.current?.abort(), []);
 
   const solve = useCallback(async (request: SolveRequest) => {
+    setSolving(true);
     controller.current?.abort();
     const current = new AbortController();
     controller.current = current;
     setPhase({ kind: 'solving', stage: 'read', startedAt: Date.now() });
-    setSolving(true);
     try {
       const solution = await requestSolution(request, {
         signal: current.signal,

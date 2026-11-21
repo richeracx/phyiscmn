@@ -28,13 +28,22 @@ export function SolvingLockGuard() {
   const locked = useSolvingLock();
 
   useEffect(() => {
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!isSolving()) return;
-      const target = event.target as HTMLElement | null;
-      const link = target?.closest('a, button, [role="link"], [role="button"]');
-      if (!link) return;
+    const isNavTarget = (target: EventTarget | null) => Boolean(
+      target instanceof Element && target.closest('a, button, [role="link"], [role="button"]'),
+    );
+    const blockNavigation = (event: Event) => {
+      if (!isSolving() || !isNavTarget(event.target)) return;
       event.preventDefault();
       event.stopPropagation();
+      event.stopImmediatePropagation();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isSolving() || !isNavTarget(event.target)) return;
+      if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
     };
 
     const handlePopState = (event: PopStateEvent) => {
@@ -49,11 +58,15 @@ export function SolvingLockGuard() {
       event.returnValue = 'Çözüm devam ediyor, lütfen bekleyin.';
     };
 
-    document.addEventListener('pointerdown', handlePointerDown, true);
+    window.addEventListener('click', blockNavigation, true);
+    window.addEventListener('pointerdown', blockNavigation, true);
+    window.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('popstate', handlePopState);
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
-      document.removeEventListener('pointerdown', handlePointerDown, true);
+      window.removeEventListener('click', blockNavigation, true);
+      window.removeEventListener('pointerdown', blockNavigation, true);
+      window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
