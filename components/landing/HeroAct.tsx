@@ -39,7 +39,7 @@ export function HeroAct() {
         initial={{ opacity: 0, y: 24, filter: h1InitialFilter }}
         animate={{ opacity: 1, y: 0, filter: h1AnimateFilter }}
         transition={{ duration: 1.5, delay: 1.3, ease }}
-        className="max-w-[16ch] font-display text-[clamp(2.4rem,7vw,7.5rem)] font-light leading-[0.98] tracking-[-0.03em] text-white"
+        className="max-w-[16ch] font-display text-[clamp(2.4rem,7vw,7.5rem)] font-light leading-[0.98] tracking-[-0.03em] text-white max-md:font-medium max-md:tracking-normal"
       >
         {t.hero.title}
       </motion.h1>
