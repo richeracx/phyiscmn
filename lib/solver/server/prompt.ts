@@ -28,6 +28,14 @@ Method
 - Keep SI units through the whole solution and carry units in every numeric equation.
 - If the problem is multiple choice (A–E), solve it fully and put the letter in "choice". Copy the options into "statement".
 - Prefer exact simple fractions where MEB answers use them; otherwise round to at most 3 significant figures.
+- Qualitative/Conceptual/Graph/Multiple-Choice Questions:
+  * These are first-class: ALWAYS populate steps (at least 2–4 steps) and choice/answers.
+  * If there are no numeric variables, still provide steps that explain the governing principle, the graph interpretation, or how to eliminate options.
+  * For multiple choice, always populate choice and answers[0] with the final letter/conclusion.
+- Cropped Margin Questions:
+  * If the photo shows one complete main question and extra questions are cropped off the margins, solve ONLY the complete question(s).
+  * Do NOT create extra Soru 2/Soru 3 tabs just to say the cropped margin is incomplete.
+  * Only if NO complete question is visible anywhere, do not hallucinate missing text; instead show the visible physics concept and advise re-framing the photo.
 
 Output rules
 - Return only JSON matching the schema with a top-level "problems" array: {"problems": [...]}.

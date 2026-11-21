@@ -137,7 +137,7 @@ function isSafeAst(node: MathNode, scope: Record<string, number | Unit>, state: 
 export function verifyPhysicsSolution(solution: ModelSolution): VerificationResult {
   const vBlock = solution.verification;
 
-  // If no verification block or empty formula/variables, skip deterministic math audit gracefully
+  // Conceptual/graph/multiple-choice steps have no numeric formula_expression; pass cleanly.
   if (!vBlock || !vBlock.formula_expression || vBlock.variables.length === 0) {
     return { passed: true, mathVerified: false, skipped: true };
   }

@@ -53,11 +53,12 @@ export function SolutionView({ solution }: { solution: Solution }) {
       step.text[0].value === 'Çözüm adımları';
     return (textHasContent || eqHasContent) && !isPlaceholder;
   });
+  const hasSteps = current.steps.length > 0 || validSteps.length > 0;
 
   const isCompletelyEmpty =
     current.statement.length === 0 &&
     current.given.length === 0 &&
-    validSteps.length === 0 &&
+    !hasSteps &&
     validAnswers.length === 0 &&
     !current.choice;
 
@@ -209,7 +210,7 @@ export function SolutionView({ solution }: { solution: Solution }) {
         </section>
       )}
 
-      {validSteps.length > 0 && (
+      {hasSteps && (
         <section>
           <Label>{sections.solution}</Label>
           <ol className="mt-5 space-y-0">

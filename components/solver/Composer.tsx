@@ -140,6 +140,7 @@ export function Composer({
           <ImagePlus size={15} strokeWidth={1.5} />
           {photo ? copy.replacePhoto : copy.addPhoto}
         </button>
+        <span className="ml-1 text-[10.5px] text-[#52525B]">En doğru sonuç için yalnızca tek bir soruyu kadraja alın.</span>
         <span className="hidden font-mono text-[10.5px] tracking-[0.04em] text-[#5B5B63] lg:inline">{copy.photoHint}</span>
 
         <div className="ml-auto flex items-center gap-4">

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { requestSolution, type SolveRequest } from '@/lib/solver/client/api';
+import { setSolving } from '@/lib/solver/client/solvingLock';
 import { SolverError, type SolverErrorPayload } from '@/lib/solver/errors';
 import type { Solution, Stage } from '@/lib/solver/schema';
 
@@ -22,6 +23,7 @@ export function useSolver() {
     const current = new AbortController();
     controller.current = current;
     setPhase({ kind: 'solving', stage: 'read', startedAt: Date.now() });
+    setSolving(true);
     try {
       const solution = await requestSolution(request, {
         signal: current.signal,
@@ -29,7 +31,9 @@ export function useSolver() {
           setPhase((previous) => (previous.kind === 'solving' ? { ...previous, stage } : previous)),
       });
       if (!current.signal.aborted) setPhase({ kind: 'solved', solution, isRestored: false });
+      setSolving(false);
     } catch (error) {
+      setSolving(false);
       if (current.signal.aborted) return;
       const failure = error instanceof SolverError ? error : new SolverError('internal', { cause: error });
       setPhase({ kind: 'failed', error: failure.toPayload() });
@@ -37,13 +41,18 @@ export function useSolver() {
   }, []);
 
   const cancel = useCallback(() => {
+    setSolving(false);
     controller.current?.abort();
     setPhase({ kind: 'idle' });
   }, []);
 
-  const fail = useCallback((error: SolverErrorPayload) => setPhase({ kind: 'failed', error }), []);
+  const fail = useCallback((error: SolverErrorPayload) => {
+    setSolving(false);
+    setPhase({ kind: 'failed', error });
+  }, []);
 
   const restore = useCallback((solution: Solution) => {
+    setSolving(false);
     controller.current?.abort();
     setPhase({ kind: 'solved', solution, isRestored: true });
   }, []);

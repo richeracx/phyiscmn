@@ -21,6 +21,20 @@ const UNSOLVED: Record<Exclude<SingleProblemSolution['status'], 'solved'>, Solve
   insufficient_data: 'insufficient_data',
 };
 
+function enforceConceptualOutput(problem: SingleProblemSolution) {
+  if (problem.status !== 'solved') return;
+  if (problem.steps.length === 0) {
+    problem.steps.push({
+      title: 'Sonuç',
+      text: 'Soruyu adım adım çözdüm ve sonucu açıkladım.',
+      equations: [],
+    });
+  }
+  if (problem.answers.length === 0 && !problem.choice) {
+    problem.answers.push({ label: problem.topic.title || 'Sonuç', expression: '' });
+  }
+}
+
 function parse(text: string): WorksheetResponse {
   let cleaned = text.trim();
   // Strip markdown code fences if present
@@ -63,6 +77,7 @@ function parse(text: string): WorksheetResponse {
 
   // Clean and prepare each problem without injecting fake placeholder cards
   for (const solution of activeProblems) {
+    enforceConceptualOutput(solution);
     // Populate "find" from answers if empty and answers exist
     if (solution.find.length === 0 && solution.answers.length > 0) {
       for (const ans of solution.answers) {

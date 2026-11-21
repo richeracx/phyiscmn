@@ -5,6 +5,7 @@ import { useLanguage } from '@/components/shared/LanguageProvider';
 import { soundController } from '@/lib/cosmos/audio';
 import { useOdyssey } from './ScrollProvider';
 import { MuteButton } from './MuteButton';
+import { SolvingLockGuard } from '@/lib/solver/client/solvingLock';
 
 export function HUD() {
   const { t } = useLanguage();
@@ -105,6 +106,7 @@ export function HUD() {
       </div>
       </header>
       <MuteButton />
+      <SolvingLockGuard />
     </>
   );
 }

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { History as HistoryIcon } from 'lucide-react';
 import { useLanguage } from '@/components/shared/LanguageProvider';
+import { SolvingLockGuard } from '@/lib/solver/client/solvingLock';
 
 interface SolverHeaderProps {
   historyCount?: number;
@@ -56,6 +57,7 @@ export function SolverHeader({ historyCount = 0, onOpenHistory }: SolverHeaderPr
           </Link>
         </div>
       </div>
+      <SolvingLockGuard />
     </header>
   );
 }
